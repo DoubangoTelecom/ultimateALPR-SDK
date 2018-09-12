@@ -8,7 +8,6 @@
 /x64
 *.idb
 /Debug
-Release
 *.orig
 *.tlog
 Debug
