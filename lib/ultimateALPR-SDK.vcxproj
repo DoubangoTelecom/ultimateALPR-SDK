@@ -1,6 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug_sdk|Win32">
+      <Configuration>Debug_sdk</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_sdk|x64">
+      <Configuration>Debug_sdk</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
@@ -11,6 +19,14 @@
     </ProjectConfiguration>
     <ProjectConfiguration Include="Debug_static|x64">
       <Configuration>Debug_static</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_sdk|Win32">
+      <Configuration>Release_sdk</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_sdk|x64">
+      <Configuration>Release_sdk</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
@@ -53,6 +69,12 @@
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_sdk|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -67,6 +89,13 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_sdk|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -74,6 +103,12 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_static|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_sdk|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
@@ -93,6 +128,13 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_sdk|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -104,10 +146,16 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_static|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_sdk|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_sdk|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -116,10 +164,16 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_static|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_sdk|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_sdk|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -129,10 +183,16 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_static|Win32'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_sdk|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_static|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_sdk|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -141,10 +201,16 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_sdk|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_static|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_sdk|x64'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -181,6 +247,23 @@
       <AdditionalLibraryDirectories>../../compv/thirdparties/libraries/windows/glew-2.3.4-win32;../../compv/thirdparties/libraries/windows/freetype-2.8-win32;../../compv/thirdparties/libraries/windows/ffmpeg-3.3.1-lgpl-win32;../../compv/thirdparties/libraries/windows/sdl-2.0.5-win32-debug</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_sdk|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ULTIMATE_ALPR_SDK_EXPORTS;COMPV_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>../lib/include;../../ultimateBase/lib/include;../../ultimateText/lib/include;../../ultimateALPR/lib/include;../../compv/api/include;../../compv/base/include;../../compv/camera/include;../../compv/gl/include;../../compv/drawing/include;../../compv/gpu/include;../../compv/core/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>$(OutDir)CompVBase.lib;$(OutDir)CompVGPU.lib;$(OutDir)CompVCore.lib;$(OutDir)CompVGL.lib;$(OutDir)CompVCamera.lib;$(OutDir)CompVDrawing.lib;$(OutDir)ultimateBase.lib;$(OutDir)ultimateText.lib;$(OutDir)ultimateALPR.lib;Winmm.lib;imm32.lib;version.lib;Shlwapi.lib;ws2_32.lib;Secur32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../compv/thirdparties/libraries/windows/glew-2.3.4-win32;../../compv/thirdparties/libraries/windows/freetype-2.8-win32;../../compv/thirdparties/libraries/windows/ffmpeg-3.3.1-lgpl-win32;../../compv/thirdparties/libraries/windows/sdl-2.0.5-win32-debug</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>
@@ -212,6 +295,23 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>$(OutDir)CompVBase.lib;$(OutDir)CompVGPU.lib;$(OutDir)CompVCore.lib;$(OutDir)CompVGL.lib;$(OutDir)CompVCamera.lib;$(OutDir)CompVDrawing.lib;$(OutDir)ultimateBase.lib;$(OutDir)ultimateText.lib;$(OutDir)ultimateALPR.lib;libavformat.a;libavcodec.a;libavutil.a;libswresample.a;libswscale.a;OpenGL32.lib;Glu32.lib;glew32s.lib;freetype.lib;SDL2.lib;Winmm.lib;imm32.lib;version.lib;Shlwapi.lib;ws2_32.lib;Secur32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../compv/thirdparties/libraries/windows/glew-2.3.4-win64;../../compv/thirdparties/libraries/windows/freetype-2.8-win64;../../compv/thirdparties/libraries/windows/ffmpeg-3.3.1-lgpl-win64;../../compv/thirdparties/libraries/windows/sdl-2.0.5-win64-debug</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_sdk|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;ULTIMATE_ALPR_SDK_EXPORTS;COMPV_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>../lib/include;../../ultimateBase/lib/include;../../ultimateText/lib/include;../../ultimateALPR/lib/include;../../compv/api/include;../../compv/base/include;../../compv/camera/include;../../compv/gl/include;../../compv/drawing/include;../../compv/gpu/include;../../compv/core/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>$(OutDir)CompVBase.lib;$(OutDir)CompVGPU.lib;$(OutDir)CompVCore.lib;$(OutDir)CompVGL.lib;$(OutDir)CompVCamera.lib;$(OutDir)CompVDrawing.lib;$(OutDir)ultimateBase.lib;$(OutDir)ultimateText.lib;$(OutDir)ultimateALPR.lib;Winmm.lib;imm32.lib;version.lib;Shlwapi.lib;ws2_32.lib;Secur32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../compv/thirdparties/libraries/windows/glew-2.3.4-win64;../../compv/thirdparties/libraries/windows/freetype-2.8-win64;../../compv/thirdparties/libraries/windows/ffmpeg-3.3.1-lgpl-win64;../../compv/thirdparties/libraries/windows/sdl-2.0.5-win64-debug</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -257,6 +357,27 @@
       <AdditionalLibraryDirectories>../../compv/thirdparties/libraries/windows/glew-2.3.4-win32;../../compv/thirdparties/libraries/windows/freetype-2.8-win32;../../compv/thirdparties/libraries/windows/ffmpeg-3.3.1-lgpl-win32;../../compv/thirdparties/libraries/windows/sdl-2.0.5-win32-release</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_sdk|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;ULTIMATE_ALPR_SDK_EXPORTS;COMPV_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>../lib/include;../../ultimateBase/lib/include;../../ultimateText/lib/include;../../ultimateALPR/lib/include;../../compv/api/include;../../compv/base/include;../../compv/camera/include;../../compv/gl/include;../../compv/drawing/include;../../compv/gpu/include;../../compv/core/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>$(OutDir)CompVBase.lib;$(OutDir)CompVGPU.lib;$(OutDir)CompVCore.lib;$(OutDir)CompVGL.lib;$(OutDir)CompVCamera.lib;$(OutDir)CompVDrawing.lib;$(OutDir)ultimateBase.lib;$(OutDir)ultimateText.lib;$(OutDir)ultimateALPR.lib;Winmm.lib;imm32.lib;version.lib;Shlwapi.lib;ws2_32.lib;Secur32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../compv/thirdparties/libraries/windows/glew-2.3.4-win32;../../compv/thirdparties/libraries/windows/freetype-2.8-win32;../../compv/thirdparties/libraries/windows/ffmpeg-3.3.1-lgpl-win32;../../compv/thirdparties/libraries/windows/sdl-2.0.5-win32-release</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -296,6 +417,27 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>$(OutDir)CompVBase.lib;$(OutDir)CompVGPU.lib;$(OutDir)CompVCore.lib;$(OutDir)CompVGL.lib;$(OutDir)CompVCamera.lib;$(OutDir)CompVDrawing.lib;$(OutDir)ultimateBase.lib;$(OutDir)ultimateText.lib;$(OutDir)ultimateALPR.lib;libavformat.a;libavcodec.a;libavutil.a;libswresample.a;libswscale.a;OpenGL32.lib;Glu32.lib;glew32s.lib;freetype.lib;SDL2.lib;Winmm.lib;imm32.lib;version.lib;Shlwapi.lib;ws2_32.lib;Secur32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../compv/thirdparties/libraries/windows/glew-2.3.4-win64;../../compv/thirdparties/libraries/windows/freetype-2.8-win64;../../compv/thirdparties/libraries/windows/ffmpeg-3.3.1-lgpl-win64;../../compv/thirdparties/libraries/windows/sdl-2.0.5-win64-release</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_sdk|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;ULTIMATE_ALPR_SDK_EXPORTS;COMPV_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>../lib/include;../../ultimateBase/lib/include;../../ultimateText/lib/include;../../ultimateALPR/lib/include;../../compv/api/include;../../compv/base/include;../../compv/camera/include;../../compv/gl/include;../../compv/drawing/include;../../compv/gpu/include;../../compv/core/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>$(OutDir)CompVBase.lib;$(OutDir)CompVGPU.lib;$(OutDir)CompVCore.lib;$(OutDir)CompVGL.lib;$(OutDir)CompVCamera.lib;$(OutDir)CompVDrawing.lib;$(OutDir)ultimateBase.lib;$(OutDir)ultimateText.lib;$(OutDir)ultimateALPR.lib;Winmm.lib;imm32.lib;version.lib;Shlwapi.lib;ws2_32.lib;Secur32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../compv/thirdparties/libraries/windows/glew-2.3.4-win64;../../compv/thirdparties/libraries/windows/freetype-2.8-win64;../../compv/thirdparties/libraries/windows/ffmpeg-3.3.1-lgpl-win64;../../compv/thirdparties/libraries/windows/sdl-2.0.5-win64-release</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>

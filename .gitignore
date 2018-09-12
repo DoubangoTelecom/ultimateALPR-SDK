@@ -16,6 +16,8 @@ Debug_static
 Release
 Release_dynamic
 Release_static
+Debug_sdk
+Release_sdk
 *.gray
 *.yuv
 *.rgb
