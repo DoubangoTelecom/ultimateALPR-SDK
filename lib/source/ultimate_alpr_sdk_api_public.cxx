@@ -7,6 +7,7 @@
 #include "ultimate_alpr_sdk_api_public.h"
 #include "ultimate_alpr_sdk_api_private.h"
 #include <ultimate_alpr_api_private.h>
+
 using namespace ULTIMATE_ALPR_NAMESPACE;
 
 // make sure the patched namespaces are correct

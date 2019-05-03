@@ -294,6 +294,38 @@
   <ItemGroup>
     <ClCompile Include="main.cxx" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\compv\base\CompVBase.vcxproj">
+      <Project>{52028a97-e6d7-4c48-82e9-3789fd42bc56}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\compv\camera\CompVCamera.vcxproj">
+      <Project>{d5bd00ca-0ee0-4bc2-9b0e-011f0eac5d68}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\compv\core\CompVCore.vcxproj">
+      <Project>{8ba49971-9b73-4717-ab9c-78204716aa00}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\compv\drawing\CompVDrawing.vcxproj">
+      <Project>{3b044340-c223-474b-bb77-ce2f430c0190}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\compv\gl\CompVGL.vcxproj">
+      <Project>{4a895705-e866-452d-8cfa-481c9e6b8871}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\compv\gpu\CompVGPU.vcxproj">
+      <Project>{f3fdf15a-8ae4-4d9d-aa7b-0b7f6e940146}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ultimateALPR\lib\ultimateALPR.vcxproj">
+      <Project>{fb7214c4-a40b-4d1d-b284-653a2242c10c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ultimateBase\lib\ultimateBase.vcxproj">
+      <Project>{2180c425-6d2c-4e17-bd3d-2564d6db13f5}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ultimateText\lib\ultimateText.vcxproj">
+      <Project>{f484c018-2e38-48c0-bb3f-235b4e60b9bf}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\lib\ultimateALPR-SDK.vcxproj">
+      <Project>{ba4e92f3-21c5-4c1f-b892-8c26956a8013}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

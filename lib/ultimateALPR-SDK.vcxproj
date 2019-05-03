@@ -460,12 +460,6 @@
     <ProjectReference Include="..\..\compv\gpu\CompVGPU.vcxproj">
       <Project>{f3fdf15a-8ae4-4d9d-aa7b-0b7f6e940146}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\compv\plugin_directshow\CompVPluginDirectShow.vcxproj">
-      <Project>{09f89651-7ca8-4382-9e8b-272c3eb1291c}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\compv\plugin_mfoundation\CompVPluginMFoundation.vcxproj">
-      <Project>{f9006758-f433-4f8a-a12d-6f0ff4131a74}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\..\ultimateALPR\lib\ultimateALPR.vcxproj">
       <Project>{fb7214c4-a40b-4d1d-b284-653a2242c10c}</Project>
     </ProjectReference>
