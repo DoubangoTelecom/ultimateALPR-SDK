@@ -1,4 +1,4 @@
-With an average inference time as low as 27 milliseconds on HD images (720p) and 98.2 F-score this is the world's fastest and most accurate ANPR/ALPR (Automatic Number/License Plate Recognition) implementation.
+With an average inference time as low as <s>42</s> <s>27</s> <b>16 milliseconds</b> on HD images (720p) and 98.2 F-score this is the world's fastest and most accurate ANPR/ALPR (Automatic Number/License Plate Recognition) implementation.
 We're using state of the art deep learning techniques to outperform traditional implementations.
 Don't take our word for it, test it using your own images at https://www.doubango.org/webapps/alpr/
 
