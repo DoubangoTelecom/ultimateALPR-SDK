@@ -188,7 +188,7 @@ The C++ API is defined [here](https://www.doubango.org/SDKs/anpr/docs/cpp-api.ht
 	}
 ```
 
-Again, please check the [sample applications](#sample-applications) and [full documentation](https://www.doubango.org/SDKs/anpr/docs/index.html) for more information.
+Again, please check the [sample applications](#sample-applications) and [full documentation](https://www.doubango.org/SDKs/anpr/docs/) for more information.
 
 <a name="technical-questions"></a>
  # Technical questions #
