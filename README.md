@@ -31,7 +31,7 @@ congestion detection, double white line crossing detection, incident detection..
 
 On high-end NVIDIA GPUs like the **Tesla V100 the frame rate is 315 fps which means 3.17 millisecond inference time**.
 
-Don't take our word for it, come check our implementation. **No registration, license key or internet connection is needed**, just clone the code and start coding/testing. Everything runs on the device, no data is leaving your computer. 
+Don't take our word for it, come check our implementation. **No registration, license key or internet connection is required**, just clone the code and start coding/testing. Everything runs on the device, no data is leaving your computer. 
 The code released here comes with many [ready-to-use samples](#sample-applications) to help you get started easily. 
 
 You can also check our online [cloud-based implementation](https://www.doubango.org/webapps/alpr/) (*no registration required*) to check out the accuracy and precision before starting to play with the SDK.
