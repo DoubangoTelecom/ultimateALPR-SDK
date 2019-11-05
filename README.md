@@ -37,28 +37,28 @@ You can also check our online [cloud-based implementation](https://www.doubango.
 Please check full documentation at https://www.doubango.org/SDKs/anpr/docs/
 
 <a name="sample-applications"></a>
-### Sample applications ### 
+# Sample applications #
 The source code comes with #4 sample applications: [Benchmark](#sample-application-benchmark), [VideoParallel](#sample-application-videoparallel), [VideoSequential](sample-application-videosequential) and [ImageSnap](sample-application-imagesnap).
 
 <a name="sample-application-benchmark"></a>
-#### Benchmark ####
+## Benchmark ##
 This application is used to check everything is ok and running as fast as expected. The imformation about the maximum frame rate (**47fps**) on Snapdragon 855 devices could be checked using this application. It's open source and doesn't require registration or license key.
 
 <a name="sample-application-videoparallel"></a>
-#### VideoParallel #### 
+## VideoParallel ##
 This application should be used as reference code by any developer trying to add ultimateALPR to their products. It shows how to detect and recognize license plates in realtime using live video stream from the camera.
 Please check [Parallel versus sequential processing section](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html#parallelversussequentialprocessing) for more info about parellel mode.
 
 <a name="sample-application-videosequential"></a>
-#### VideoSequential ####
+## VideoSequential ##
 Same as VideoParallel but working on sequential mode which means slower. This application is provided to ease comparing the modes: Parallel versus Sequential.
 
 <a name="sample-application-imagesnap"></a>
-#### ImageSnap ####
+## ImageSnap ##
 This application reads and display the live video stream from the camera but only recognize an image from the stream on demand.
 
 <a name="trying-the-samples"></a>
-### Trying the samples ###
+# Trying the samples #
 To try the sample applications on Android:
  1. Open Android Studio and select "Open an existing Android Studio project"
 ![alt text](https://www.doubango.org/SDKs/anpr/docs/_images/android_studio_open_existing_project.jpg "Open an existing Android Studio project")
@@ -70,8 +70,126 @@ To try the sample applications on Android:
 ![alt text](https://www.doubango.org/SDKs/anpr/docs/_images/android_studio_select_samples_videoparallel.jpg "Select sample")
             
 <a name="getting-started"></a>
-### Getting started ### 
+# Getting started # 
+The SDK works on [many platforms](https://www.doubango.org/SDKs/anpr/docs/Architecture_overview.html#supportedoperatingsystems) and comes with support for many [programming languages](https://www.doubango.org/SDKs/anpr/docs/Architecture_overview.html#supportedprogramminglanguages) but this section focus on Android and Java. 
+Please check the [previous section](#trying-the-samples) for more information on how to use the [sample applications](#sample-applications).
+
+## Adding the SDK to your project (Android) ##
+The SDK is distributed as an Android Studio module and you can add it as reference or you can also build it and add the AAR to your project. But, the easiest way to add the SDK to your project is by directly including the source.
+
+In your *build.gradle* file add:
+
+```python
+android {
+
+      # This is the block to add within "android { } " section
+      sourceSets {
+         main {
+             jniLibs.srcDirs += ['path-to-your-ultimateALPR-SDK/binaries/android/jniLibs']
+             java.srcDirs += ['path-to-your-ultimateALPR-SDK/java/android']
+             assets.srcDirs += ['path-to-your-ultimateALPR-SDK/assets/models']
+         }
+      }
+}
+```
+
+## Using the API (Android) ##
+
+It's hard to be lost when you try to use the API as there are only 3 useful functions: init, process and deInit.
+
+The C++ API is defined [here](https://www.doubango.org/SDKs/anpr/docs/cpp-api.html).
+
+```java
+
+	import org.doubango.ultimateAlpr.Sdk.ULTALPR_SDK_IMAGE_TYPE;
+	import org.doubango.ultimateAlpr.Sdk.UltAlprSdkEngine;
+	import org.doubango.ultimateAlpr.Sdk.UltAlprSdkParallelDeliveryCallback;
+	import org.doubango.ultimateAlpr.Sdk.UltAlprSdkResult;
+
+	final static String CONFIG = "{" +
+		"\"debug_level\": \"info\"," + 
+		"\"gpgpu_enabled\": true," + 
+
+		"\"detect_minscore\": 0.1" + 
+		"\"detect_quantization_enabled\": true," + 
+
+		"\"recogn_score_type\": \"min\"," + 
+		"\"recogn_minscore\": 0.3," + 
+		"\"recogn_rectify_enabled\": false," + 
+		"\"recogn_quantization_enabled\": true" + 
+	"}";
+
+	/**
+	* Parallel callback delivery function used to notify about new results.
+	* This callback will be called few milliseconds (before next frame is completely processed)
+	* after process function is called.
+	*/
+	static class MyUltAlprSdkParallelDeliveryCallback extends UltAlprSdkParallelDeliveryCallback {
+		@Override
+		public void onNewResult(UltAlprSdkResult result) { }
+	}
+
+	final MyUltAlprSdkParallelDeliveryCallback mCallback = new MyUltAlprSdkParallelDeliveryCallback(); // set to null to disable parallel mode
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+
+		// Initialize the engine
+		assert UltAlprSdkEngine.init(
+				getAssets(),
+				CONFIG,
+				mCallback
+		).isOK();
+	}
+
+	// Camera listener: https://developer.android.com/reference/android/media/ImageReader.OnImageAvailableListener
+	final ImageReader.OnImageAvailableListener mOnImageAvailableListener = new ImageReader.OnImageAvailableListener() {
+
+		@Override
+		public void onImageAvailable(ImageReader reader) {
+				try {
+				    final Image image = reader.acquireLatestImage();
+				    if (image == null) {
+				        return;
+				    }
+
+				    // ANPR/ALPR recognition
+				    final Image.Plane[] planes = image.getPlanes();
+				    final UltAlprSdkResult result = UltAlprSdkEngine.process(
+				        ULTALPR_SDK_IMAGE_TYPE.ULTALPR_SDK_IMAGE_TYPE_YUV420P,
+				        planes[0].getBuffer(),
+				        planes[1].getBuffer(),
+				        planes[2].getBuffer(),
+				        image.getWidth(),
+				        image.getHeight(),
+				        planes[0].getRowStride(),
+				        planes[1].getRowStride(),
+				        planes[2].getRowStride(),
+				        planes[1].getPixelStride()
+				    );
+				    assert result.isOK();
+
+				    image.close();
+
+				} catch (final Exception e) {
+				   e.printStackTrace();
+				}
+		}
+	};
+
+	@Override
+	public void onDestroy() {
+		// DeInitialize the engine
+		assert UltAlprSdkEngine.deInit().isOK();
+
+		super.onDestroy();
+	}
+```
+
+Again, please check the [sample applications](#sample-applications) and [full documentation](https://www.doubango.org/SDKs/anpr/docs/index.html) for more information.
 
 <a name="technical-questions"></a>
- ### Technical questions ###
+ # Technical questions #
  Please check our [discussion group](https://groups.google.com/forum/#!forum/doubango-ai) or [twitter account](https://twitter.com/doubangotelecom?lang=en)
