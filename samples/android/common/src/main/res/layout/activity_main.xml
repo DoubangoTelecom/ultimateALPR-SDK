@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+ Copyright (C) 2016-2019 Doubango AI <https://www.doubango.org>
+ License: For non-commercial use only
+ Source code: https://github.com/DoubangoTelecom/ultimateALPR-SDK
+ WebSite: https://www.doubango.org/webapps/alpr/
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000"
+    tools:context="org.doubango.ultimateAlpr.MainActivity" />
