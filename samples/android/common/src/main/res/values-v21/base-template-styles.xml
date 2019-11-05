@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (C) 2016-2019 Doubango AI <https://www.doubango.org>
+ License: For non-commercial use only
+ Source code: https://github.com/DoubangoTelecom/ultimateALPR-SDK
+ WebSite: https://www.doubango.org/webapps/alpr/
+-->
+
+<resources>
+
+    <!-- Activity themes -->
+    <style name="Theme.Base" parent="android:Theme.Material.Light">
+    </style>
+
+</resources>

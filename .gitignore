@@ -8,9 +8,6 @@
 /x64
 *.idb
 /Debug
-*.orig
-*.tlog
-Debug
 Debug_dynamic
 Debug_static
 Release
@@ -18,6 +15,9 @@ Release_dynamic
 Release_static
 Debug_sdk
 Release_sdk
+*.orig
+*.tlog
+Debug
 *.gray
 *.yuv
 *.rgb
@@ -41,5 +41,9 @@ out
 .externalNativeBuild
 My Amplifier XE Results*
 My Advisor Results*
-/plugin_androidcamera/.idea/libraries
 *.rbg
+/.vs/config
+/vs_android/.vs
+/docs/*.odt#
+/vs_android/.workspace
+

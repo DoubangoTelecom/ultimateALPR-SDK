@@ -1,0 +1,15 @@
+<!--
+ Copyright (C) 2016-2019 Doubango AI <https://www.doubango.org>
+ License: For non-commercial use only
+ Source code: https://github.com/DoubangoTelecom/ultimateALPR-SDK
+ WebSite: https://www.doubango.org/webapps/alpr/
+  -->
+
+<resources>
+
+    <!-- Semantic definitions -->
+
+    <dimen name="horizontal_page_margin">@dimen/margin_huge</dimen>
+    <dimen name="vertical_page_margin">@dimen/margin_medium</dimen>
+
+</resources>

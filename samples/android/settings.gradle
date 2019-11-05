@@ -1,0 +1,2 @@
+include ':sdk', ':videoparallel', ':benchmark', ':videosequential'
+rootProject.name='ultimateAlpr'
