@@ -3,6 +3,8 @@
   3. [Getting started](#getting-started)
   4. [Getting help](#technical-questions)
   
+ Full documentation at https://www.doubango.org/SDKs/anpr/docs/
+  
 <hr />
   
 Have you ever seen a deep learning based [ANPR/ALPR (Automatic Number/License Plate Recognition)](https://en.wikipedia.org/wiki/Automatic_number-plate_recognition) engine running at **47fps on ARM device** (Android, Snapdragon 855, 720p video resolution)? <br />
