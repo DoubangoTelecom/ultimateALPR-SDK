@@ -22,7 +22,7 @@ Please check [Device-based versus Cloud-based solution](https://www.doubango.org
 <p align="center" style="text-align: center">
   <img src="https://www.doubango.org/SDKs/anpr/docs/_images/Screenshot_20191103-194930_AlprVideoParallel.jpg">
   <br />
-  <em><u>ultimateALPR running on Android</u></em>
+  <em><u><a href="#sample-application-videoparallel">VideoParallel sample application</a> on Android</u></em>
 </p>
 
 We're already working to bring this frame rate at 64fps and add support for CMMDP (**Color-Make Model-Direction-Prediction**) before march 2020. 
