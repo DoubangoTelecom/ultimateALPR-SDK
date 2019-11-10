@@ -3,7 +3,8 @@
   3. [Getting started](#getting-started)
   4. [Getting help](#technical-questions)
   
- Full documentation at https://www.doubango.org/SDKs/anpr/docs/
+ - Full documentation at https://www.doubango.org/SDKs/anpr/docs/
+ - Online demo at https://www.doubango.org/webapps/alpr/
   
 <hr />
   
