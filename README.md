@@ -112,7 +112,7 @@ The C++ API is defined [here](https://www.doubango.org/SDKs/anpr/docs/cpp-api.ht
 		"\"debug_level\": \"info\"," + 
 		"\"gpgpu_enabled\": true," + 
 
-		"\"detect_minscore\": 0.1" + 
+		"\"detect_minscore\": 0.1," + 
 		"\"detect_quantization_enabled\": true," + 
 
 		"\"recogn_score_type\": \"min\"," + 
