@@ -3,7 +3,8 @@
   3. [Getting started](#getting-started)
   4. [Getting help](#technical-questions)
   
- Full documentation at https://www.doubango.org/SDKs/anpr/docs/
+ - Full documentation at https://www.doubango.org/SDKs/anpr/docs/
+ - Online demo at https://www.doubango.org/webapps/alpr/
   
 <hr />
   
@@ -112,7 +113,7 @@ The C++ API is defined [here](https://www.doubango.org/SDKs/anpr/docs/cpp-api.ht
 		"\"debug_level\": \"info\"," + 
 		"\"gpgpu_enabled\": true," + 
 
-		"\"detect_minscore\": 0.1" + 
+		"\"detect_minscore\": 0.1," + 
 		"\"detect_quantization_enabled\": true," + 
 
 		"\"recogn_score_type\": \"min\"," + 
