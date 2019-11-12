@@ -69,9 +69,11 @@ namespace ultimateAlprSdk
 	/*! Defines the image types.
 	*/
 	enum ULTALPR_SDK_IMAGE_TYPE {
-		/*! A pixel is represented by 3 BYTES containing a red, blue and green sample (with blue stored at the lowest address, green next then red). 
-		 * No padding bytes are added between pixels.
-		 * More information at https://www.fourcc.org/pixel-format/rgb-bi_rgb/
+		/*! Each pixel is stored on 3 bytes. Each channel (R, G, B) is stored with 8 bits of precision (256 possible values).
+		* Here is how the pixels are packed:
+		* \code{.cpp}
+		* const int color = (B & 0xff) << 16 | (G & 0xff) << 8 | (R & 0xff);
+		* \endcode
 		*/
 		ULTALPR_SDK_IMAGE_TYPE_RGB24,
 		/*! YUV 4:2:0 image with a plane of 8 bit Y samples followed by an interleaved U/V plane containing 8 bit 2x2 subsampled colour difference samples.
@@ -152,7 +154,7 @@ namespace ultimateAlprSdk
 		virtual void onNewResult(const UltAlprSdkResult* result) const = 0;
 	};
 
-	/*! The ANPR/ALPR engine.
+	/*! The Automatic Number/License Plate Recognition (ANPR/ALPR) engine.
 	*/
 	class ULTIMATE_ALPR_SDK_PUBLIC_API UltAlprSdkEngine
 	{
@@ -180,7 +182,7 @@ namespace ultimateAlprSdk
 		static UltAlprSdkResult init(const std::string& jsonConfig = "", const UltAlprSdkParallelDeliveryCallback* parallelDeliveryCallback = nullptr);
 #endif /* ULTALPR_SDK_OS_ANDROID */
 
-		/*! DeInitialize the engine. This function must be the last one to call.
+		/*! DeInitialize the engine. This function must be the last one to be call.
 			Deallocate all the resources allocated using \ref init function.
 			\returns a \ref UltAlprSdkResult "result"
 		*/
