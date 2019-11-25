@@ -189,6 +189,15 @@ class ultimateAlprSdkPINVOKE {
   }
 
 
+  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_ULTALPR_SDK_VERSION_MAJOR_get")]
+  public static extern int ULTALPR_SDK_VERSION_MAJOR_get();
+
+  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_ULTALPR_SDK_VERSION_MINOR_get")]
+  public static extern int ULTALPR_SDK_VERSION_MINOR_get();
+
+  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_ULTALPR_SDK_VERSION_MICRO_get")]
+  public static extern int ULTALPR_SDK_VERSION_MICRO_get();
+
   [DllImport("ultimateAlprSdk", EntryPoint="CSharp_new_UltAlprSdkResult__SWIG_0")]
   public static extern IntPtr new_UltAlprSdkResult__SWIG_0(int jarg1, string jarg2, string jarg3, uint jarg4);
 
@@ -225,12 +234,6 @@ class ultimateAlprSdkPINVOKE {
   [DllImport("ultimateAlprSdk", EntryPoint="CSharp_UltAlprSdkParallelDeliveryCallback_director_connect")]
   public static extern void UltAlprSdkParallelDeliveryCallback_director_connect(HandleRef jarg1, UltAlprSdkParallelDeliveryCallback.SwigDelegateUltAlprSdkParallelDeliveryCallback_0 delegate0);
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_new_UltAlprSdkEngine")]
-  public static extern IntPtr new_UltAlprSdkEngine();
-
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_delete_UltAlprSdkEngine")]
-  public static extern void delete_UltAlprSdkEngine(HandleRef jarg1);
-
   [DllImport("ultimateAlprSdk", EntryPoint="CSharp_UltAlprSdkEngine_init__SWIG_0")]
   public static extern IntPtr UltAlprSdkEngine_init__SWIG_0(string jarg1, HandleRef jarg2);
 
@@ -257,6 +260,9 @@ class ultimateAlprSdkPINVOKE {
 
   [DllImport("ultimateAlprSdk", EntryPoint="CSharp_UltAlprSdkEngine_warmUp")]
   public static extern IntPtr UltAlprSdkEngine_warmUp(int jarg1);
+
+  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_delete_UltAlprSdkEngine")]
+  public static extern void delete_UltAlprSdkEngine(HandleRef jarg1);
 }
 
 }

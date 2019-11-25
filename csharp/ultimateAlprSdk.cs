@@ -12,6 +12,9 @@ using System;
 using System.Runtime.InteropServices;
 
 public class ultimateAlprSdk {
+  public static readonly int ULTALPR_SDK_VERSION_MAJOR = ultimateAlprSdkPINVOKE.ULTALPR_SDK_VERSION_MAJOR_get();
+  public static readonly int ULTALPR_SDK_VERSION_MINOR = ultimateAlprSdkPINVOKE.ULTALPR_SDK_VERSION_MINOR_get();
+  public static readonly int ULTALPR_SDK_VERSION_MICRO = ultimateAlprSdkPINVOKE.ULTALPR_SDK_VERSION_MICRO_get();
 }
 
 }

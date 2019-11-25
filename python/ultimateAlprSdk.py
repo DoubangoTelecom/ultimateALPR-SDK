@@ -74,7 +74,11 @@ except:
     weakref_proxy = lambda x: x
 
 
+ULTALPR_SDK_VERSION_MAJOR = _ultimateAlprSdk.ULTALPR_SDK_VERSION_MAJOR
+ULTALPR_SDK_VERSION_MINOR = _ultimateAlprSdk.ULTALPR_SDK_VERSION_MINOR
+ULTALPR_SDK_VERSION_MICRO = _ultimateAlprSdk.ULTALPR_SDK_VERSION_MICRO
 ULTALPR_SDK_IMAGE_TYPE_RGB24 = _ultimateAlprSdk.ULTALPR_SDK_IMAGE_TYPE_RGB24
+ULTALPR_SDK_IMAGE_TYPE_RGBA32 = _ultimateAlprSdk.ULTALPR_SDK_IMAGE_TYPE_RGBA32
 ULTALPR_SDK_IMAGE_TYPE_NV12 = _ultimateAlprSdk.ULTALPR_SDK_IMAGE_TYPE_NV12
 ULTALPR_SDK_IMAGE_TYPE_NV21 = _ultimateAlprSdk.ULTALPR_SDK_IMAGE_TYPE_NV21
 ULTALPR_SDK_IMAGE_TYPE_YUV420P = _ultimateAlprSdk.ULTALPR_SDK_IMAGE_TYPE_YUV420P
@@ -130,13 +134,8 @@ class UltAlprSdkEngine(_object):
     __setattr__ = lambda self, name, value: _swig_setattr(self, UltAlprSdkEngine, name, value)
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, UltAlprSdkEngine, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined")
     __repr__ = _swig_repr
-    def __init__(self): 
-        this = _ultimateAlprSdk.new_UltAlprSdkEngine()
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _ultimateAlprSdk.delete_UltAlprSdkEngine
-    __del__ = lambda self : None;
     __swig_getmethods__["init"] = lambda x: _ultimateAlprSdk.UltAlprSdkEngine_init
     if _newclass:init = staticmethod(_ultimateAlprSdk.UltAlprSdkEngine_init)
     __swig_getmethods__["deInit"] = lambda x: _ultimateAlprSdk.UltAlprSdkEngine_deInit
@@ -145,6 +144,8 @@ class UltAlprSdkEngine(_object):
     if _newclass:process = staticmethod(_ultimateAlprSdk.UltAlprSdkEngine_process)
     __swig_getmethods__["warmUp"] = lambda x: _ultimateAlprSdk.UltAlprSdkEngine_warmUp
     if _newclass:warmUp = staticmethod(_ultimateAlprSdk.UltAlprSdkEngine_warmUp)
+    __swig_destroy__ = _ultimateAlprSdk.delete_UltAlprSdkEngine
+    __del__ = lambda self : None;
 UltAlprSdkEngine_swigregister = _ultimateAlprSdk.UltAlprSdkEngine_swigregister
 UltAlprSdkEngine_swigregister(UltAlprSdkEngine)
 

@@ -14,7 +14,7 @@ ultimateALPR SDK public header
 #include <string>
 
 #define ULTALPR_SDK_VERSION_MAJOR		2
-#define ULTALPR_SDK_VERSION_MINOR		0
+#define ULTALPR_SDK_VERSION_MINOR		1
 #define ULTALPR_SDK_VERSION_MICRO		0
 
 // Windows's symbols export
@@ -72,33 +72,65 @@ namespace ultimateAlprSdk
 		/*! Each pixel is stored on 3 bytes. Each channel (R, G, B) is stored with 8 bits of precision (256 possible values).
 		* Here is how the pixels are packed:
 		* \code{.cpp}
-		* const int color = (B & 0xff) << 16 | (G & 0xff) << 8 | (R & 0xff);
+		* const int pixel = (B & 0xff) << 16 | (G & 0xff) << 8 | (R & 0xff);
 		* \endcode
+		*
+		* Available since: 2.0.0
 		*/
 		ULTALPR_SDK_IMAGE_TYPE_RGB24,
+
+		/*! Each pixel is stored on 4 bytes. Each channel (R, G, B, A) is stored with 8 bits (1 byte) of precision (256 possible values).
+		* The R channel is stored at the lowest memory address followed by G, B then A channels. If you're using Android then,
+		* this is the same as <a href="https://developer.android.com/reference/android/graphics/Bitmap.Config#ARGB_8888">ARGB_8888</a>.
+		* Here is how the pixels are packed:
+		* \code{.cpp}
+		* const int pixel = (A & 0xff) << 24 | (B & 0xff) << 16 | (G & 0xff) << 8 | (R & 0xff);
+		* \endcode
+		*
+		* Available since: 2.1.0
+		*/
+		ULTALPR_SDK_IMAGE_TYPE_RGBA32,
+
 		/*! YUV 4:2:0 image with a plane of 8 bit Y samples followed by an interleaved U/V plane containing 8 bit 2x2 subsampled colour difference samples.
 		*	More information at https://www.fourcc.org/pixel-format/yuv-nv12/
+		*
+		* Available since: 2.0.0
 		*/
 		ULTALPR_SDK_IMAGE_TYPE_NV12,
+
 		/*! YUV 4:2:0 image with a plane of 8 bit Y samples followed by an interleaved V/U plane containing 8 bit 2x2 subsampled chroma samples. 
 		* The same as \ref ULTALPR_SDK_IMAGE_TYPE_NV12 except the interleave order of U and V is reversed.
 		*	More information at https://www.fourcc.org/pixel-format/yuv-nv21/
+		*
+		* Available since: 2.0.0
 		*/
 		ULTALPR_SDK_IMAGE_TYPE_NV21,
+
 		/*! These formats are identical to YV12 except that the U and V plane order is reversed. 
 		* They comprise an NxM Y plane followed by (N/2)x(M/2) U and V planes. 
 		* This is the format of choice for many software MPEG codecs.
 		* More information at https://www.fourcc.org/pixel-format/yuv-i420/
+		*
+		* Available since: 2.0.0
 		*/
 		ULTALPR_SDK_IMAGE_TYPE_YUV420P,
+
 		/*! Same as \ref ULTALPR_SDK_IMAGE_TYPE_YUV420P except the order of U and V is reversed.
 		*	More information at https://www.fourcc.org/pixel-format/yuv-yv12/
+		*
+		* Available since: 2.0.0
 		*/
 		ULTALPR_SDK_IMAGE_TYPE_YVU420P,
+
 		/*!  YUV 4:2:2 image with an NxM Y plane followed by (N/2)x(M) V and U planes.
+		*
+		* Available since: 2.0.0
 		*/
 		ULTALPR_SDK_IMAGE_TYPE_YUV422P,
+
 		/*!  YUV 4:4:4 image with an NxM Y plane followed by NxM V and U planes.
+		*
+		* Available since: 2.0.0
 		*/
 		ULTALPR_SDK_IMAGE_TYPE_YUV444P,
 	};

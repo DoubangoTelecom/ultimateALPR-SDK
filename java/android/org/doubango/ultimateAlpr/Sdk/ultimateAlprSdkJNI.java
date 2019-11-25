@@ -27,8 +27,6 @@ public class ultimateAlprSdkJNI {
   public final static native void UltAlprSdkParallelDeliveryCallback_onNewResult(long jarg1, UltAlprSdkParallelDeliveryCallback jarg1_, long jarg2, UltAlprSdkResult jarg2_);
   public final static native void UltAlprSdkParallelDeliveryCallback_director_connect(UltAlprSdkParallelDeliveryCallback obj, long cptr, boolean mem_own, boolean weak_global);
   public final static native void UltAlprSdkParallelDeliveryCallback_change_ownership(UltAlprSdkParallelDeliveryCallback obj, long cptr, boolean take_or_release);
-  public final static native long new_UltAlprSdkEngine();
-  public final static native void delete_UltAlprSdkEngine(long jarg1);
   public final static native long UltAlprSdkEngine_init__SWIG_0(Object jarg1, String jarg2, long jarg3, UltAlprSdkParallelDeliveryCallback jarg3_);
   public final static native long UltAlprSdkEngine_init__SWIG_1(Object jarg1, String jarg2);
   public final static native long UltAlprSdkEngine_init__SWIG_2(Object jarg1);
@@ -38,6 +36,7 @@ public class ultimateAlprSdkJNI {
   public final static native long UltAlprSdkEngine_process__SWIG_2(int jarg1, java.nio.ByteBuffer jarg2, java.nio.ByteBuffer jarg3, java.nio.ByteBuffer jarg4, long jarg5, long jarg6, long jarg7, long jarg8, long jarg9, long jarg10);
   public final static native long UltAlprSdkEngine_process__SWIG_3(int jarg1, java.nio.ByteBuffer jarg2, java.nio.ByteBuffer jarg3, java.nio.ByteBuffer jarg4, long jarg5, long jarg6, long jarg7, long jarg8, long jarg9);
   public final static native long UltAlprSdkEngine_warmUp(int jarg1);
+  public final static native void delete_UltAlprSdkEngine(long jarg1);
 
   public static void SwigDirector_UltAlprSdkParallelDeliveryCallback_onNewResult(UltAlprSdkParallelDeliveryCallback self, long result) {
     self.onNewResult((result == 0) ? null : new UltAlprSdkResult(result, false));

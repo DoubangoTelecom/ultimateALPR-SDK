@@ -8,5 +8,5 @@
 
 package org.doubango.ultimateAlpr.Sdk;
 
-public class ultimateAlprSdk {
+public class ultimateAlprSdk implements ultimateAlprSdkConstants {
 }

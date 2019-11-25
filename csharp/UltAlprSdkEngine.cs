@@ -41,9 +41,6 @@ public class UltAlprSdkEngine : IDisposable {
     }
   }
 
-  public UltAlprSdkEngine() : this(ultimateAlprSdkPINVOKE.new_UltAlprSdkEngine(), true) {
-  }
-
   public static UltAlprSdkResult init(string jsonConfig, UltAlprSdkParallelDeliveryCallback parallelDeliveryCallback) {
     UltAlprSdkResult ret = new UltAlprSdkResult(ultimateAlprSdkPINVOKE.UltAlprSdkEngine_init__SWIG_0(jsonConfig, UltAlprSdkParallelDeliveryCallback.getCPtr(parallelDeliveryCallback)), true);
     if (ultimateAlprSdkPINVOKE.SWIGPendingException.Pending) throw ultimateAlprSdkPINVOKE.SWIGPendingException.Retrieve();

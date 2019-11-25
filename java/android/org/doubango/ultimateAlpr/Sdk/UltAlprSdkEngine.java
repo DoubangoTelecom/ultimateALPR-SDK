@@ -35,10 +35,6 @@ public class UltAlprSdkEngine {
     }
   }
 
-  public UltAlprSdkEngine() {
-    this(ultimateAlprSdkJNI.new_UltAlprSdkEngine(), true);
-  }
-
   public static UltAlprSdkResult init(Object assetManager, String jsonConfig, UltAlprSdkParallelDeliveryCallback parallelDeliveryCallback) {
     return new UltAlprSdkResult(ultimateAlprSdkJNI.UltAlprSdkEngine_init__SWIG_0(assetManager, jsonConfig, UltAlprSdkParallelDeliveryCallback.getCPtr(parallelDeliveryCallback), parallelDeliveryCallback), true);
   }

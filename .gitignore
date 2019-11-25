@@ -47,3 +47,7 @@ My Advisor Results*
 /docs/*.odt#
 /vs_android/.workspace
 
+/python/ultimateALPR-SDK-API-PUBLIC-SWIG.cxx
+/python/ultimateALPR-SDK-API-PUBLIC-SWIG.h
+/ruby/ultimateALPR-SDK-API-PUBLIC-SWIG.cxx
+/ruby/ultimateALPR-SDK-API-PUBLIC-SWIG.h

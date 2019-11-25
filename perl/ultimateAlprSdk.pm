@@ -131,12 +131,10 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 @ISA = qw( ultimateAlprSdk );
 %OWNER = ();
 %ITERATORS = ();
-sub new {
-    my $pkg = shift;
-    my $self = ultimateAlprSdkc::new_UltAlprSdkEngine(@_);
-    bless $self, $pkg if defined($self);
-}
-
+*init = *ultimateAlprSdkc::UltAlprSdkEngine_init;
+*deInit = *ultimateAlprSdkc::UltAlprSdkEngine_deInit;
+*process = *ultimateAlprSdkc::UltAlprSdkEngine_process;
+*warmUp = *ultimateAlprSdkc::UltAlprSdkEngine_warmUp;
 sub DESTROY {
     return unless $_[0]->isa('HASH');
     my $self = tied(%{$_[0]});
@@ -148,10 +146,6 @@ sub DESTROY {
     }
 }
 
-*init = *ultimateAlprSdkc::UltAlprSdkEngine_init;
-*deInit = *ultimateAlprSdkc::UltAlprSdkEngine_deInit;
-*process = *ultimateAlprSdkc::UltAlprSdkEngine_process;
-*warmUp = *ultimateAlprSdkc::UltAlprSdkEngine_warmUp;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -169,7 +163,11 @@ sub ACQUIRE {
 
 package ultimateAlprSdk;
 
+*ULTALPR_SDK_VERSION_MAJOR = *ultimateAlprSdkc::ULTALPR_SDK_VERSION_MAJOR;
+*ULTALPR_SDK_VERSION_MINOR = *ultimateAlprSdkc::ULTALPR_SDK_VERSION_MINOR;
+*ULTALPR_SDK_VERSION_MICRO = *ultimateAlprSdkc::ULTALPR_SDK_VERSION_MICRO;
 *ULTALPR_SDK_IMAGE_TYPE_RGB24 = *ultimateAlprSdkc::ULTALPR_SDK_IMAGE_TYPE_RGB24;
+*ULTALPR_SDK_IMAGE_TYPE_RGBA32 = *ultimateAlprSdkc::ULTALPR_SDK_IMAGE_TYPE_RGBA32;
 *ULTALPR_SDK_IMAGE_TYPE_NV12 = *ultimateAlprSdkc::ULTALPR_SDK_IMAGE_TYPE_NV12;
 *ULTALPR_SDK_IMAGE_TYPE_NV21 = *ultimateAlprSdkc::ULTALPR_SDK_IMAGE_TYPE_NV21;
 *ULTALPR_SDK_IMAGE_TYPE_YUV420P = *ultimateAlprSdkc::ULTALPR_SDK_IMAGE_TYPE_YUV420P;
