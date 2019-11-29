@@ -1,7 +1,7 @@
 - [Building](#building)
   - [Windows](#building-windows)
   - [Generic GCC](#building-generic-gcc)
-  - [Raspberry pi (Raspbian OS)](#building-rpi)
+  - [Raspberry Pi (Raspbian OS)](#building-rpi)
 - [Testing](#testing)
   - [Usage](#testing-usage)
   - [Examples](#testing-examples)
@@ -36,9 +36,9 @@ g++ recognizer.cxx -O3 -I../../../c++ -L../../../binaries/<yourOS>/<yourArch> -l
 - If you're cross compiling then, you'll have to change `g++` with the correct triplet. For example, on Android ARM64 the triplet would be equal to `aarch64-linux-android-g++`.
 
 <a name="building-rpi"></a>
-## Raspberry pi (Raspbian OS) ##
+## Raspberry Pi (Raspbian OS) ##
 
-To build the sample for Raspberry pi you can either do it on the device itself or cross compile it on [Windows](#cross-compilation-rpi-install-windows), [Linux](#cross-compilation-rpi-install-ubunt) or OSX machines. 
+To build the sample for Raspberry Pi you can either do it on the device itself or cross compile it on [Windows](#cross-compilation-rpi-install-windows), [Linux](#cross-compilation-rpi-install-ubunt) or OSX machines. 
 For more information on how to install the toolchain for cross compilation please check [here](../README.md#cross-compilation-rpi).
 
 ```
@@ -73,7 +73,7 @@ Options surrounded with **[]** are optional.
 <a name="testing-examples"></a>
 ## Examples ##
 
-For example, on **Raspberry pi** you may call the recognizer application using the following command:
+For example, on **Raspberry Pi** you may call the recognizer application using the following command:
 ```
 LD_LIBRARY_PATH=../../../binaries/raspbian/armv7l:$LD_LIBRARY_PATH ./recognizer \
     --image ../../../assets/images/lic_us_1280x720.jpg \

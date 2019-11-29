@@ -2,14 +2,14 @@
 - [Building](#building)
   - [Windows](#building-windows)
   - [Generic GCC](#building-generic-gcc)
-  - [Raspberry pi (Raspbian OS)](#building-rpi)
+  - [Raspberry Pi (Raspbian OS)](#building-rpi)
 - [Testing](#testing)
   - [Usage](#testing-usage)
   - [Examples](#testing-examples)
 
 
 This application is used to check everything is ok and running as fast as expected. 
-The information about the maximum frame rate (**47fps** on Snapdragon 855 devices and **12fps** on Raspberry pi 4) could be checked using this application. 
+The information about the maximum frame rate (**47fps** on Snapdragon 855 devices and **12fps** on Raspberry Pi 4) could be checked using this application. 
 It's open source and doesn't require registration or license key.
 
 More information about the benchmark rules at [https://www.doubango.org/SDKs/anpr/docs/Benchmark.html](https://www.doubango.org/SDKs/anpr/docs/Benchmark.html).
@@ -17,15 +17,15 @@ More information about the benchmark rules at [https://www.doubango.org/SDKs/anp
 <a name="peformance-numbers"></a>
 # Peformance numbers #
 
-Some performance numbers on high-end (**Galaxy S10+**) and low-end (**Raspberry pi 4**) devices using **720p (1280x720)** images:
+Some performance numbers on high-end (**Galaxy S10+**) and low-end (**Raspberry Pi 4**) devices using **720p (1280x720)** images:
 
 |  | 0.0 rate | 0.2 rate | 0.5 rate | 0.7 rate | 1.0 rate |
 |-------- | --- | --- | --- | --- | --- |
 | **Galaxy S10+ (Android)** | 21344 millis <br/> **46.85 fps** | 25815 millis <br/> 38.73 fps | 29712 millis <br/> 33.65 fps | 33352 millis <br/> 29.98 fps | 37825 millis <br/> 26.43 fps |
-| **Raspberry pi 4 (Raspbian Buster)** | 81890 millis <br />**12.21 fps** | 89770 millis <br/> 11.13 fps | 115190 millis <br/> 8.68 fps | 122950 millis <br/> 8.13fps | 141460 millis <br/> 7.06 fps |
+| **Raspberry Pi 4 (Raspbian Buster)** | 81890 millis <br />**12.21 fps** | 89770 millis <br/> 11.13 fps | 115190 millis <br/> 8.68 fps | 122950 millis <br/> 8.13fps | 141460 millis <br/> 7.06 fps |
 
 Some notes:
-- **Please note that even if Raspberry pi 4 has a 64-bit CPU [Raspbian OS](https://en.wikipedia.org/wiki/Raspbian>) uses a 32-bit kernel which means we're loosing many SIMD optimizations.**
+- **Please note that even if Raspberry Pi 4 has a 64-bit CPU [Raspbian OS](https://en.wikipedia.org/wiki/Raspbian>) uses a 32-bit kernel which means we're loosing many SIMD optimizations.**
 - **On Android devices we have noticed that [parallel processing](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html) can speedup the pipeline by up to 120% on some devices while on Raspberry pi the gain is marginal.**
 
 <a name="building"></a>
@@ -49,9 +49,9 @@ g++ benchmark.cxx -O3 -I../../../c++ -L../../../binaries/<yourOS>/<yourArch> -lu
 - If you're cross compiling then, you'll have to change `g++` with the correct triplet. For example, on Android ARM64 the triplet would be equal to `aarch64-linux-android-g++`.
 
 <a name="building-rpi"></a>
-## Raspberry pi (Raspbian OS) ##
+## Raspberry Pi (Raspbian OS) ##
 
-To build the sample for Raspberry pi you can either do it on the device itself or cross compile it on [Windows](#cross-compilation-rpi-install-windows), [Linux](#cross-compilation-rpi-install-ubunt) or OSX machines. 
+To build the sample for Raspberry Pi you can either do it on the device itself or cross compile it on [Windows](#cross-compilation-rpi-install-windows), [Linux](#cross-compilation-rpi-install-ubunt) or OSX machines. 
 For more information on how to install the toolchain for cross compilation please check [here](../README.md#cross-compilation-rpi).
 
 ```
@@ -89,12 +89,12 @@ Options surrounded with **[]** are optional.
 - `--parallel` Whether to enabled the parallel mode. More info about the parallel mode at [https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html). Default: *true*.
 - `--rectify` Whether to enable the rectification layer. More info about the rectification layer at [https://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html](https://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html). Default: *false*.
 
-The information about the maximum frame rate (**47fps** on Snapdragon 855 devices and **12fps** on Raspberry pi 4) is obtained using `--rate 0.0` which means evaluating the negative (no license plate) image only. The minimum frame rate could be obtained using `--rate 1.0` which means evaluating the positive image only (all images on the video stream have a license plate). In real life, very few frames from a video stream will contain a license plate (`--rate` **< 0.01**).
+The information about the maximum frame rate (**47fps** on Snapdragon 855 devices and **12fps** on Raspberry Pi 4) is obtained using `--rate 0.0` which means evaluating the negative (no license plate) image only. The minimum frame rate could be obtained using `--rate 1.0` which means evaluating the positive image only (all images on the video stream have a license plate). In real life, very few frames from a video stream will contain a license plate (`--rate` **< 0.01**).
 
 <a name="testing-examples"></a>
 ## Examples ##
 
-For example, on **Raspberry pi** you may call the benchmark application using the following command:
+For example, on **Raspberry Pi** you may call the benchmark application using the following command:
 ```
 LD_LIBRARY_PATH=../../../binaries/raspbian/armv7l:$LD_LIBRARY_PATH ./benchmark \
     --positive ../../../assets/images/lic_us_1280x720.jpg \

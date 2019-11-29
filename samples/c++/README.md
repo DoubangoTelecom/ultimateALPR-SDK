@@ -1,5 +1,5 @@
 - [Cross compilation](#cross-compilation)
-  - [Raspberry pi](#cross-compilation-rpi)
+  - [Raspberry Pi](#cross-compilation-rpi)
     - [Installing the toolchain](#cross-compilation-rpi-install)
       - [Windows](#cross-compilation-rpi-install-windows)
       - [Ubuntu](#cross-compilation-rpi-install-ubuntu)
@@ -7,7 +7,7 @@
 
 There are 2 C++ samples: [Benchmark](benchmark) and [Recognizer](recognizer). Check [here](benchmark/README.md) and [here](recognizer/README.md) on how to build and use them.
 
-The C++ samples are common to all platforms: **Android**, **Windows**, **iOS**, **Raspberry pi (3 or 4)**, **Linux**...
+The C++ samples are common to all platforms: **Android**, **Windows**, **iOS**, **Raspberry Pi (3 or 4)**, **Linux**...
 
 For **Android**, we recommend using the Java samples under [android](../android) folder. These are complete samples with support for reatime recognition from video stream (camera) and require Android Studio to build. More info on how to install these samples is available [here](../../README.md#trying-the-samples-android).
 
@@ -17,16 +17,16 @@ For **Android**, we recommend using the Java samples under [android](../android)
 Every sample contain a single C++ source file and is easy to cross compile. 
 
 <a name="cross-compilation-rpi"></a>
-## Raspberry pi (Raspbian OS) ##
+## Raspberry Pi (Raspbian OS) ##
 
-This section explain how to install Raspberry pi 4 (Raspbian OS) toolchain to cross compile the samples. These instructions can be easily adapted to another target platform (e.g Android).
+This section explain how to install Raspberry Pi 4 (Raspbian OS) toolchain to cross compile the samples. These instructions can be easily adapted to another target platform (e.g Android).
 
 <a name="cross-compilation-rpi-install"></a>
 ### Installing the toolchain ###
 
 <a name="cross-compilation-rpi-install-windows"></a>
 #### Windows ####
-The toolchain for Raspberry pi 4 could be found at [http://sysprogs.com/getfile/566/raspberry-gcc8.3.0.exe](http://sysprogs.com/getfile/566/raspberry-gcc8.3.0.exe) and more toolchain versions are at [https://gnutoolchains.com/raspberry/](https://gnutoolchains.com/raspberry/).
+The toolchain for Raspberry Pi 4 could be found at [http://sysprogs.com/getfile/566/raspberry-gcc8.3.0.exe](http://sysprogs.com/getfile/566/raspberry-gcc8.3.0.exe) and more toolchain versions are at [https://gnutoolchains.com/raspberry/](https://gnutoolchains.com/raspberry/).
 
 If you haven't changed the installation dir then, it should be installed at **C:\SysGCC**. To add the toolchain to the **%PATH**:
 ```

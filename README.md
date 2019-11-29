@@ -8,7 +8,7 @@
 	- [Trying the samples](#trying-the-samples-android)
 	- [Adding the SDK to your project](#adding-the-sdk-to-your-project-android)
 	- [Using the Java API](#using-the-java-api-android)
- - [Raspberry pi (Raspbian OS) and others](#others)
+ - [Raspberry Pi (Raspbian OS) and others](#others)
  	- [Sample applications](#sample-applications-others)
 		- [Benchmark](#sample-application-benchmark-others)
 		- [Recognizer](#sample-application-recognizer-others)
@@ -42,10 +42,10 @@ We're confident that it's possible to have a complete [ITS](https://en.wikipedia
 congestion detection, double white line crossing detection, incident detection...**) system running above 40fps on ARM device.
 
 On high-end NVIDIA GPUs like the **Tesla V100 the frame rate is 315 fps which means 3.17 millisecond inference time**.
-On low-end CPUs like the **Raspberry pi 4 the average [frame rate is 12fps](samples/c++/benchmark/README.md#peformance-numbers)**.
+On low-end CPUs like the **Raspberry Pi 4 the average [frame rate is 12fps](samples/c++/benchmark/README.md#peformance-numbers)**.
 
 Don't take our word for it, come check our implementation. **No registration, license key or internet connection is required**, just clone the code and start coding/testing. Everything runs on the device, no data is leaving your computer. 
-The code released here comes with many ready-to-use samples for [Android](#sample-applications-android) and [Raspberry pi](#sample-applications-others) to help you get started easily. 
+The code released here comes with many ready-to-use samples for [Android](#sample-applications-android) and [Raspberry Pi](#sample-applications-others) to help you get started easily. 
 
 You can also check our online [cloud-based implementation](https://www.doubango.org/webapps/alpr/) (*no registration required*) to check out the accuracy and precision before starting to play with the SDK.
 
@@ -210,25 +210,25 @@ The C++ API is defined [here](https://www.doubango.org/SDKs/anpr/docs/cpp-api.ht
 	}
 ```
 
-Again, please check the sample applications for [Android](#sample-applications-android) and [Raspberry pi](#sample-applications-others) and [full documentation](https://www.doubango.org/SDKs/anpr/docs/) for more information.
+Again, please check the sample applications for [Android](#sample-applications-android) and [Raspberry Pi](#sample-applications-others) and [full documentation](https://www.doubango.org/SDKs/anpr/docs/) for more information.
 
 <a name="others"></a>
-# Raspberry pi (Raspbian OS) and others #
+# Raspberry Pi (Raspbian OS) and others #
 
 <a name="sample-applications-others"></a>
-## Sample applications (Raspberry pi) ##
+## Sample applications (Raspberry Pi) ##
 The source code comes with #2 [C++ sample applications](samples/c++): [Benchmark](#sample-application-benchmark-others) and [Recognizer](#sample-application-recognizer-others). These sample applications can be used on all supported platforms: **Android**, **Windows**, **Raspberry pi**, **iOS**, **OSX**, **Linux**...
 
 <a name="sample-application-benchmark-others"></a>
-### Benchmark (Raspberry pi) ###
+### Benchmark (Raspberry Pi) ###
 This application is used to check everything is ok and running as fast as expected. 
-The information about the maximum frame rate (**47fps** on Snapdragon 855 devices and **12fps** on Raspberry pi 4) could be checked using this application. 
+The information about the maximum frame rate (**47fps** on Snapdragon 855 devices and **12fps** on Raspberry Pi 4) could be checked using this application. 
 It's open source and doesn't require registration or license key.
 
 For more information on how to build and run this sample please check [samples/c++/benchmark](samples/c++/benchmark/README.md).
 
 <a name="sample-application-recognizer-others"></a>
-### Recognizer (Raspberry pi) ###
+### Recognizer (Raspberry Pi) ###
 This is a command line application used to detect and recognize a license plate from any JPEG/PNG/BMP image.
 
 For more information on how to build and run this sample please check [samples/c++/recognizer](samples/c++/recognizer/README.md).
