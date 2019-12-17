@@ -78,7 +78,9 @@ benchmark \
       [--loops <number-of-times-to-run-the-loop:[1, inf]>] \
       [--rate <positive-rate:[0.0, 1.0]>] \
       [--parallel <whether-to-enable-parallel-mode:true/false>] \
-      [--rectify <whether-to-enable-rectification-layer:true/false>]
+      [--rectify <whether-to-enable-rectification-layer:true/false>] \
+      [--tokenfile <path-to-license-token-file>] \
+      [--tokendata <base64-license-token-data>]
 ```
 Options surrounded with **[]** are optional.
 - `--positive` Path to an image (JPEG/PNG/BMP) with a license plate. This image will be used to evaluate the recognizer. You can use default image at [../../../assets/images/lic_us_1280x720.jpg](../../../assets/images/lic_us_1280x720.jpg).
@@ -88,6 +90,8 @@ Options surrounded with **[]** are optional.
 - `--rate` Percentage value within [0.0, 1.0] defining the positive rate. The positive rate defines the percentage of images with a plate.
 - `--parallel` Whether to enabled the parallel mode. More info about the parallel mode at [https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html). Default: *true*.
 - `--rectify` Whether to enable the rectification layer. More info about the rectification layer at [https://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html](https://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html). Default: *false*.
+- `--tokenfile` Path to the file containing the base64 license token if you have one. If not provided then, the application will act like a trial version. Default: *null*.
+- `--tokendata` Base64 license token if you have one. If not provided then, the application will act like a trial version. Default: *null*.
 
 The information about the maximum frame rate (**47fps** on Snapdragon 855 devices and **12fps** on Raspberry Pi 4) is obtained using `--rate 0.0` which means evaluating the negative (no license plate) image only. The minimum frame rate could be obtained using `--rate 1.0` which means evaluating the positive image only (all images on the video stream have a license plate). In real life, very few frames from a video stream will contain a license plate (`--rate` **< 0.01**).
 

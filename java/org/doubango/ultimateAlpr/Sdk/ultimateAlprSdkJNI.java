@@ -35,6 +35,8 @@ public class ultimateAlprSdkJNI {
   public final static native long UltAlprSdkEngine_process__SWIG_1(int jarg1, java.nio.ByteBuffer jarg2, long jarg3, long jarg4);
   public final static native long UltAlprSdkEngine_process__SWIG_2(int jarg1, java.nio.ByteBuffer jarg2, java.nio.ByteBuffer jarg3, java.nio.ByteBuffer jarg4, long jarg5, long jarg6, long jarg7, long jarg8, long jarg9, long jarg10);
   public final static native long UltAlprSdkEngine_process__SWIG_3(int jarg1, java.nio.ByteBuffer jarg2, java.nio.ByteBuffer jarg3, java.nio.ByteBuffer jarg4, long jarg5, long jarg6, long jarg7, long jarg8, long jarg9);
+  public final static native long UltAlprSdkEngine_requestRuntimeLicenseKey__SWIG_0(boolean jarg1);
+  public final static native long UltAlprSdkEngine_requestRuntimeLicenseKey__SWIG_1();
   public final static native long UltAlprSdkEngine_warmUp(int jarg1);
   public final static native void delete_UltAlprSdkEngine(long jarg1);
 

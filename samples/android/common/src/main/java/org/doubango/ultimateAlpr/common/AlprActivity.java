@@ -23,6 +23,8 @@ import org.doubango.ultimateAlpr.Sdk.ULTALPR_SDK_IMAGE_TYPE;
 import org.doubango.ultimateAlpr.Sdk.UltAlprSdkEngine;
 import org.doubango.ultimateAlpr.Sdk.UltAlprSdkParallelDeliveryCallback;
 import org.doubango.ultimateAlpr.Sdk.UltAlprSdkResult;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.List;
@@ -57,7 +59,6 @@ public abstract class AlprActivity extends AppCompatActivity implements AlprCame
 
         @Override
         public void onNewResult(UltAlprSdkResult result) {
-            final long nowMillis = SystemClock.uptimeMillis();
             Log.d(TAG, AlprUtils.resultToString(result));
             if (mAlprPlateView!= null) {
                 mAlprPlateView.setResult(result, mImageSize);
@@ -97,12 +98,44 @@ public abstract class AlprActivity extends AppCompatActivity implements AlprCame
         mParallelDeliveryCallback = isParallelDeliveryEnabled() ? MyUltAlprSdkParallelDeliveryCallback.newInstance() : null;
 
         // Init the engine
+        final boolean isActivationPossible = !getActivationServerUrl().isEmpty() && !getActivationMasterOrSlaveKey().isEmpty();
+        final JSONObject config = getJsonConfig();
+        String tokenFile = "";
+        if (isActivationPossible) {
+            // Retrieve previously stored key from internal storage
+            tokenFile = AlprLicenseActivator.tokenFile(this);
+            if (!tokenFile.isEmpty()) {
+                try {
+                    config.put("license_token_data", AlprLicenseActivator.tokenData(tokenFile));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         final UltAlprSdkResult alprResult = AlprUtils.assertIsOk(UltAlprSdkEngine.init(
                 getAssets(),
-                getJsonConfig(),
+                config.toString(),
                 mParallelDeliveryCallback
         ));
         Log.i(TAG,"ALPR engine initialized: " + AlprUtils.resultToString(alprResult));
+
+        // Activate the license
+        if (isActivationPossible && tokenFile.isEmpty()) {
+            // Generate the license key and store it to the internal storage for next times
+            tokenFile = AlprLicenseActivator.activate(this, getActivationServerUrl(), getActivationMasterOrSlaveKey(), false);
+            if (!tokenFile.isEmpty()) {
+                try {
+                    config.put("license_token_data", AlprLicenseActivator.tokenData(tokenFile));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                AlprUtils.assertIsOk(UltAlprSdkEngine.init(
+                        getAssets(),
+                        config.toString(),
+                        mParallelDeliveryCallback
+                ));
+            }
+        }
     }
 
     @Override
@@ -217,6 +250,26 @@ public abstract class AlprActivity extends AppCompatActivity implements AlprCame
     }
 
     /**
+     * Gets the server url used to activate the license. Please contact us to get the correct URL.
+     * e.g. https://localhost:3600
+     * @return The URL
+     */
+    protected String getActivationServerUrl() {
+        return "";
+    }
+
+    /**
+     * Gets the master or slave key to use for the activation.
+     * You MUST NEVER include your master key in the code or share it with the end user.
+     * The master key should be used to generate slaves (one-time activation keys).
+     * More information about master/slave keys at https://www.doubango.org/SDKs/LicenseManager/docs/Jargon.html.
+     * @return The master of slave key.
+     */
+    protected String getActivationMasterOrSlaveKey() {
+        return "";
+    }
+
+    /**
      * Returns the layout Id for the activity
      * @return
      */
@@ -226,7 +279,7 @@ public abstract class AlprActivity extends AppCompatActivity implements AlprCame
      * Returns JSON config to be used to initialize the ALPR/ANPR SDK.
      * @return The JSON config
      */
-    protected abstract String getJsonConfig();
+    protected abstract JSONObject getJsonConfig();
 
     /**
      */

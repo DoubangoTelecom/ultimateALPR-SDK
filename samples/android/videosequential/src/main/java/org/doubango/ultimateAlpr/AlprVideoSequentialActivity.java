@@ -36,6 +36,20 @@ public class AlprVideoSequentialActivity extends AlprActivity {
     static final Size PREFERRED_SIZE = new Size(1280, 720);
 
     /**
+     * The server url used to activate the license. Please contact us to get the real URL.
+     * e.g. https://localhost:3600
+     */
+    static final String ACTIVATION_SERVER_URL = "";
+
+    /**
+     * The master or slave key to use for the activation.
+     * You MUST NEVER include your master key in the code or share it with the end user.
+     * The master key should be used to generate slaves (one-time activation keys).
+     * More information about master/slave keys at https://www.doubango.org/SDKs/LicenseManager/docs/Jargon.html.
+     */
+    static final String ACTIVATION_MASTER_OR_SLAVE_KEY = "";
+
+    /**
      * Defines the debug level to output on the console. You should use "verbose" for diagnostic, "info" in development stage and "warn" on production.
      * JSON name: "debug_level"
      * Default: "info"
@@ -193,7 +207,7 @@ public class AlprVideoSequentialActivity extends AlprActivity {
     }
 
     @Override
-    protected String getJsonConfig() {
+    protected JSONObject getJsonConfig() {
         // More information on the JSON config at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html
         JSONObject config = new JSONObject();
         try {
@@ -215,16 +229,19 @@ public class AlprVideoSequentialActivity extends AlprActivity {
         catch (JSONException e) {
             e.printStackTrace();
         }
-        return config.toString();
+        return config;
     }
 
-    @Override
-    protected boolean isParallelDeliveryEnabled() {
-        return false; // we want to deactivated parallel and use sequential delivery
-    }
 
     @Override
-    protected List<Float> getDetectROI() {
-        return CONFIG_DETECT_ROI;
-    }
+    protected boolean isParallelDeliveryEnabled() { return false; /* we want to deactivated parallel and use sequential delivery*/ }
+
+    @Override
+    protected List<Float> getDetectROI() { return CONFIG_DETECT_ROI; }
+
+    @Override
+    protected String getActivationServerUrl() { return ACTIVATION_SERVER_URL; }
+
+    @Override
+    protected String getActivationMasterOrSlaveKey() { return ACTIVATION_MASTER_OR_SLAVE_KEY; }
 }

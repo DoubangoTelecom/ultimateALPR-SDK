@@ -62,13 +62,17 @@ recognizer \
       --image <path-to-image-with-to-process> \
       [--assets <path-to-assets-folder>] \
       [--parallel <whether-to-enable-parallel-mode:true/false>] \
-      [--rectify <whether-to-enable-rectification-layer:true/false>]
+      [--rectify <whether-to-enable-rectification-layer:true/false>] \
+      [--tokenfile <path-to-license-token-file>] \
+      [--tokendata <base64-license-token-data>]
 ```
 Options surrounded with **[]** are optional.
 - `--image` Path to the image(JPEG/PNG/BMP) to process. You can use default image at [../../../assets/images/lic_us_1280x720.jpg](../../../assets/images/lic_us_1280x720.jpg).
 - `--assets` Path to the [assets](../../../assets) folder containing the configuration files and models. Default value is the current folder.
 - `--parallel` Whether to enabled the parallel mode. More info about the parallel mode at [https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html). Default: *false*.
 - `--rectify` Whether to enable the rectification layer. More info about the rectification layer at [https://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html](https://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html). Default: *false*.
+- `--tokenfile` Path to the file containing the base64 license token if you have one. If not provided then, the application will act like a trial version. Default: *null*.
+- `--tokendata` Base64 license token if you have one. If not provided then, the application will act like a trial version. Default: *null*.
 
 <a name="testing-examples"></a>
 ## Examples ##

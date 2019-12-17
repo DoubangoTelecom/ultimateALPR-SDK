@@ -70,7 +70,7 @@ public class AlprBenchmarkActivity extends AppCompatActivity {
     /**
      * Defines the maximum number of threads to use.
      * You should not change this value unless you know what you’re doing. Set to -1 to let the SDK choose the right value.
-     * The right value the SDK will choose will likely be equal to the number of virtual core.
+     * The right value the SDK will choose will likely be equal to the number of virtual cores.
      * For example, on an octa-core device the maximum number of threads will be 8.
      * JSON name: "num_threads"
      * Default: -1

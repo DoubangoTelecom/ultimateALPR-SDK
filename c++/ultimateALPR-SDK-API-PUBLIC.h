@@ -14,7 +14,7 @@ ultimateALPR SDK public header
 #include <string>
 
 #define ULTALPR_SDK_VERSION_MAJOR		2
-#define ULTALPR_SDK_VERSION_MINOR		1
+#define ULTALPR_SDK_VERSION_MINOR		2
 #define ULTALPR_SDK_VERSION_MICRO		0
 
 // Windows's symbols export
@@ -142,7 +142,7 @@ namespace ultimateAlprSdk
 #if !defined(SWIG)
 		UltAlprSdkResult() = delete;
 #endif /* SWIG */
-		UltAlprSdkResult(const int code, std::string const& phrase, std::string const& json, const size_t numPlates = 0)
+		UltAlprSdkResult(const int code, const char* phrase, const char* json, const size_t numPlates = 0)
 		: code_(code), phrase_(phrase), json_(json), numPlates_(numPlates) {}
 		
 		virtual ~UltAlprSdkResult() {}
@@ -152,10 +152,10 @@ namespace ultimateAlprSdk
 		inline int code()const { return code_; }
 		/*! Short description for the \ref code.
 		*/
-		inline const std::string& phrase()const { return phrase_; }
+		inline const char* phrase()const { return phrase_.c_str(); }
 		/*! The license plates as JSON content string. May be null if no plate found.
 		*/
-		inline const std::string& json()const { return json_; }
+		inline const char* json()const { return json_.c_str(); }
 		/*! Number of license plates in \ref json string. This is a helper function to quickly check whether the result contains license plates
 			without parsing the \ref json string.
 		*/
@@ -164,7 +164,7 @@ namespace ultimateAlprSdk
 		*/
 		inline bool isOK()const { return (code_ == 0); }
 #if !defined(SWIG)
-		static UltAlprSdkResult bodyless(const int code, const std::string& phrase) { return UltAlprSdkResult(code, phrase, ""); }
+		static UltAlprSdkResult bodyless(const int code, const char* phrase) { return UltAlprSdkResult(code, phrase, ""); }
 		static UltAlprSdkResult bodylessOK() { return UltAlprSdkResult(0, "OK", ""); }
 #endif /* SWIG */
 	private:
@@ -204,14 +204,14 @@ namespace ultimateAlprSdk
 			\param parallelDeliveryCallback Callback function to enable parallel mode. Use null value to use sequential instead of parallel mode. More info at https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html.
 			\returns a result
 		*/
-		static UltAlprSdkResult init(jobject assetManager, const std::string& jsonConfig = "", const UltAlprSdkParallelDeliveryCallback* parallelDeliveryCallback = nullptr);
+		static UltAlprSdkResult init(jobject assetManager, const char* jsonConfig = nullptr, const UltAlprSdkParallelDeliveryCallback* parallelDeliveryCallback = nullptr);
 #else
 		/*! Initializes the engine. This function must be the first one to call.
 			\param jsonConfig JSON string containing configuration entries. May be null. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html
 			\param parallelDeliveryCallback \ref UltAlprSdkParallelDeliveryCallback "callback" function to enable parallel mode. Use null value to use sequential instead of parallel mode. More info at https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html.
 			\returns a \ref UltAlprSdkResult "result"
 		*/
-		static UltAlprSdkResult init(const std::string& jsonConfig = "", const UltAlprSdkParallelDeliveryCallback* parallelDeliveryCallback = nullptr);
+		static UltAlprSdkResult init(const char* jsonConfig = nullptr, const UltAlprSdkParallelDeliveryCallback* parallelDeliveryCallback = nullptr);
 #endif /* ULTALPR_SDK_OS_ANDROID */
 
 		/*! DeInitialize the engine. This function must be the last one to be call.
@@ -226,6 +226,7 @@ namespace ultimateAlprSdk
 			\param imageWidthInSamples Image width in samples.
 			\param imageHeightInSamples Image height in samples.
 			\param imageStrideInSamples Image stride in samples. Should be zero unless your the data is strided.
+			\returns a \ref UltAlprSdkResult "result"
 		*/
 		static UltAlprSdkResult process(
 			const ULTALPR_SDK_IMAGE_TYPE imageType, 
@@ -246,6 +247,7 @@ namespace ultimateAlprSdk
 			\param uStrideInBytes Stride in bytes for the U (chroma) samples.
 			\param vStrideInBytes Stride in bytes for the V (chroma) samples.
 			\param uvPixelStrideInBytes Pixel stride in bytes for the UV (chroma) samples. Should be 1 for planar and 2 for semi-planar formats. Set to 0 for auto-detect.
+			\returns a \ref UltAlprSdkResult "result"
 		*/
 		static UltAlprSdkResult process(
 			const ULTALPR_SDK_IMAGE_TYPE imageType,
@@ -260,6 +262,16 @@ namespace ultimateAlprSdk
 			const size_t uvPixelStrideInBytes = 0
 		);
 		
+		/*! Build a unique runtime license key associated to this device.
+			You must \ref init "initialize" the engine before calling this function.
+			This function doesn't require internet connection.
+			The runtime key must be activated to obtain a token.
+			\param rawInsteadOfJSON Whether to output the runtime key as raw string intead of JSON entry. Requesting raw
+				string instead of JSON could be helpful for applications without JSON parser to extract the key.
+			\returns a \ref UltAlprSdkResult "result"
+		*/
+		static UltAlprSdkResult requestRuntimeLicenseKey(const bool& rawInsteadOfJSON = false);
+
 		static UltAlprSdkResult warmUp(const ULTALPR_SDK_IMAGE_TYPE imageType);
 
 #if ULTALPR_SDK_OS_ANDROID && !defined(SWIG)

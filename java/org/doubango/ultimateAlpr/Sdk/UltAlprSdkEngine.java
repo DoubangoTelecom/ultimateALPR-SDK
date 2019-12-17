@@ -67,6 +67,14 @@ public class UltAlprSdkEngine {
     return new UltAlprSdkResult(ultimateAlprSdkJNI.UltAlprSdkEngine_process__SWIG_3(imageType.swigValue(), yPtr, uPtr, vPtr, widthInSamples, heightInSamples, yStrideInBytes, uStrideInBytes, vStrideInBytes), true);
   }
 
+  public static UltAlprSdkResult requestRuntimeLicenseKey(boolean rawInsteadOfJSON) {
+    return new UltAlprSdkResult(ultimateAlprSdkJNI.UltAlprSdkEngine_requestRuntimeLicenseKey__SWIG_0(rawInsteadOfJSON), true);
+  }
+
+  public static UltAlprSdkResult requestRuntimeLicenseKey() {
+    return new UltAlprSdkResult(ultimateAlprSdkJNI.UltAlprSdkEngine_requestRuntimeLicenseKey__SWIG_1(), true);
+  }
+
   public static UltAlprSdkResult warmUp(ULTALPR_SDK_IMAGE_TYPE imageType) {
     return new UltAlprSdkResult(ultimateAlprSdkJNI.UltAlprSdkEngine_warmUp(imageType.swigValue()), true);
   }

@@ -1,4 +1,4 @@
-/* Copyright (C) 2016-2019 Doubango Telecom <https://www.doubango.org>
+/* Copyright (C) 2011-2019 Doubango Telecom <https://www.doubango.org>
 * File author: Mamadou DIOP (Doubango Telecom, France).
 * License: For non commercial use only.
 * Source code: https://github.com/DoubangoTelecom/ultimateALPR-SDK
@@ -16,7 +16,9 @@
 			[--loops <number-of-times-to-run-the-loop:[1, inf]>] \
 			[--rate <positive-rate:[0.0, 1.0]>] \
 			[--parallel <whether-to-enable-parallel-mode:true/false>] \
-			[--rectify <whether-to-enable-rectification-layer:true/false>]
+			[--rectify <whether-to-enable-rectification-layer:true/false>] \
+			[--tokenfile <path-to-license-token-file>] \
+			[--tokendata <base64-license-token-data>]
 
 	Example:
 		benchmark \
@@ -26,7 +28,8 @@
 			--rate 0.2 \
 			--parallel true \
 			--rectify false \
-			--assets C:/Projects/GitHub/ultimate/ultimateALPR/SDK_dist/assets
+			--assets C:/Projects/GitHub/ultimate/ultimateALPR/SDK_dist/assets \
+			--tokenfile C:/Projects/GitHub/ultimate/ultimateALPR/SDK_dev/tokens/windows-iMac.lic
 		
 */
 
@@ -36,6 +39,9 @@
 #include <vector>
 #include <algorithm>
 #include <random>
+#if defined(_WIN32)
+#include <algorithm> // std::replace
+#endif
 
 using namespace ultimateAlprSdk;
 
@@ -75,7 +81,7 @@ class MyUltAlprSdkParallelDeliveryCallback : public UltAlprSdkParallelDeliveryCa
 		const std::string& json = result->json();
 		ULTALPR_SDK_PRINT_INFO("MyUltAlprSdkParallelDeliveryCallback::onNewResult(%d, %s, %zu): %s",
 			result->code(),
-			result->phrase().c_str(),
+			result->phrase(),
 			++numParallelDeliveryResults,
 			!json.empty() ? json.c_str() : "{}"
 		);
@@ -92,7 +98,7 @@ int main(int argc, char *argv[])
 	// local variables
 	UltAlprSdkResult result(0, "OK", "{}");
 	MyUltAlprSdkParallelDeliveryCallback parallelDeliveryCallbackCallback;
-	std::string assetsFolder = "";
+	std::string assetsFolder, licenseTokenData, licenseTokenFile;
 	bool isParallelDeliveryEnabled = true;
 	bool isRectificationEnabled = false;
 	size_t loopCount = 100;
@@ -137,9 +143,21 @@ int main(int argc, char *argv[])
 	}
 	if (args.find("--assets") != args.end()) {
 		assetsFolder = args["--assets"];
+#if defined(_WIN32)
+		std::replace(assetsFolder.begin(), assetsFolder.end(), '\\', '/');
+#endif
 	}
 	if (args.find("--rectify") != args.end()) {
 		isRectificationEnabled = (args["--rectify"].compare("true") == 0);
+	}
+	if (args.find("--tokenfile") != args.end()) {
+		licenseTokenFile = args["--tokenfile"];
+#if defined(_WIN32)
+		std::replace(licenseTokenFile.begin(), licenseTokenFile.end(), '\\', '/');
+#endif
+	}
+	if (args.find("--tokendata") != args.end()) {
+		licenseTokenData = args["--tokendata"];
 	}
 	
 
@@ -149,6 +167,12 @@ int main(int argc, char *argv[])
 		jsonConfig += std::string(",\"assets_folder\": \"") + assetsFolder + std::string("\"");
 	}
 	jsonConfig += std::string(",\"recogn_rectify_enabled\": ") + (isRectificationEnabled ? "true" : "false");
+	if (!licenseTokenFile.empty()) {
+		jsonConfig += std::string(",\"license_token_file\": \"") + licenseTokenFile + std::string("\"");
+	}
+	if (!licenseTokenData.empty()) {
+		jsonConfig += std::string(",\"license_token_data\": \"") + licenseTokenData + std::string("\"");
+	}
 	
 	jsonConfig += "}"; // end-of-config
 
@@ -178,7 +202,7 @@ int main(int argc, char *argv[])
 	ULTALPR_SDK_PRINT_INFO("Starting benchmark...");
 	ULTALPR_SDK_ASSERT((result = UltAlprSdkEngine::init(
 		ASSET_MGR_PARAM()
-		jsonConfig,
+		jsonConfig.c_str(),
 		isParallelDeliveryEnabled ? &parallelDeliveryCallbackCallback : nullptr
 	)).isOK());
 
@@ -247,6 +271,8 @@ static void printUsage(const std::string& message /*= ""*/)
 		"\t[--rate <positive-rate:[0.0, 1.0]>] \n"
 		"\t[--parallel <whether-to-enable-parallel-mode:true / false>] \n"
 		"\t[--rectify <whether-to-enable-rectification-layer:true / false>]\n"
+		"\t[--tokenfile <path-to-license-token-file>] \n"
+		"\t[--tokendata <base64-license-token-data>] \n"
 		"\n"
 		"Options surrounded with [] are optional.\n"
 		"\n"
@@ -257,6 +283,8 @@ static void printUsage(const std::string& message /*= ""*/)
 		"--rate: Percentage value within[0.0, 1.0] defining the positive rate. The positive rate defines the percentage of images with a plate.\n\n"
 		"--parallel: Whether to enabled the parallel mode. More info about the parallel mode at https ://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html. Default: true.\n\n"
 		"--rectify: Whether to enable the rectification layer.More info about the rectification layer at https://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html. Default: false.\n\n"
+		"--tokenfile: Path to the file containing the base64 license token if you have one. If not provided then, the application will act like a trial version. Default: null.\n\n"
+		"--tokendata: Base64 license token if you have one. If not provided then, the application will act like a trial version. Default: null.\n\n"
 		"********************************************************************************\n"
 	);
 }

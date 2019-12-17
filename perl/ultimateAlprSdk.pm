@@ -134,6 +134,7 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *init = *ultimateAlprSdkc::UltAlprSdkEngine_init;
 *deInit = *ultimateAlprSdkc::UltAlprSdkEngine_deInit;
 *process = *ultimateAlprSdkc::UltAlprSdkEngine_process;
+*requestRuntimeLicenseKey = *ultimateAlprSdkc::UltAlprSdkEngine_requestRuntimeLicenseKey;
 *warmUp = *ultimateAlprSdkc::UltAlprSdkEngine_warmUp;
 sub DESTROY {
     return unless $_[0]->isa('HASH');

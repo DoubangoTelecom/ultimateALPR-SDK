@@ -8,6 +8,7 @@
     package="org.doubango.ultimateAlpr">
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- Network permission need for license activation only. This line could be removed if you're not planning to activate any license. -->
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />

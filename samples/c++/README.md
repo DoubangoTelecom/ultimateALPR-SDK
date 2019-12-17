@@ -5,7 +5,7 @@
       - [Ubuntu](#cross-compilation-rpi-install-ubuntu)
       
 
-There are 2 C++ samples: [Benchmark](benchmark) and [Recognizer](recognizer). Check [here](benchmark/README.md) and [here](recognizer/README.md) on how to build and use them.
+There are 3 C++ samples: [Benchmark](benchmark), [Recognizer](recognizer) and [RuntimeKey](runtimeKey). Check [here](benchmark/README.md), [here](recognizer/README.md) and [here](runtimeKey/README.md) on how to build and use them.
 
 The C++ samples are common to all platforms: **Android**, **Windows**, **iOS**, **Raspberry Pi (3 or 4)**, **Linux**...
 
