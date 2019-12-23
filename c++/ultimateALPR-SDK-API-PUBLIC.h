@@ -15,7 +15,7 @@ ultimateALPR SDK public header
 
 #define ULTALPR_SDK_VERSION_MAJOR		2
 #define ULTALPR_SDK_VERSION_MINOR		2
-#define ULTALPR_SDK_VERSION_MICRO		0
+#define ULTALPR_SDK_VERSION_MICRO		1
 
 // Windows's symbols export
 #if defined(SWIG)
@@ -265,7 +265,7 @@ namespace ultimateAlprSdk
 		/*! Build a unique runtime license key associated to this device.
 			You must \ref init "initialize" the engine before calling this function.
 			This function doesn't require internet connection.
-			The runtime key must be activated to obtain a token.
+			The runtime key must be activated to obtain a token. The activation procedure is explained at https://www.doubango.org/SDKs/LicenseManager/docs/Activation_use_cases.html.
 			\param rawInsteadOfJSON Whether to output the runtime key as raw string intead of JSON entry. Requesting raw
 				string instead of JSON could be helpful for applications without JSON parser to extract the key.
 			\returns a \ref UltAlprSdkResult "result"

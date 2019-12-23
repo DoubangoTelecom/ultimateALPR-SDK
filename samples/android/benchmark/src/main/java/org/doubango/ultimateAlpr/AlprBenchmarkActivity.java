@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.ColorSpace;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
@@ -250,7 +249,7 @@ public class AlprBenchmarkActivity extends AppCompatActivity {
         for (Integer i : indices) {
             final AlprImage image = images[i];
             assertIsOk(UltAlprSdkEngine.process(
-                    ULTALPR_SDK_IMAGE_TYPE.ULTALPR_SDK_IMAGE_TYPE_RGB24,
+                    image.mType,
                     image.mBuffer,
                     image.mWidth,
                     image.mHeight
@@ -297,24 +296,11 @@ public class AlprBenchmarkActivity extends AppCompatActivity {
         final int widthInBytes = bitmap.getRowBytes();
         final int width = bitmap.getWidth();
         final int height = bitmap.getHeight();
-        final ByteBuffer argb32Buffer = ByteBuffer.allocate(widthInBytes * height);
-        bitmap.copyPixelsToBuffer(argb32Buffer);
-        final byte[] argb32Bytes = argb32Buffer.array();
-        byte[] rgb24Bytes = new byte[width * height * 3];
-        for (int j = 0; j < height; ++j) {
-            for (int i = 0, m = j * widthInBytes, n = j * width * 3; i < width; ++i, m += 4, n += 3) {
-                // https://developer.android.com/reference/android/graphics/Bitmap.Config#ARGB_8888
-                // Dummy name for "ARGB" it should be named "ABGR" as R is at position #0 (lowest byte)
-                rgb24Bytes[n] = argb32Bytes[m];
-                rgb24Bytes[n + 1] = argb32Bytes[m + 1];
-                rgb24Bytes[n + 2] = argb32Bytes[m + 2];
-            }
-        }
-        ByteBuffer nativeBuffer = ByteBuffer.allocateDirect(rgb24Bytes.length);
-        nativeBuffer.put(rgb24Bytes);
+        final ByteBuffer nativeBuffer = ByteBuffer.allocateDirect(widthInBytes * height);
+        bitmap.copyPixelsToBuffer(nativeBuffer);
         nativeBuffer.rewind();
 
-        return new AlprImage(nativeBuffer, width, height);
+        return new AlprImage(ULTALPR_SDK_IMAGE_TYPE.ULTALPR_SDK_IMAGE_TYPE_RGBA32, nativeBuffer, width, height);
     }
 
     final String getConfig() {
@@ -352,11 +338,13 @@ public class AlprBenchmarkActivity extends AppCompatActivity {
     }
 
     static class AlprImage {
+        final ULTALPR_SDK_IMAGE_TYPE mType;
         final ByteBuffer mBuffer;
         final int mWidth;
         final int mHeight;
 
-        AlprImage(final ByteBuffer buffer, final int width, final int height) {
+        AlprImage(final ULTALPR_SDK_IMAGE_TYPE type, final ByteBuffer buffer, final int width, final int height) {
+            mType = type;
             mBuffer = buffer;
             mWidth = width;
             mHeight = height;
