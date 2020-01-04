@@ -54,10 +54,12 @@ After [building](#building) the application you can test it on your local machin
 runtimeKey is a command line application with the following usage:
 ```
 runtimeKey \
-      [--json <json-output:bool>]
+      [--json <json-output:bool>] \
+      [--assets <path-to-assets-folder>]
 ```
 Options surrounded with **[]** are optional.
 - `--json` Whether to output the runtime license key as JSON string intead of raw string. Default: *true*.
+- `--assets` Path to the [assets](../../../assets) folder containing the configuration files and models. Default value is the current folder.
 
 <a name="testing-examples"></a>
 ## Examples ##
@@ -65,12 +67,14 @@ Options surrounded with **[]** are optional.
 For example, on **Raspberry Pi** you may call the runtimeKey application using the following command:
 ```
 LD_LIBRARY_PATH=../../../binaries/raspbian/armv7l:$LD_LIBRARY_PATH ./runtimeKey \
-    --json false
+    --json false \
+    --assets ../../../assets
 ```
 On Android ARM64 you may use the next command:
 ```
 LD_LIBRARY_PATH=../../../binaries/android/jniLibs/arm64-v8a:$LD_LIBRARY_PATH ./runtimeKey \
-    --json false
+    --json false \
+    --assets ../../../assets
 ```
 
 Please note that if you're cross compiling the application then you've to make sure to copy the application and both the [assets](../../../assets) and [binaries](../../../binaries) folders to the target device.
