@@ -26,6 +26,7 @@ android {
             jniLibs.srcDirs += ['../../../binaries/android/jniLibs']
             java.srcDirs += ['../../../java/android']
             assets.srcDirs += ['../../../assets/models']
+            assets.srcDirs += ['../../../assets/fonts']
         }
     }
 }

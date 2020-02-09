@@ -53,7 +53,9 @@ import androidx.core.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Size;
+import android.util.SparseIntArray;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -70,7 +72,7 @@ import org.doubango.ultimateAlpr.R; // FIXME(dmi): must remove
 
 
 public class AlprCameraFragment extends Fragment
-        implements View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
+        implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     static final int REQUEST_CAMERA_PERMISSION = 1;
 
@@ -79,6 +81,14 @@ public class AlprCameraFragment extends Fragment
     static final String TAG = AlprCameraFragment.class.getCanonicalName();
 
     static final int VIDEO_FORMAT = ImageFormat.YUV_420_888; // All Android devices are required to support this format
+
+    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
+    static {
+        ORIENTATIONS.append(Surface.ROTATION_0, 90);
+        ORIENTATIONS.append(Surface.ROTATION_90, 0);
+        ORIENTATIONS.append(Surface.ROTATION_180, 270);
+        ORIENTATIONS.append(Surface.ROTATION_270, 180);
+    }
 
     /**
      * Using #2: processing and pending.
@@ -97,6 +107,8 @@ public class AlprCameraFragment extends Fragment
      * ID of the current {@link CameraDevice}.
      */
     private String mCameraId;
+
+    private int mJpegOrientation = 1;
 
     /**
      * An {@link AlprGLSurfaceView} for camera preview.
@@ -121,11 +133,6 @@ public class AlprCameraFragment extends Fragment
     private Size mPreviewSize;
 
     private AlprCameraFragmentSink mSink;
-
-    /**
-     * True to activate live stream video mode and false for image snap mode.
-     */
-    private boolean mModeVideo;
 
     private final AlprBackgroundTask mBackgroundTaskCamera = new AlprBackgroundTask();
     private final AlprBackgroundTask mBackgroundTaskDrawing = new AlprBackgroundTask();
@@ -194,10 +201,10 @@ public class AlprCameraFragment extends Fragment
 
                 final boolean isForDrawing = (reader.getSurface() == mImageReaderDrawing.getSurface());
                 if (isForDrawing) {
-                    /*mBackgroundTaskDrawing.post(() ->*/ mGLSurfaceView.setImage(image)/*)*/;
+                    /*mBackgroundTaskDrawing.post(() ->*/ mGLSurfaceView.setImage(image, mJpegOrientation)/*)*/;
                 }
                 else {
-                    /*mBackgroundTaskInference.post(() ->*/ mSink.setImage(image)/*)*/;
+                    /*mBackgroundTaskInference.post(() ->*/ mSink.setImage(image, mJpegOrientation)/*)*/;
                 }
 
             } catch (final Exception e) {
@@ -232,10 +239,9 @@ public class AlprCameraFragment extends Fragment
         // nothing special here
     }
 
-    private AlprCameraFragment(final Size preferredSize, final AlprCameraFragmentSink sink, final boolean modeVideo) {
+    private AlprCameraFragment(final Size preferredSize, final AlprCameraFragmentSink sink) {
         mPreferredSize = preferredSize;
         mSink = sink;
-        mModeVideo = modeVideo;
     }
 
     /**
@@ -243,8 +249,8 @@ public class AlprCameraFragment extends Fragment
      * @param preferredSize
      * @return
      */
-    public static AlprCameraFragment newInstance(final Size preferredSize, final AlprCameraFragmentSink sink, final boolean modeVideo) {
-        return new AlprCameraFragment(preferredSize, sink, modeVideo);
+    public static AlprCameraFragment newInstance(final Size preferredSize, final AlprCameraFragmentSink sink) {
+        return new AlprCameraFragment(preferredSize, sink);
     }
 
     @Override
@@ -255,15 +261,9 @@ public class AlprCameraFragment extends Fragment
 
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
-        view.findViewById(R.id.picture).setOnClickListener(this);
-        view.findViewById(R.id.info).setOnClickListener(this);
         mGLSurfaceView = (AlprGLSurfaceView) view.findViewById(R.id.glSurfaceView);
         mPlateView = (AlprPlateView) view.findViewById(R.id.plateView);
-        if (mModeVideo) {
-            view.findViewById(R.id.control).setVisibility(View.INVISIBLE);
-        }
         //mPlateView.setBackgroundColor(Color.RED);
-
     }
 
     @Override
@@ -406,6 +406,11 @@ public class AlprCameraFragment extends Fragment
                 }
 
                 mSensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+
+                // JPEG orientation
+                // https://developer.android.com/reference/android/hardware/camera2/CaptureRequest#JPEG_ORIENTATION
+                int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+                mJpegOrientation = (ORIENTATIONS.get(rotation) + mSensorOrientation + 270) % 360;
 
                 // Danger, W.R.! Attempting to use too large a preview size could  exceed the camera
                 // bus' bandwidth limitation, resulting in gorgeous previews but the storage of
@@ -557,7 +562,7 @@ public class AlprCameraFragment extends Fragment
                                 // Auto focus should be continuous
                                 mCaptureRequestBuilder.set(
                                         CaptureRequest.CONTROL_AF_MODE,
-                                        CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_VIDEO);
+                                        CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
                                 // Flash is automatically enabled when necessary.
                                 mCaptureRequestBuilder.set(
                                         CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
@@ -584,26 +589,6 @@ public class AlprCameraFragment extends Fragment
         }
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.picture: {
-                // takePicture();
-                break;
-            }
-            case R.id.info: {
-                Activity activity = getActivity();
-                if (null != activity) {
-                    new AlertDialog.Builder(activity)
-                            .setMessage(R.string.intro_message)
-                            .setPositiveButton(android.R.string.ok, null)
-                            .show();
-                }
-                break;
-            }
-        }
-    }
-
     /**
      *
      */
@@ -618,8 +603,9 @@ public class AlprCameraFragment extends Fragment
         /**
          *
          * @param image
+         * @param jpegOrientation
          */
-        public void setImage(@NonNull final Image image);
+        public void setImage(@NonNull final Image image, final int jpegOrientation);
     }
 
     /**

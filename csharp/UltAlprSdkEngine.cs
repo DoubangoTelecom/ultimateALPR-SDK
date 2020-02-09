@@ -43,13 +43,11 @@ public class UltAlprSdkEngine : IDisposable {
 
   public static UltAlprSdkResult init(string jsonConfig, UltAlprSdkParallelDeliveryCallback parallelDeliveryCallback) {
     UltAlprSdkResult ret = new UltAlprSdkResult(ultimateAlprSdkPINVOKE.UltAlprSdkEngine_init__SWIG_0(jsonConfig, UltAlprSdkParallelDeliveryCallback.getCPtr(parallelDeliveryCallback)), true);
-    if (ultimateAlprSdkPINVOKE.SWIGPendingException.Pending) throw ultimateAlprSdkPINVOKE.SWIGPendingException.Retrieve();
     return ret;
   }
 
   public static UltAlprSdkResult init(string jsonConfig) {
     UltAlprSdkResult ret = new UltAlprSdkResult(ultimateAlprSdkPINVOKE.UltAlprSdkEngine_init__SWIG_1(jsonConfig), true);
-    if (ultimateAlprSdkPINVOKE.SWIGPendingException.Pending) throw ultimateAlprSdkPINVOKE.SWIGPendingException.Retrieve();
     return ret;
   }
 
@@ -63,23 +61,43 @@ public class UltAlprSdkEngine : IDisposable {
     return ret;
   }
 
+  public static UltAlprSdkResult process(ULTALPR_SDK_IMAGE_TYPE imageType, IntPtr imageData, uint imageWidthInSamples, uint imageHeightInSamples, uint imageStrideInSamples, int imageExifOrientation) {
+    UltAlprSdkResult ret = new UltAlprSdkResult(ultimateAlprSdkPINVOKE.UltAlprSdkEngine_process__SWIG_0((int)imageType, imageData, imageWidthInSamples, imageHeightInSamples, imageStrideInSamples, imageExifOrientation), true);
+    return ret;
+  }
+
   public static UltAlprSdkResult process(ULTALPR_SDK_IMAGE_TYPE imageType, IntPtr imageData, uint imageWidthInSamples, uint imageHeightInSamples, uint imageStrideInSamples) {
-    UltAlprSdkResult ret = new UltAlprSdkResult(ultimateAlprSdkPINVOKE.UltAlprSdkEngine_process__SWIG_0((int)imageType, imageData, imageWidthInSamples, imageHeightInSamples, imageStrideInSamples), true);
+    UltAlprSdkResult ret = new UltAlprSdkResult(ultimateAlprSdkPINVOKE.UltAlprSdkEngine_process__SWIG_1((int)imageType, imageData, imageWidthInSamples, imageHeightInSamples, imageStrideInSamples), true);
     return ret;
   }
 
   public static UltAlprSdkResult process(ULTALPR_SDK_IMAGE_TYPE imageType, IntPtr imageData, uint imageWidthInSamples, uint imageHeightInSamples) {
-    UltAlprSdkResult ret = new UltAlprSdkResult(ultimateAlprSdkPINVOKE.UltAlprSdkEngine_process__SWIG_1((int)imageType, imageData, imageWidthInSamples, imageHeightInSamples), true);
+    UltAlprSdkResult ret = new UltAlprSdkResult(ultimateAlprSdkPINVOKE.UltAlprSdkEngine_process__SWIG_2((int)imageType, imageData, imageWidthInSamples, imageHeightInSamples), true);
+    return ret;
+  }
+
+  public static UltAlprSdkResult process(ULTALPR_SDK_IMAGE_TYPE imageType, IntPtr yPtr, IntPtr uPtr, IntPtr vPtr, uint widthInSamples, uint heightInSamples, uint yStrideInBytes, uint uStrideInBytes, uint vStrideInBytes, uint uvPixelStrideInBytes, int exifOrientation) {
+    UltAlprSdkResult ret = new UltAlprSdkResult(ultimateAlprSdkPINVOKE.UltAlprSdkEngine_process__SWIG_3((int)imageType, yPtr, uPtr, vPtr, widthInSamples, heightInSamples, yStrideInBytes, uStrideInBytes, vStrideInBytes, uvPixelStrideInBytes, exifOrientation), true);
     return ret;
   }
 
   public static UltAlprSdkResult process(ULTALPR_SDK_IMAGE_TYPE imageType, IntPtr yPtr, IntPtr uPtr, IntPtr vPtr, uint widthInSamples, uint heightInSamples, uint yStrideInBytes, uint uStrideInBytes, uint vStrideInBytes, uint uvPixelStrideInBytes) {
-    UltAlprSdkResult ret = new UltAlprSdkResult(ultimateAlprSdkPINVOKE.UltAlprSdkEngine_process__SWIG_2((int)imageType, yPtr, uPtr, vPtr, widthInSamples, heightInSamples, yStrideInBytes, uStrideInBytes, vStrideInBytes, uvPixelStrideInBytes), true);
+    UltAlprSdkResult ret = new UltAlprSdkResult(ultimateAlprSdkPINVOKE.UltAlprSdkEngine_process__SWIG_4((int)imageType, yPtr, uPtr, vPtr, widthInSamples, heightInSamples, yStrideInBytes, uStrideInBytes, vStrideInBytes, uvPixelStrideInBytes), true);
     return ret;
   }
 
   public static UltAlprSdkResult process(ULTALPR_SDK_IMAGE_TYPE imageType, IntPtr yPtr, IntPtr uPtr, IntPtr vPtr, uint widthInSamples, uint heightInSamples, uint yStrideInBytes, uint uStrideInBytes, uint vStrideInBytes) {
-    UltAlprSdkResult ret = new UltAlprSdkResult(ultimateAlprSdkPINVOKE.UltAlprSdkEngine_process__SWIG_3((int)imageType, yPtr, uPtr, vPtr, widthInSamples, heightInSamples, yStrideInBytes, uStrideInBytes, vStrideInBytes), true);
+    UltAlprSdkResult ret = new UltAlprSdkResult(ultimateAlprSdkPINVOKE.UltAlprSdkEngine_process__SWIG_5((int)imageType, yPtr, uPtr, vPtr, widthInSamples, heightInSamples, yStrideInBytes, uStrideInBytes, vStrideInBytes), true);
+    return ret;
+  }
+
+  public static UltAlprSdkResult requestRuntimeLicenseKey(bool rawInsteadOfJSON) {
+    UltAlprSdkResult ret = new UltAlprSdkResult(ultimateAlprSdkPINVOKE.UltAlprSdkEngine_requestRuntimeLicenseKey__SWIG_0(rawInsteadOfJSON), true);
+    return ret;
+  }
+
+  public static UltAlprSdkResult requestRuntimeLicenseKey() {
+    UltAlprSdkResult ret = new UltAlprSdkResult(ultimateAlprSdkPINVOKE.UltAlprSdkEngine_requestRuntimeLicenseKey__SWIG_1(), true);
     return ret;
   }
 

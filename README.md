@@ -32,7 +32,7 @@ Being able to run all ITS applications on the device **will significantly lower 
 Please check [Device-based versus Cloud-based solution](https://www.doubango.org/SDKs/anpr/docs/Device-based_versus_Cloud-based_solution.html) section for more information about how this would reduce the cost.
 
 <p align="center" style="text-align: center">
-  <img src="https://www.doubango.org/SDKs/anpr/docs/_images/Screenshot_20191103-194930_AlprVideoParallel.jpg">
+  <img src="https://www.doubango.org/SDKs/anpr/docs/_images/theverge_with_pysearch.jpg">
   <br />
   <em><u><a href="#sample-application-videoparallel-android">VideoParallel sample application</a> on Android</u></em>
 </p>
@@ -133,7 +133,11 @@ The C++ API is defined [here](https://www.doubango.org/SDKs/anpr/docs/cpp-api.ht
 
 		"\"detect_minscore\": 0.1," + 
 		"\"detect_quantization_enabled\": true," + 
-		"\"detect_pyramidal_search_enabled\": false," +
+		
+		"\"pyramidal_search_enabled\": true," +
+		"\"pyramidal_search_sensitivity\": 0.28," +
+		"\"pyramidal_search_minscore\": 0.5," +
+		"\"pyramidal_search_quantization_enabled\": true," +
 
 		"\"recogn_score_type\": \"min\"," + 
 		"\"recogn_minscore\": 0.3," + 

@@ -14,8 +14,8 @@ ultimateALPR SDK public header
 #include <string>
 
 #define ULTALPR_SDK_VERSION_MAJOR		2
-#define ULTALPR_SDK_VERSION_MINOR		2
-#define ULTALPR_SDK_VERSION_MICRO		1
+#define ULTALPR_SDK_VERSION_MINOR		4
+#define ULTALPR_SDK_VERSION_MICRO		0
 
 // Windows's symbols export
 #if defined(SWIG)
@@ -90,6 +90,18 @@ namespace ultimateAlprSdk
 		* Available since: 2.1.0
 		*/
 		ULTALPR_SDK_IMAGE_TYPE_RGBA32,
+
+		/*! Each pixel is stored on 4 bytes. Each channel (B, G, R, A) is stored with 8 bits (1 byte) of precision (256 possible values).
+		* The B channel is stored at the lowest memory address followed by G, R then A channels. If you're using iOS then,
+		* this is the same as <a href="https://developer.apple.com/documentation/corevideo/1563591-pixel_format_identifiers/kcvpixelformattype_32bgra?language=objc">kCVPixelFormatType_32BGRA</a>.
+		* Here is how the pixels are packed:
+		* \code{.cpp}
+		* const int pixel = (A & 0xff) << 24 | (R & 0xff) << 16 | (G & 0xff) << 8 | (B & 0xff);
+		* \endcode
+		*
+		* Available since: 2.3.0
+		*/
+		ULTALPR_SDK_IMAGE_TYPE_BGRA32,
 
 		/*! YUV 4:2:0 image with a plane of 8 bit Y samples followed by an interleaved U/V plane containing 8 bit 2x2 subsampled colour difference samples.
 		*	More information at https://www.fourcc.org/pixel-format/yuv-nv12/
@@ -226,6 +238,7 @@ namespace ultimateAlprSdk
 			\param imageWidthInSamples Image width in samples.
 			\param imageHeightInSamples Image height in samples.
 			\param imageStrideInSamples Image stride in samples. Should be zero unless your the data is strided.
+			\param imageExifOrientation Image EXIF/JPEG orientation. Must be within [1, 8]. More information at https://www.impulseadventure.com/photo/exif-orientation.html. Available since: 2.3.0.
 			\returns a \ref UltAlprSdkResult "result"
 		*/
 		static UltAlprSdkResult process(
@@ -233,7 +246,8 @@ namespace ultimateAlprSdk
 			const void* imageData, 
 			const size_t imageWidthInSamples,
 			const size_t imageHeightInSamples,
-			const size_t imageStrideInSamples = 0
+			const size_t imageStrideInSamples = 0,
+			const int imageExifOrientation = 1
 		);
 
 		/*! Performs ANPR detection and recognition operations.
@@ -247,6 +261,7 @@ namespace ultimateAlprSdk
 			\param uStrideInBytes Stride in bytes for the U (chroma) samples.
 			\param vStrideInBytes Stride in bytes for the V (chroma) samples.
 			\param uvPixelStrideInBytes Pixel stride in bytes for the UV (chroma) samples. Should be 1 for planar and 2 for semi-planar formats. Set to 0 for auto-detect.
+			\param exifOrientation Image EXIF/JPEG orientation. Must be within [1, 8]. More information at https://www.impulseadventure.com/photo/exif-orientation.html. Available since: 2.3.0.
 			\returns a \ref UltAlprSdkResult "result"
 		*/
 		static UltAlprSdkResult process(
@@ -259,7 +274,8 @@ namespace ultimateAlprSdk
 			const size_t yStrideInBytes,
 			const size_t uStrideInBytes,
 			const size_t vStrideInBytes,
-			const size_t uvPixelStrideInBytes = 0
+			const size_t uvPixelStrideInBytes = 0,
+			const int exifOrientation = 1
 		);
 		
 		/*! Build a unique runtime license key associated to this device.
@@ -276,6 +292,7 @@ namespace ultimateAlprSdk
 
 #if ULTALPR_SDK_OS_ANDROID && !defined(SWIG)
 		static void setAssetManager(AAssetManager* assetManager);
+		static void setJavaVM(JavaVM* vm);
 #endif /* ULTALPR_SDK_OS_ANDROID */
 	};
 

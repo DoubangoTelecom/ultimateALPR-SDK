@@ -51,20 +51,28 @@ public class UltAlprSdkEngine {
     return new UltAlprSdkResult(ultimateAlprSdkJNI.UltAlprSdkEngine_deInit(), true);
   }
 
+  public static UltAlprSdkResult process(ULTALPR_SDK_IMAGE_TYPE imageType, java.nio.ByteBuffer imageData, long imageWidthInSamples, long imageHeightInSamples, long imageStrideInSamples, int imageExifOrientation) {
+    return new UltAlprSdkResult(ultimateAlprSdkJNI.UltAlprSdkEngine_process__SWIG_0(imageType.swigValue(), imageData, imageWidthInSamples, imageHeightInSamples, imageStrideInSamples, imageExifOrientation), true);
+  }
+
   public static UltAlprSdkResult process(ULTALPR_SDK_IMAGE_TYPE imageType, java.nio.ByteBuffer imageData, long imageWidthInSamples, long imageHeightInSamples, long imageStrideInSamples) {
-    return new UltAlprSdkResult(ultimateAlprSdkJNI.UltAlprSdkEngine_process__SWIG_0(imageType.swigValue(), imageData, imageWidthInSamples, imageHeightInSamples, imageStrideInSamples), true);
+    return new UltAlprSdkResult(ultimateAlprSdkJNI.UltAlprSdkEngine_process__SWIG_1(imageType.swigValue(), imageData, imageWidthInSamples, imageHeightInSamples, imageStrideInSamples), true);
   }
 
   public static UltAlprSdkResult process(ULTALPR_SDK_IMAGE_TYPE imageType, java.nio.ByteBuffer imageData, long imageWidthInSamples, long imageHeightInSamples) {
-    return new UltAlprSdkResult(ultimateAlprSdkJNI.UltAlprSdkEngine_process__SWIG_1(imageType.swigValue(), imageData, imageWidthInSamples, imageHeightInSamples), true);
+    return new UltAlprSdkResult(ultimateAlprSdkJNI.UltAlprSdkEngine_process__SWIG_2(imageType.swigValue(), imageData, imageWidthInSamples, imageHeightInSamples), true);
+  }
+
+  public static UltAlprSdkResult process(ULTALPR_SDK_IMAGE_TYPE imageType, java.nio.ByteBuffer yPtr, java.nio.ByteBuffer uPtr, java.nio.ByteBuffer vPtr, long widthInSamples, long heightInSamples, long yStrideInBytes, long uStrideInBytes, long vStrideInBytes, long uvPixelStrideInBytes, int exifOrientation) {
+    return new UltAlprSdkResult(ultimateAlprSdkJNI.UltAlprSdkEngine_process__SWIG_3(imageType.swigValue(), yPtr, uPtr, vPtr, widthInSamples, heightInSamples, yStrideInBytes, uStrideInBytes, vStrideInBytes, uvPixelStrideInBytes, exifOrientation), true);
   }
 
   public static UltAlprSdkResult process(ULTALPR_SDK_IMAGE_TYPE imageType, java.nio.ByteBuffer yPtr, java.nio.ByteBuffer uPtr, java.nio.ByteBuffer vPtr, long widthInSamples, long heightInSamples, long yStrideInBytes, long uStrideInBytes, long vStrideInBytes, long uvPixelStrideInBytes) {
-    return new UltAlprSdkResult(ultimateAlprSdkJNI.UltAlprSdkEngine_process__SWIG_2(imageType.swigValue(), yPtr, uPtr, vPtr, widthInSamples, heightInSamples, yStrideInBytes, uStrideInBytes, vStrideInBytes, uvPixelStrideInBytes), true);
+    return new UltAlprSdkResult(ultimateAlprSdkJNI.UltAlprSdkEngine_process__SWIG_4(imageType.swigValue(), yPtr, uPtr, vPtr, widthInSamples, heightInSamples, yStrideInBytes, uStrideInBytes, vStrideInBytes, uvPixelStrideInBytes), true);
   }
 
   public static UltAlprSdkResult process(ULTALPR_SDK_IMAGE_TYPE imageType, java.nio.ByteBuffer yPtr, java.nio.ByteBuffer uPtr, java.nio.ByteBuffer vPtr, long widthInSamples, long heightInSamples, long yStrideInBytes, long uStrideInBytes, long vStrideInBytes) {
-    return new UltAlprSdkResult(ultimateAlprSdkJNI.UltAlprSdkEngine_process__SWIG_3(imageType.swigValue(), yPtr, uPtr, vPtr, widthInSamples, heightInSamples, yStrideInBytes, uStrideInBytes, vStrideInBytes), true);
+    return new UltAlprSdkResult(ultimateAlprSdkJNI.UltAlprSdkEngine_process__SWIG_5(imageType.swigValue(), yPtr, uPtr, vPtr, widthInSamples, heightInSamples, yStrideInBytes, uStrideInBytes, vStrideInBytes), true);
   }
 
   public static UltAlprSdkResult requestRuntimeLicenseKey(boolean rawInsteadOfJSON) {

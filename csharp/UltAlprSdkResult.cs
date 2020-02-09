@@ -42,11 +42,9 @@ public class UltAlprSdkResult : IDisposable {
   }
 
   public UltAlprSdkResult(int code, string phrase, string json, uint numPlates) : this(ultimateAlprSdkPINVOKE.new_UltAlprSdkResult__SWIG_0(code, phrase, json, numPlates), true) {
-    if (ultimateAlprSdkPINVOKE.SWIGPendingException.Pending) throw ultimateAlprSdkPINVOKE.SWIGPendingException.Retrieve();
   }
 
   public UltAlprSdkResult(int code, string phrase, string json) : this(ultimateAlprSdkPINVOKE.new_UltAlprSdkResult__SWIG_1(code, phrase, json), true) {
-    if (ultimateAlprSdkPINVOKE.SWIGPendingException.Pending) throw ultimateAlprSdkPINVOKE.SWIGPendingException.Retrieve();
   }
 
   public int code() {

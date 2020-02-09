@@ -7,6 +7,7 @@
 package org.doubango.ultimateAlpr.common;
 
 import android.graphics.RectF;
+import android.media.ExifInterface;
 import android.media.Image;
 import android.os.Bundle;
 import android.os.Environment;
@@ -39,6 +40,7 @@ public abstract class AlprActivity extends AppCompatActivity implements AlprCame
     private String mDebugInternalDataPath = null;
 
     private boolean mIsProcessing = false;
+    private boolean mIsPaused = true;
 
     /**
      * Parallel callback delivery function used by the engine to notify for new deferred results
@@ -48,20 +50,27 @@ public abstract class AlprActivity extends AppCompatActivity implements AlprCame
 
         AlprPlateView mAlprPlateView;
         Size mImageSize;
+        long mTotalDuration = 0;
+        int mOrientation = 0;
 
         void setAlprPlateView(@NonNull final AlprPlateView view) {
             mAlprPlateView = view;
         }
 
-        void setImageSize(@NonNull final Size imageSize) {
+        void setImageSize(@NonNull final Size imageSize, @NonNull final int orientation) {
             mImageSize = imageSize;
+            mOrientation = orientation;
+        }
+
+        void setDurationTime(final long totalDuration) {
+            mTotalDuration = totalDuration;
         }
 
         @Override
         public void onNewResult(UltAlprSdkResult result) {
             Log.d(TAG, AlprUtils.resultToString(result));
             if (mAlprPlateView!= null) {
-                mAlprPlateView.setResult(result, mImageSize);
+                mAlprPlateView.setResult(result, mImageSize, mTotalDuration, mOrientation);
             }
         }
         static MyUltAlprSdkParallelDeliveryCallback newInstance() {
@@ -154,10 +163,12 @@ public abstract class AlprActivity extends AppCompatActivity implements AlprCame
     public synchronized void onResume() {
         super.onResume();
 
+        mIsPaused = false;
     }
 
     @Override
     public synchronized void onPause() {
+        mIsPaused = true;
 
         super.onPause();
     }
@@ -181,11 +192,11 @@ public abstract class AlprActivity extends AppCompatActivity implements AlprCame
     }
 
     @Override
-    public void setImage(@NonNull final Image image) {
+    public void setImage(@NonNull final Image image, final int jpegOrientation) {
 
         // On sequential mode we just ignore the processing
-        if (mIsProcessing) {
-            Log.d(TAG, "Inference function not returned yet");
+        if (mIsProcessing || mIsPaused) {
+            Log.d(TAG, "Inference function not returned yet: Processing or paused");
             image.close();
             return;
         }
@@ -194,9 +205,19 @@ public abstract class AlprActivity extends AppCompatActivity implements AlprCame
 
         final Size imageSize = new Size(image.getWidth(), image.getHeight());
 
+        // Orientation
+        // Convert from degree to real EXIF orientation
+        int exifOrientation;
+        switch (jpegOrientation) {
+            case 90: exifOrientation = ExifInterface.ORIENTATION_ROTATE_90; break;
+            case 180: exifOrientation = ExifInterface.ORIENTATION_ROTATE_180; break;
+            case 270: exifOrientation = ExifInterface.ORIENTATION_ROTATE_270; break;
+            case 0: default: exifOrientation = ExifInterface.ORIENTATION_NORMAL; break;
+        }
+
         // Update image for the async callback
         if (mParallelDeliveryCallback != null) {
-            mParallelDeliveryCallback.setImageSize(imageSize);
+            mParallelDeliveryCallback.setImageSize((jpegOrientation % 180) == 0 ? imageSize : new Size(imageSize.getHeight(), imageSize.getWidth()), jpegOrientation);
         }
 
         // The actual ALPR inference is done here
@@ -214,12 +235,13 @@ public abstract class AlprActivity extends AppCompatActivity implements AlprCame
                 planes[0].getRowStride(),
                 planes[1].getRowStride(),
                 planes[2].getRowStride(),
-                planes[1].getPixelStride()
+                planes[1].getPixelStride(),
+                exifOrientation
         ));
-        final long durationInMillis = SystemClock.uptimeMillis() - startTimeInMillis;
-        //Log.d(TAG, "inferenceTimeInMillis: " + durationInMillis);
-        if (mAlprPlateView != null) {
-            mAlprPlateView.setInferenceTime(durationInMillis);
+        final long durationInMillis = SystemClock.uptimeMillis() - startTimeInMillis; // Total time: Inference + image processing (chroma conversion, rotation...)
+
+        if (mParallelDeliveryCallback != null) {
+            mParallelDeliveryCallback.setDurationTime(durationInMillis);
         }
 
         // Release the image and signal the inference process is finished
@@ -236,7 +258,7 @@ public abstract class AlprActivity extends AppCompatActivity implements AlprCame
         // Display the result if sequential mode. Otherwise, let the parallel callback
         // display the result when provided.
         if (mAlprPlateView != null && (mParallelDeliveryCallback == null || result.numPlates() == 0)) { // means sequential call or no plates to expect from the parallel delivery callback
-            mAlprPlateView.setResult(result, imageSize);
+            mAlprPlateView.setResult(result, (jpegOrientation % 180) == 0 ? imageSize : new Size(imageSize.getHeight(), imageSize.getWidth()), durationInMillis, jpegOrientation);
         }
     }
 

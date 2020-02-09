@@ -34,6 +34,7 @@ import android.opengl.GLSurfaceView;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
+
 /**
  * GL surface view
  */
@@ -45,27 +46,64 @@ public class AlprGLSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
     private static final int TRIANGLE_VERTICES_DATA_STRIDE_BYTES = 5 * FLOAT_SIZE_BYTES;
     private static final int TRIANGLE_VERTICES_DATA_POS_OFFSET = 0;
     private static final int TRIANGLE_VERTICES_DATA_UV_OFFSET = 3;
-    private static final float[] TRIANGLE_VERTICES_DATA = {
-            1, -1, 0, 1, 1,
-            1, 1, 0, 1, 0,
-            -1, 1, 0, 0, 0,
-            -1, -1, 0, 0, 1
+
+    private static final float[] TRIANGLE_VERTICES_DATA_0 = {
+            1, -1, 0, 1, 1,     // 0: bottom/right
+            1, 1, 0, 1, 0,      // 1: top/right
+            -1, 1, 0, 0, 0,     // 2: top/left
+            -1, -1, 0, 0, 1     // 3: bottom/left
     };
-    private static final short[] INDICES_DATA = {
-            0, 1, 2,
-            2, 3, 0};
+    private static final short[] INDICES_DATA_0 = {
+            0, 1, 2,    // triangle #1: bottom/right, top/right, top/left
+            2, 3, 0   // triangle #2: top/left, bottom/left, bottom/right
+    };
+
+    private static final float[] TRIANGLE_VERTICES_DATA_90 = {
+            1, -1, 0, 1, 0,
+            1, 1, 0, 0, 0,
+            -1, 1, 0, 0, 1,
+            -1, -1, 0, 1, 1,
+    };
+    private static final short[] INDICES_DATA_90 = {
+            3, 0, 1,
+            1, 2, 3
+    };
+
+    private static final float[] TRIANGLE_VERTICES_DATA_180 = {
+            1, -1, 0, 0, 0,
+            1, 1, 0, 0, 1,
+            -1, 1, 0, 1, 1,
+            -1, -1, 0, 1, 0,
+    };
+    private static final short[] INDICES_DATA_180 = {
+            2, 3, 0,
+            0, 1, 2
+    };
+
+    private static final float[] TRIANGLE_VERTICES_DATA_270 = {
+            1, -1, 0, 0, 1,
+            1, 1, 0, 1, 1,
+            -1, 1, 0, 1, 0,
+            -1, -1, 0, 0, 0,
+    };
+    private static final short[] INDICES_DATA_270 = {
+            1, 2, 3,
+            3, 0, 1
+    };
 
     private FloatBuffer mTriangleVertices;
     private ShortBuffer mIndices;
+    private int mJpegOrientation = 0;
+    private boolean mJpegOrientationChanged = false;
 
     private static final String VERTEX_SHADER_SOURCE = "precision mediump float;" +
             "attribute vec4 aPosition;\n" +
-                    "attribute vec2 aTextureCoord;\n" +
-                    "varying vec2 vTextureCoord;\n" +
-                    "void main() {\n" +
-                    "  gl_Position = aPosition;\n" +
-                    "  vTextureCoord = aTextureCoord;\n" +
-                    "}\n";
+            "attribute vec2 aTextureCoord;\n" +
+            "varying vec2 vTextureCoord;\n" +
+            "void main() {\n" +
+            "  gl_Position = aPosition;\n" +
+            "  vTextureCoord = aTextureCoord;\n" +
+            "}\n";
 
     private static final String FRAGMENT_SHADER_SOURCE = "precision mediump float;" +
             "varying vec2 vTextureCoord;" +
@@ -117,13 +155,13 @@ public class AlprGLSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
         getHolder().setFormat(PixelFormat.TRANSLUCENT);
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 
-        mTriangleVertices = ByteBuffer.allocateDirect(TRIANGLE_VERTICES_DATA.length
+        mTriangleVertices = ByteBuffer.allocateDirect(TRIANGLE_VERTICES_DATA_0.length
                 * FLOAT_SIZE_BYTES).order(ByteOrder.nativeOrder()).asFloatBuffer();
-        mTriangleVertices.put(TRIANGLE_VERTICES_DATA).position(0);
+        mTriangleVertices.put(TRIANGLE_VERTICES_DATA_0).position(0);
 
-        mIndices = ByteBuffer.allocateDirect(INDICES_DATA.length
+        mIndices = ByteBuffer.allocateDirect(INDICES_DATA_0.length
                 * SHORT_SIZE_BYTES).order(ByteOrder.nativeOrder()).asShortBuffer();
-        mIndices.put(INDICES_DATA).position(0);
+        mIndices.put(INDICES_DATA_0).position(0);
     }
 
     /**
@@ -147,7 +185,7 @@ public class AlprGLSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
      *
      * @param
      */
-    public void setImage(final Image image){
+    public void setImage(final Image image, final int jpegOrientation){
         if (!isReady()) {
             Log.i(TAG, "Not ready");
             image.close();
@@ -161,6 +199,12 @@ public class AlprGLSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
 
         // We need to save the image as the rendering is asynchronous
         mImage = image;
+
+        if (mJpegOrientation != jpegOrientation) {
+            Log.i(TAG, "Orientation changed: " + mJpegOrientation + " -> " + jpegOrientation);
+            mJpegOrientation = jpegOrientation;
+            mJpegOrientationChanged = true;
+        }
 
         // Signal the surface as dirty to force redrawing
         requestRender();
@@ -209,10 +253,16 @@ public class AlprGLSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
             return;
         }
 
+        if (mJpegOrientationChanged) {
+            updateVertices();
+            mJpegOrientationChanged = false;
+        }
+
+        final boolean swapSize = (mJpegOrientation % 180) != 0;
         final int imageWidth = mImage.getWidth();
         final int imageHeight = mImage.getHeight();
 
-        final AlprUtils.AlprTransformationInfo tInfo = new AlprUtils.AlprTransformationInfo(imageWidth, imageHeight, getWidth(), getHeight());
+        final AlprUtils.AlprTransformationInfo tInfo = new AlprUtils.AlprTransformationInfo(swapSize ? imageHeight : imageWidth, swapSize ? imageWidth : imageHeight, getWidth(), getHeight());
         GLES20.glViewport(tInfo.getXOffset(), tInfo.getYOffset(), tInfo.getWidth(), tInfo.getHeight());
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT /*| GLES20.GL_DEPTH_BUFFER_BIT*/);
         GLES20.glUseProgram(mProgram);
@@ -248,7 +298,7 @@ public class AlprGLSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
         GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, uvFormat, bufferWidthUV, bufferHeightUV, 0, uvFormat, GLES20.GL_UNSIGNED_BYTE, bufferV);
         GLES20.glUniform1i(muSamplerVHandle, 2);
 
-        GLES20.glDrawElements(GLES20.GL_TRIANGLES, INDICES_DATA.length, GLES20.GL_UNSIGNED_SHORT, mIndices);
+        GLES20.glDrawElements(GLES20.GL_TRIANGLES, INDICES_DATA_0.length, GLES20.GL_UNSIGNED_SHORT, mIndices);
 
         mImage.close();
         mImage = null;
@@ -301,17 +351,7 @@ public class AlprGLSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
             throw new RuntimeException("Could not get uniform location for SamplerV");
         }
 
-        mTriangleVertices.position(TRIANGLE_VERTICES_DATA_POS_OFFSET);
-        GLES20.glVertexAttribPointer(maPositionHandle, 3, GLES20.GL_FLOAT, false, TRIANGLE_VERTICES_DATA_STRIDE_BYTES, mTriangleVertices);
-        checkGlError("glVertexAttribPointer maPosition");
-
-        mTriangleVertices.position(TRIANGLE_VERTICES_DATA_UV_OFFSET);
-        GLES20.glEnableVertexAttribArray(maPositionHandle);
-        checkGlError("glEnableVertexAttribArray maPositionHandle");
-        GLES20.glVertexAttribPointer(maTextureHandle, 2, GLES20.GL_FLOAT, false, TRIANGLE_VERTICES_DATA_STRIDE_BYTES, mTriangleVertices);
-        checkGlError("glVertexAttribPointer maTextureHandle");
-        GLES20.glEnableVertexAttribArray(maTextureHandle);
-        checkGlError("glEnableVertexAttribArray maTextureHandle");
+        updateVertices();
 
         GLES20.glGenTextures(1, mTextureY, 0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureY[0]);
@@ -382,6 +422,44 @@ public class AlprGLSurfaceView extends GLSurfaceView implements GLSurfaceView.Re
             }
         }
         return program;
+    }
+
+    private void updateVertices() {
+        mTriangleVertices.rewind();
+        mIndices.rewind();
+
+        switch (mJpegOrientation) {
+            case 90:
+                mTriangleVertices.put(TRIANGLE_VERTICES_DATA_90).position(0);
+                mIndices.put(INDICES_DATA_90).position(0);
+                break;
+            case 180:
+                mTriangleVertices.put(TRIANGLE_VERTICES_DATA_180).position(0);
+                mIndices.put(INDICES_DATA_180).position(0);
+                break;
+            case 270:
+                mTriangleVertices.put(TRIANGLE_VERTICES_DATA_270).position(0);
+                mIndices.put(INDICES_DATA_270).position(0);
+                break;
+            case 0:
+                mTriangleVertices.put(TRIANGLE_VERTICES_DATA_0).position(0);
+                mIndices.put(INDICES_DATA_0).position(0);
+                break;
+            default:
+                throw new RuntimeException("Invalid orientation:" + mJpegOrientation);
+        }
+
+        mTriangleVertices.position(TRIANGLE_VERTICES_DATA_POS_OFFSET);
+        GLES20.glVertexAttribPointer(maPositionHandle, 3, GLES20.GL_FLOAT, false, TRIANGLE_VERTICES_DATA_STRIDE_BYTES, mTriangleVertices);
+        checkGlError("glVertexAttribPointer maPosition");
+
+        mTriangleVertices.position(TRIANGLE_VERTICES_DATA_UV_OFFSET);
+        GLES20.glEnableVertexAttribArray(maPositionHandle);
+        checkGlError("glEnableVertexAttribArray maPositionHandle");
+        GLES20.glVertexAttribPointer(maTextureHandle, 2, GLES20.GL_FLOAT, false, TRIANGLE_VERTICES_DATA_STRIDE_BYTES, mTriangleVertices);
+        checkGlError("glVertexAttribPointer maTextureHandle");
+        GLES20.glEnableVertexAttribArray(maTextureHandle);
+        checkGlError("glEnableVertexAttribArray maTextureHandle");
     }
 
     private void checkGlError(String op) {

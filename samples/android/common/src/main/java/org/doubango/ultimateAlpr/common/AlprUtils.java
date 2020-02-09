@@ -70,6 +70,18 @@ public class AlprUtils {
         public float[] getWarpedBox() { return mWarpedBox; }
     }
 
+    static public final long extractFrameId(final UltAlprSdkResult result) {
+        final String jsonString = result.json();
+        if (jsonString != null) {
+            try {
+                final JSONObject jObject = new JSONObject(jsonString);
+                return jObject.getLong("frame_id");
+            }
+            catch (JSONException e) { }
+        }
+        return 0;
+    }
+
     static public final List<Plate> extractPlates(final UltAlprSdkResult result) {
         final List<Plate> plates = new LinkedList<>();
         if (!result.isOK() || result.numPlates() == 0) {

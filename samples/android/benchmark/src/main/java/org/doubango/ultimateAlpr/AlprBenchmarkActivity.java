@@ -114,15 +114,49 @@ public class AlprBenchmarkActivity extends AppCompatActivity {
     static final List<Float> CONFIG_DETECT_ROI = Arrays.asList(0.f, 0.f, 0.f, 0.f);
 
     /**
-     * Whether to enable pyramidal search. Pyramidal search is an advanced and experimental feature to accurately detect very small or far away license plates.
-     * May not be available if you're using a trial version.
-     * JSON name: "detect_pyramidal_search_enabled"
-     * Default: false
+     * Whether to enable pyramidal search. Pyramidal search is an advanced feature to accurately detect very small or far away license plates.
+     * JSON name: "pyramidal_search_enabled"
+     * Default: true
      * type: bool
      * pattern: true | false
-     * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#detect-pyramidal-search-enabled
+     * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#pyramidal_search_enabled
      */
-    static final boolean CONFIG_DETECT_PYRAMIDAL_SEARCH_ENABLED = false;
+    static final boolean CONFIG_PYRAMIDAL_SEARCH_ENABLED = false;
+
+    /**
+     * Defines how sensitive the pyramidal search anchor resolution function should be. The higher this value is, the higher the number of pyramid levels will be.
+     * More levels means better accuracy but higher CPU usage and inference time.
+     * Pyramidal search will be disabled if this value is equal to 0.
+     * JSON name: "pyramidal_search_sensitivity"
+     * Default: 0.28f
+     * type: float
+     * pattern: [0.f, 1.f]
+     * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#pyramidal_search_sensitivity
+     */
+    static final double CONFIG_PYRAMIDAL_SEARCH_SENSITIVITY= 0.28; // 28%
+
+    /**
+     * Defines a threshold for the detection score associated to the plates retrieved after pyramidal search.
+     * Any detection with a score below that threshold will be ignored.
+     * 0.f being poor confidence and 1.f excellent confidence.
+     * JSON name: "pyramidal_search_minscore"
+     * Default: 0.8f
+     * type: float
+     * pattern: ]0.f, 1.f]
+     * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#pyramidal_search_minscore
+     */
+    static final double CONFIG_PYRAMIDAL_SEARCH_MINSCORE = 0.8; // 80%
+
+    /**
+     * Minimum image size (max[width, height]) in pixels to trigger pyramidal search.
+     * Pyramidal search will be disabled if the image size is less than this value. Using pyramidal search on small images is useless.
+     * JSON name: "pyramidal_search_min_image_size_inpixels"
+     * Default: 800
+     * type: integer
+     * pattern: [0, inf]
+     * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#pyramidal_search_min_image_size_inpixels
+     */
+    static final int CONFIG_PYRAMIDAL_SEARCH_MIN_IMAGE_SIZE_INPIXELS = 800; // pixels
 
     /**
      * Define a threshold for the overall recognition score. Any recognition with a score below that threshold will be ignored.
@@ -206,9 +240,6 @@ public class AlprBenchmarkActivity extends AppCompatActivity {
                 getConfig(),
                 mCallback
         ));
-
-        // Warm up to prepare for benchmark
-        assertIsOk(UltAlprSdkEngine.warmUp(ULTALPR_SDK_IMAGE_TYPE.ULTALPR_SDK_IMAGE_TYPE_RGB24));
     }
 
     @Override
@@ -240,6 +271,9 @@ public class AlprBenchmarkActivity extends AppCompatActivity {
         if (images[1] == null) {
             throw new AssertionError("Failed to read file");
         }
+
+        // Warm up to prepare for benchmark
+        assertIsOk(UltAlprSdkEngine.warmUp(images[1].mType));
 
         textView.setText("*** Started timing... ***");
 
@@ -325,7 +359,11 @@ public class AlprBenchmarkActivity extends AppCompatActivity {
 
             config.put("detect_minscore", CONFIG_DETECT_MINSCORE);
             config.put("detect_roi", new JSONArray(CONFIG_DETECT_ROI));
-            config.put("detect_pyramidal_search_enabled", CONFIG_DETECT_PYRAMIDAL_SEARCH_ENABLED);
+
+            config.put("pyramidal_search_enabled", CONFIG_PYRAMIDAL_SEARCH_ENABLED);
+            config.put("pyramidal_search_sensitivity", CONFIG_PYRAMIDAL_SEARCH_SENSITIVITY);
+            config.put("pyramidal_search_minscore", CONFIG_PYRAMIDAL_SEARCH_MINSCORE);
+            config.put("pyramidal_search_min_image_size_inpixels", CONFIG_PYRAMIDAL_SEARCH_MIN_IMAGE_SIZE_INPIXELS);
 
             config.put("recogn_minscore", CONFIG_RECOGN_MINSCORE);
             config.put("recogn_score_type", CONFIG_RECOGN_SCORE_TYPE);

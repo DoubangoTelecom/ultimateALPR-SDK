@@ -42,14 +42,16 @@ public class AlprPlateView extends View {
     private final Paint mPaintTextConfidence;
     private final Paint mPaintTextConfidenceBackground;
     private final Paint mPaintBorder;
-    private final Paint mPaintTextInferenceTime;
-    private final Paint mPaintTextInferenceTimeBackground;
+    private final Paint mPaintTextDurationTime;
+    private final Paint mPaintTextDurationTimeBackground;
     private final Paint mPaintDetectROI;
 
     private int mRatioWidth = 0;
     private int mRatioHeight = 0;
 
-    long mInferenceTimeMillis;
+    private int mOrientation = 0;
+
+    private long mDurationTimeMillis;
 
     private Size mImageSize;
     private List<AlprUtils.Plate> mPlates = null;
@@ -63,12 +65,14 @@ public class AlprPlateView extends View {
     public AlprPlateView(final Context context, final AttributeSet attrs) {
         super(context, attrs);
 
+        final Typeface fontALPR = Typeface.createFromAsset(context.getAssets(), "GlNummernschildEng-XgWd.ttf");
+
         mPaintTextNumber = new Paint();
         mPaintTextNumber.setTextSize(TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, TEXT_NUMBER_SIZE_DIP, getResources().getDisplayMetrics()));
         mPaintTextNumber.setColor(Color.BLACK);
         mPaintTextNumber.setStyle(Paint.Style.FILL_AND_STROKE);
-        mPaintTextNumber.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        mPaintTextNumber.setTypeface(Typeface.create(fontALPR, Typeface.BOLD));
 
         mPaintTextNumberBackground = new Paint();
         mPaintTextNumberBackground.setColor(Color.YELLOW);
@@ -80,7 +84,7 @@ public class AlprPlateView extends View {
                 TypedValue.COMPLEX_UNIT_DIP, TEXT_CONFIDENCE_SIZE_DIP, getResources().getDisplayMetrics()));
         mPaintTextConfidence.setColor(Color.BLUE);
         mPaintTextConfidence.setStyle(Paint.Style.FILL_AND_STROKE);
-        mPaintTextConfidence.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        mPaintTextConfidence.setTypeface(Typeface.create(fontALPR, Typeface.BOLD));
 
         mPaintTextConfidenceBackground = new Paint();
         mPaintTextConfidenceBackground.setColor(Color.YELLOW);
@@ -93,31 +97,23 @@ public class AlprPlateView extends View {
         mPaintBorder.setColor(Color.YELLOW);
         mPaintBorder.setStyle(Paint.Style.STROKE);
 
-        mPaintTextInferenceTime = new Paint();
-        mPaintTextInferenceTime.setTextSize(TypedValue.applyDimension(
+        mPaintTextDurationTime = new Paint();
+        mPaintTextDurationTime.setTextSize(TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, TEXT_INFERENCE_TIME_SIZE_DIP, getResources().getDisplayMetrics()));
-        mPaintTextInferenceTime.setColor(Color.BLACK);
-        mPaintTextInferenceTime.setStyle(Paint.Style.FILL_AND_STROKE);
-        mPaintTextInferenceTime.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        mPaintTextDurationTime.setColor(Color.BLACK);
+        mPaintTextDurationTime.setStyle(Paint.Style.FILL_AND_STROKE);
+        mPaintTextDurationTime.setTypeface(Typeface.create(fontALPR, Typeface.BOLD));
 
-        mPaintTextInferenceTimeBackground = new Paint();
-        mPaintTextInferenceTimeBackground.setColor(Color.WHITE);
-        mPaintTextInferenceTimeBackground.setStrokeWidth(STROKE_WIDTH);
-        mPaintTextInferenceTimeBackground.setStyle(Paint.Style.FILL_AND_STROKE);
+        mPaintTextDurationTimeBackground = new Paint();
+        mPaintTextDurationTimeBackground.setColor(Color.WHITE);
+        mPaintTextDurationTimeBackground.setStrokeWidth(STROKE_WIDTH);
+        mPaintTextDurationTimeBackground.setStyle(Paint.Style.FILL_AND_STROKE);
 
         mPaintDetectROI = new Paint();
         mPaintDetectROI.setColor(Color.RED);
         mPaintDetectROI.setStrokeWidth(STROKE_WIDTH);
         mPaintDetectROI.setStyle(Paint.Style.STROKE);
         mPaintDetectROI.setPathEffect(new DashPathEffect(new float[] {10,20}, 0));
-    }
-
-    /**
-     *
-     * @param timeMillis
-     */
-    public void setInferenceTime(long timeMillis) {
-        mInferenceTimeMillis = timeMillis;
     }
 
     public void setDetectROI(final RectF roi) { mDetectROI = roi; }
@@ -158,9 +154,11 @@ public class AlprPlateView extends View {
      * @param result
      * @param imageSize
      */
-    public synchronized void setResult(@NonNull final UltAlprSdkResult result, @NonNull final Size imageSize) {
+    public synchronized void setResult(@NonNull final UltAlprSdkResult result, @NonNull final Size imageSize, @NonNull final long durationTime, @NonNull final int orientation) {
         mPlates = AlprUtils.extractPlates(result);
         mImageSize = imageSize;
+        mDurationTimeMillis = durationTime;
+        mOrientation = orientation;
         postInvalidate();
     }
 
@@ -174,11 +172,12 @@ public class AlprPlateView extends View {
         }
 
         // Inference time
-        final String mInferenceTimeMillisString = "Inference time: " + mInferenceTimeMillis;
+        // Landscape faster: https://www.doubango.org/SDKs/anpr/docs/Improving_the_speed.html#landscape-mode
+        final String mInferenceTimeMillisString = "Total processing time: " + mDurationTimeMillis + (mOrientation == 0 ? "" : " -> Rotate to landscape to speedup");
         Rect boundsTextmInferenceTimeMillis = new Rect();
-        mPaintTextInferenceTime.getTextBounds(mInferenceTimeMillisString, 0, mInferenceTimeMillisString.length(), boundsTextmInferenceTimeMillis);
-        canvas.drawRect(0, 0, boundsTextmInferenceTimeMillis.width(), boundsTextmInferenceTimeMillis.height(), mPaintTextInferenceTimeBackground);
-        canvas.drawText(mInferenceTimeMillisString, 0, boundsTextmInferenceTimeMillis.height(), mPaintTextInferenceTime);
+        mPaintTextDurationTime.getTextBounds(mInferenceTimeMillisString, 0, mInferenceTimeMillisString.length(), boundsTextmInferenceTimeMillis);
+        canvas.drawRect(0, 0, boundsTextmInferenceTimeMillis.width(), boundsTextmInferenceTimeMillis.height(), mPaintTextDurationTimeBackground);
+        canvas.drawText(mInferenceTimeMillisString, 0, boundsTextmInferenceTimeMillis.height(), mPaintTextDurationTime);
 
         // Transformation info
         final AlprUtils.AlprTransformationInfo tInfo = new AlprUtils.AlprTransformationInfo(mImageSize.getWidth(), mImageSize.getHeight(), getWidth(), getHeight());
