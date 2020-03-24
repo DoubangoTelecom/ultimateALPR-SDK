@@ -107,20 +107,17 @@ public abstract class AlprActivity extends AppCompatActivity implements AlprCame
         mParallelDeliveryCallback = isParallelDeliveryEnabled() ? MyUltAlprSdkParallelDeliveryCallback.newInstance() : null;
 
         // Init the engine
-        final boolean isActivationPossible = !getActivationServerUrl().isEmpty() && !getActivationMasterOrSlaveKey().isEmpty();
         final JSONObject config = getJsonConfig();
-        String tokenFile = "";
-        if (isActivationPossible) {
-            // Retrieve previously stored key from internal storage
-            tokenFile = AlprLicenseActivator.tokenFile(this);
-            if (!tokenFile.isEmpty()) {
-                try {
-                    config.put("license_token_data", AlprLicenseActivator.tokenData(tokenFile));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+        // Retrieve previously stored key from internal storage
+        String tokenFile = AlprLicenseActivator.tokenFile(this);
+        if (!tokenFile.isEmpty()) {
+            try {
+                config.put("license_token_data", AlprLicenseActivator.tokenData(tokenFile));
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
+
         final UltAlprSdkResult alprResult = AlprUtils.assertIsOk(UltAlprSdkEngine.init(
                 getAssets(),
                 config.toString(),
@@ -129,6 +126,7 @@ public abstract class AlprActivity extends AppCompatActivity implements AlprCame
         Log.i(TAG,"ALPR engine initialized: " + AlprUtils.resultToString(alprResult));
 
         // Activate the license
+        final boolean isActivationPossible = !getActivationServerUrl().isEmpty() && !getActivationMasterOrSlaveKey().isEmpty();
         if (isActivationPossible && tokenFile.isEmpty()) {
             // Generate the license key and store it to the internal storage for next times
             tokenFile = AlprLicenseActivator.activate(this, getActivationServerUrl(), getActivationMasterOrSlaveKey(), false);
@@ -145,6 +143,9 @@ public abstract class AlprActivity extends AppCompatActivity implements AlprCame
                 ));
             }
         }
+
+        // WarmUp to speedup first inference
+        AlprUtils.assertIsOk(UltAlprSdkEngine.warmUp(ULTALPR_SDK_IMAGE_TYPE.ULTALPR_SDK_IMAGE_TYPE_YUV420P));
     }
 
     @Override
