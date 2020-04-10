@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2016-2019 Doubango AI <https://www.doubango.org>
  * License: For non-commercial use only
  * Source code: https://github.com/DoubangoTelecom/ultimateALPR-SDK
@@ -148,7 +148,7 @@ public class AlprVideoSequentialActivity extends AlprActivity {
      * pattern: ]0.f, 1.f]
      * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#pyramidal_search_minscore
      */
-    static final double CONFIG_PYRAMIDAL_SEARCH_MINSCORE = 0.8; // 80%
+    static final double CONFIG_PYRAMIDAL_SEARCH_MINSCORE = 0.5; // 50%
 
     /**
      * Minimum image size (max[width, height]) in pixels to trigger pyramidal search.

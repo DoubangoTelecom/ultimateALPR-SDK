@@ -34,7 +34,7 @@ class ultimateAlprSdkPINVOKE {
     static ExceptionArgumentDelegate argumentNullDelegate = new ExceptionArgumentDelegate(SetPendingArgumentNullException);
     static ExceptionArgumentDelegate argumentOutOfRangeDelegate = new ExceptionArgumentDelegate(SetPendingArgumentOutOfRangeException);
 
-    [DllImport("ultimateAlprSdk", EntryPoint="SWIGRegisterExceptionCallbacks_ultimateAlprSdk")]
+    [DllImport("ultimateALPR-SDK", EntryPoint="SWIGRegisterExceptionCallbacks_ultimateAlprSdk")]
     public static extern void SWIGRegisterExceptionCallbacks_ultimateAlprSdk(
                                 ExceptionDelegate applicationDelegate,
                                 ExceptionDelegate arithmeticDelegate,
@@ -48,7 +48,7 @@ class ultimateAlprSdkPINVOKE {
                                 ExceptionDelegate overflowDelegate, 
                                 ExceptionDelegate systemExceptionDelegate);
 
-    [DllImport("ultimateAlprSdk", EntryPoint="SWIGRegisterExceptionArgumentCallbacks_ultimateAlprSdk")]
+    [DllImport("ultimateALPR-SDK", EntryPoint="SWIGRegisterExceptionArgumentCallbacks_ultimateAlprSdk")]
     public static extern void SWIGRegisterExceptionCallbacksArgument_ultimateAlprSdk(
                                 ExceptionArgumentDelegate argumentDelegate,
                                 ExceptionArgumentDelegate argumentNullDelegate,
@@ -170,7 +170,7 @@ class ultimateAlprSdkPINVOKE {
     public delegate string SWIGStringDelegate(string message);
     static SWIGStringDelegate stringDelegate = new SWIGStringDelegate(CreateString);
 
-    [DllImport("ultimateAlprSdk", EntryPoint="SWIGRegisterStringCallback_ultimateAlprSdk")]
+    [DllImport("ultimateALPR-SDK", EntryPoint="SWIGRegisterStringCallback_ultimateAlprSdk")]
     public static extern void SWIGRegisterStringCallback_ultimateAlprSdk(SWIGStringDelegate stringDelegate);
 
     static string CreateString(string cString) {
@@ -189,91 +189,91 @@ class ultimateAlprSdkPINVOKE {
   }
 
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_ULTALPR_SDK_VERSION_MAJOR_get")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_ULTALPR_SDK_VERSION_MAJOR_get")]
   public static extern int ULTALPR_SDK_VERSION_MAJOR_get();
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_ULTALPR_SDK_VERSION_MINOR_get")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_ULTALPR_SDK_VERSION_MINOR_get")]
   public static extern int ULTALPR_SDK_VERSION_MINOR_get();
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_ULTALPR_SDK_VERSION_MICRO_get")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_ULTALPR_SDK_VERSION_MICRO_get")]
   public static extern int ULTALPR_SDK_VERSION_MICRO_get();
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_new_UltAlprSdkResult__SWIG_0")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_new_UltAlprSdkResult__SWIG_0")]
   public static extern IntPtr new_UltAlprSdkResult__SWIG_0(int jarg1, string jarg2, string jarg3, uint jarg4);
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_new_UltAlprSdkResult__SWIG_1")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_new_UltAlprSdkResult__SWIG_1")]
   public static extern IntPtr new_UltAlprSdkResult__SWIG_1(int jarg1, string jarg2, string jarg3);
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_delete_UltAlprSdkResult")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_delete_UltAlprSdkResult")]
   public static extern void delete_UltAlprSdkResult(HandleRef jarg1);
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_UltAlprSdkResult_code")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_UltAlprSdkResult_code")]
   public static extern int UltAlprSdkResult_code(HandleRef jarg1);
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_UltAlprSdkResult_phrase")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_UltAlprSdkResult_phrase")]
   public static extern string UltAlprSdkResult_phrase(HandleRef jarg1);
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_UltAlprSdkResult_json")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_UltAlprSdkResult_json")]
   public static extern string UltAlprSdkResult_json(HandleRef jarg1);
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_UltAlprSdkResult_numPlates")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_UltAlprSdkResult_numPlates")]
   public static extern uint UltAlprSdkResult_numPlates(HandleRef jarg1);
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_UltAlprSdkResult_isOK")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_UltAlprSdkResult_isOK")]
   public static extern bool UltAlprSdkResult_isOK(HandleRef jarg1);
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_new_UltAlprSdkParallelDeliveryCallback")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_new_UltAlprSdkParallelDeliveryCallback")]
   public static extern IntPtr new_UltAlprSdkParallelDeliveryCallback();
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_delete_UltAlprSdkParallelDeliveryCallback")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_delete_UltAlprSdkParallelDeliveryCallback")]
   public static extern void delete_UltAlprSdkParallelDeliveryCallback(HandleRef jarg1);
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_UltAlprSdkParallelDeliveryCallback_onNewResult")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_UltAlprSdkParallelDeliveryCallback_onNewResult")]
   public static extern void UltAlprSdkParallelDeliveryCallback_onNewResult(HandleRef jarg1, HandleRef jarg2);
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_UltAlprSdkParallelDeliveryCallback_director_connect")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_UltAlprSdkParallelDeliveryCallback_director_connect")]
   public static extern void UltAlprSdkParallelDeliveryCallback_director_connect(HandleRef jarg1, UltAlprSdkParallelDeliveryCallback.SwigDelegateUltAlprSdkParallelDeliveryCallback_0 delegate0);
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_UltAlprSdkEngine_init__SWIG_0")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_UltAlprSdkEngine_init__SWIG_0")]
   public static extern IntPtr UltAlprSdkEngine_init__SWIG_0(string jarg1, HandleRef jarg2);
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_UltAlprSdkEngine_init__SWIG_1")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_UltAlprSdkEngine_init__SWIG_1")]
   public static extern IntPtr UltAlprSdkEngine_init__SWIG_1(string jarg1);
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_UltAlprSdkEngine_init__SWIG_2")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_UltAlprSdkEngine_init__SWIG_2")]
   public static extern IntPtr UltAlprSdkEngine_init__SWIG_2();
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_UltAlprSdkEngine_deInit")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_UltAlprSdkEngine_deInit")]
   public static extern IntPtr UltAlprSdkEngine_deInit();
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_UltAlprSdkEngine_process__SWIG_0")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_UltAlprSdkEngine_process__SWIG_0")]
   public static extern IntPtr UltAlprSdkEngine_process__SWIG_0(int jarg1, IntPtr jarg2, uint jarg3, uint jarg4, uint jarg5, int jarg6);
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_UltAlprSdkEngine_process__SWIG_1")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_UltAlprSdkEngine_process__SWIG_1")]
   public static extern IntPtr UltAlprSdkEngine_process__SWIG_1(int jarg1, IntPtr jarg2, uint jarg3, uint jarg4, uint jarg5);
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_UltAlprSdkEngine_process__SWIG_2")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_UltAlprSdkEngine_process__SWIG_2")]
   public static extern IntPtr UltAlprSdkEngine_process__SWIG_2(int jarg1, IntPtr jarg2, uint jarg3, uint jarg4);
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_UltAlprSdkEngine_process__SWIG_3")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_UltAlprSdkEngine_process__SWIG_3")]
   public static extern IntPtr UltAlprSdkEngine_process__SWIG_3(int jarg1, IntPtr jarg2, IntPtr jarg3, IntPtr jarg4, uint jarg5, uint jarg6, uint jarg7, uint jarg8, uint jarg9, uint jarg10, int jarg11);
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_UltAlprSdkEngine_process__SWIG_4")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_UltAlprSdkEngine_process__SWIG_4")]
   public static extern IntPtr UltAlprSdkEngine_process__SWIG_4(int jarg1, IntPtr jarg2, IntPtr jarg3, IntPtr jarg4, uint jarg5, uint jarg6, uint jarg7, uint jarg8, uint jarg9, uint jarg10);
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_UltAlprSdkEngine_process__SWIG_5")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_UltAlprSdkEngine_process__SWIG_5")]
   public static extern IntPtr UltAlprSdkEngine_process__SWIG_5(int jarg1, IntPtr jarg2, IntPtr jarg3, IntPtr jarg4, uint jarg5, uint jarg6, uint jarg7, uint jarg8, uint jarg9);
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_UltAlprSdkEngine_requestRuntimeLicenseKey__SWIG_0")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_UltAlprSdkEngine_requestRuntimeLicenseKey__SWIG_0")]
   public static extern IntPtr UltAlprSdkEngine_requestRuntimeLicenseKey__SWIG_0(bool jarg1);
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_UltAlprSdkEngine_requestRuntimeLicenseKey__SWIG_1")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_UltAlprSdkEngine_requestRuntimeLicenseKey__SWIG_1")]
   public static extern IntPtr UltAlprSdkEngine_requestRuntimeLicenseKey__SWIG_1();
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_UltAlprSdkEngine_warmUp")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_UltAlprSdkEngine_warmUp")]
   public static extern IntPtr UltAlprSdkEngine_warmUp(int jarg1);
 
-  [DllImport("ultimateAlprSdk", EntryPoint="CSharp_delete_UltAlprSdkEngine")]
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_delete_UltAlprSdkEngine")]
   public static extern void delete_UltAlprSdkEngine(HandleRef jarg1);
 }
 
