@@ -1,4 +1,4 @@
-/* Copyright (C) 2016-2019 Doubango Telecom <https://www.doubango.org>
+/* Copyright (C) 2011-2020 Doubango Telecom <https://www.doubango.org>
 * File author: Mamadou DIOP (Doubango Telecom, France).
 * License: For non commercial use only.
 * Source code: https://github.com/DoubangoTelecom/ultimateALPR-SDK
@@ -15,7 +15,7 @@ ultimateALPR SDK public header
 
 #define ULTALPR_SDK_VERSION_MAJOR		2
 #define ULTALPR_SDK_VERSION_MINOR		4
-#define ULTALPR_SDK_VERSION_MICRO		0
+#define ULTALPR_SDK_VERSION_MICRO		1
 
 // Windows's symbols export
 #if defined(SWIG)
@@ -128,19 +128,19 @@ namespace ultimateAlprSdk
 		ULTALPR_SDK_IMAGE_TYPE_YUV420P,
 
 		/*! Same as \ref ULTALPR_SDK_IMAGE_TYPE_YUV420P except the order of U and V is reversed.
-		*	More information at https://www.fourcc.org/pixel-format/yuv-yv12/
+		* More information at https://www.fourcc.org/pixel-format/yuv-yv12/
 		*
 		* Available since: 2.0.0
 		*/
 		ULTALPR_SDK_IMAGE_TYPE_YVU420P,
 
-		/*!  YUV 4:2:2 image with an NxM Y plane followed by (N/2)x(M) V and U planes.
+		/*! YUV 4:2:2 image with an NxM Y plane followed by (N/2)x(M) V and U planes.
 		*
 		* Available since: 2.0.0
 		*/
 		ULTALPR_SDK_IMAGE_TYPE_YUV422P,
 
-		/*!  YUV 4:4:4 image with an NxM Y plane followed by NxM V and U planes.
+		/*! YUV 4:4:4 image with an NxM Y plane followed by NxM V and U planes.
 		*
 		* Available since: 2.0.0
 		*/
