@@ -94,7 +94,7 @@ Options surrounded with **[]** are optional.
 - `--tokenfile` Path to the file containing the base64 license token if you have one. If not provided then, the application will act like a trial version. Default: *null*.
 - `--tokendata` Base64 license token if you have one. If not provided then, the application will act like a trial version. Default: *null*.
 
-The information about the maximum frame rate (**47fps** on Snapdragon 855 devices and **12fps** on Raspberry Pi 4) is obtained using `--rate 0.0` which means evaluating the negative (no license plate) image only. The minimum frame rate could be obtained using `--rate 1.0` which means evaluating the positive image only (all images on the video stream have a license plate). In real life, very few frames from a video stream will contain a license plate (`--rate` **< 0.01**).
+The information about the maximum frame rate (**105fps** on GTX 1070, **47fps** on Snapdragon 855 and **12fps** on Raspberry Pi 4) is obtained using `--rate 0.0` which means evaluating the negative (no license plate) image only. The minimum frame rate could be obtained using `--rate 1.0` which means evaluating the positive image only (all images on the video stream have a license plate). In real life, very few frames from a video stream will contain a license plate (`--rate` **< 0.01**).
 
 <a name="testing-examples"></a>
 ## Examples ##
