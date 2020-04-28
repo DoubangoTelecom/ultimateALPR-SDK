@@ -17,7 +17,7 @@ More information about the benchmark rules at [https://www.doubango.org/SDKs/anp
 <a name="peformance-numbers"></a>
 # Peformance numbers #
 
-Some performance numbers on mid-range GPU (**GTX 1070 (Untuntu 18)**), high-range ARM CPU (**Galaxy S10+**), low-range ARM CPU (**Raspberry Pi 4**) devices using **720p (1280x720)** images:
+Some performance numbers on mid-range GPU (**GTX 1070**), high-range ARM CPU (**Galaxy S10+**), low-range ARM CPU (**Raspberry Pi 4**) devices using **720p (1280x720)** images:
 
 |  | 0.0 rate | 0.2 rate | 0.5 rate | 0.7 rate | 1.0 rate |
 |-------- | --- | --- | --- | --- | --- |
