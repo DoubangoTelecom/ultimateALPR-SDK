@@ -66,7 +66,9 @@ The source code comes with #4 Android sample applications: [Benchmark](#sample-a
 
 <a name="sample-application-benchmark-android"></a>
 ### Benchmark (Android) ###
-This application is used to check everything is ok and running as fast as expected. The information about the maximum frame rate (**47fps**) on Snapdragon 855 devices could be checked using this application. It's open source and doesn't require registration or license key.
+This application is used to check everything is ok and running as fast as expected. 
+The information about the maximum frame rate (**105fps** on GTX 1070, **47fps** on Snapdragon 855 and **12fps** on Raspberry Pi 4) could be checked using this application. 
+It's open source and doesn't require registration or license key.
 
 <a name="sample-application-videoparallel-android"></a>
 ### VideoParallel (Android) ###

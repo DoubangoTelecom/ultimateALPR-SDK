@@ -9,7 +9,7 @@
 
 
 This application is used to check everything is ok and running as fast as expected. 
-The information about the maximum frame rate (**47fps** on Snapdragon 855 devices and **12fps** on Raspberry Pi 4) could be checked using this application. 
+The information about the maximum frame rate (**105fps** on GTX 1070, **47fps** on Snapdragon 855 and **12fps** on Raspberry Pi 4) could be checked using this application. 
 It's open source and doesn't require registration or license key.
 
 More information about the benchmark rules at [https://www.doubango.org/SDKs/anpr/docs/Benchmark.html](https://www.doubango.org/SDKs/anpr/docs/Benchmark.html).
@@ -17,10 +17,11 @@ More information about the benchmark rules at [https://www.doubango.org/SDKs/anp
 <a name="peformance-numbers"></a>
 # Peformance numbers #
 
-Some performance numbers on high-end (**Galaxy S10+**) and low-end (**Raspberry Pi 4**) devices using **720p (1280x720)** images:
+Some performance numbers on mid-range GPU (**GTX 1070 (Untuntu 18)**), high-range ARM CPU (**Galaxy S10+**), low-range ARM CPU (**Raspberry Pi 4**) devices using **720p (1280x720)** images:
 
 |  | 0.0 rate | 0.2 rate | 0.5 rate | 0.7 rate | 1.0 rate |
 |-------- | --- | --- | --- | --- | --- |
+| **GTX 1070 (Untuntu 18)** | 9516 millis <br />**105.07 fps** | 9963 millis <br/> 100.36 fps | 10701 millis <br/> 93.44 fps | 11109.millis <br/> 90.01 fps | 11704 millis <br/> 85.43 fps |
 | **Galaxy S10+ (Android)** | 21344 millis <br/> **46.85 fps** | 25815 millis <br/> 38.73 fps | 29712 millis <br/> 33.65 fps | 33352 millis <br/> 29.98 fps | 37825 millis <br/> 26.43 fps |
 | **Raspberry Pi 4 (Raspbian Buster)** | 81890 millis <br />**12.21 fps** | 89770 millis <br/> 11.13 fps | 115190 millis <br/> 8.68 fps | 122950 millis <br/> 8.13fps | 141460 millis <br/> 7.06 fps |
 
