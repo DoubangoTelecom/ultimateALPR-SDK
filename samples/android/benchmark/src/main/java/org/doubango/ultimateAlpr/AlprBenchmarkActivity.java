@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2019 Doubango AI <https://www.doubango.org>
+ * Copyright (C) 2016-2020 Doubango AI <https://www.doubango.org>
  * License: For non-commercial use only
  * Source code: https://github.com/DoubangoTelecom/ultimateALPR-SDK
  * WebSite: https://www.doubango.org/webapps/alpr/
@@ -93,6 +93,17 @@ public class AlprBenchmarkActivity extends AppCompatActivity {
     static final boolean CONFIG_GPGPU_ENABLED = true;
 
     /**
+     * Defines a charset (Alphabet) to use for the recognizer.
+     * JSON name: "gpgpu_enabled"
+     * Default: latin
+     * type: string
+     * pattern: latin | korean
+     * Available since: 2.6.2
+     * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#charset
+     */
+    static final String CONFIG_CHARSET = "latin";
+
+    /**
      * Define a threshold for the detection score. Any detection with a score below that threshold will be ignored. 0.f being poor confidence and 1.f excellent confidence.
      * JSON name: "detect_minscore",
      * Default: 0.3f
@@ -108,7 +119,7 @@ public class AlprBenchmarkActivity extends AppCompatActivity {
      * JSON name: "detect_roi"
      * Default: [0.f, 0.f, 0.f, 0.f]
      * type: float[4]
-     * pattern: [left, width, top, height]
+     * pattern: [left, right, top, bottom]
      * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#detect-roi
      */
     static final List<Float> CONFIG_DETECT_ROI = Arrays.asList(0.f, 0.f, 0.f, 0.f);
@@ -356,6 +367,7 @@ public class AlprBenchmarkActivity extends AppCompatActivity {
 
             config.put("num_threads", CONFIG_NUM_THREADS);
             config.put("gpgpu_enabled", CONFIG_GPGPU_ENABLED);
+            config.put("charset", CONFIG_CHARSET);
 
             config.put("detect_minscore", CONFIG_DETECT_MINSCORE);
             config.put("detect_roi", new JSONArray(CONFIG_DETECT_ROI));

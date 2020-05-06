@@ -3,19 +3,21 @@
   	- [Sample applications](#sample-applications-android)
 		- [Benchmark](#sample-application-benchmark-android)
 		- [VideoParallel](#sample-application-videoparallel-android)
-		- [videoSequential](#sample-application-videosequential-android)
+		- [VideoSequential](#sample-application-videosequential-android)
 		- [ImageSnap](#sample-application-imagesnap-android)
 	- [Trying the samples](#trying-the-samples-android)
 	- [Adding the SDK to your project](#adding-the-sdk-to-your-project-android)
 	- [Using the Java API](#using-the-java-api-android)
- - [Raspberry Pi (Raspbian OS) and others](#others)
+ - [Raspberry Pi (Raspbian OS), Linux, Windows and others](#others)
  	- [Sample applications](#sample-applications-others)
 		- [Benchmark](#sample-application-benchmark-others)
 		- [Recognizer](#sample-application-recognizer-others)
+	- [Using the C++ API](#using-the-cpp-api-others)
  - [Getting help](#technical-questions)
   
  - Full documentation at https://www.doubango.org/SDKs/anpr/docs/
  - Online demo at https://www.doubango.org/webapps/alpr/
+ - Open source Computer Vision Library: https://github.com/DoubangoTelecom/compv
   
 <hr />
   
@@ -36,6 +38,11 @@ Please check [Device-based versus Cloud-based solution](https://www.doubango.org
   <br />
   <em><u><a href="#sample-application-videoparallel-android">VideoParallel sample application</a> on Android</u></em>
 </p>
+<hr />
+
+The next [video](https://youtu.be/jozcaDMMgVU) ([https://youtu.be/jozcaDMMgVU](https://youtu.be/jozcaDMMgVU)) shows [Recognizer sample](#sample-application-recognizer-others) running on Windows: <br />
+[![Recognizer Running on Windows](https://www.doubango.org/SDKs/anpr/docs/_images/ScreenshotKorea.jpg)](https://www.youtube.com/watch?v=jozcaDMMgVU)
+<hr />
 
 We're already working to bring this frame rate at 64fps and add support for CMMDP (**Color-Make Model-Direction-Prediction**) before march 2020. 
 We're confident that it's possible to have a complete [ITS](https://en.wikipedia.org/wiki/Intelligent_transportation_system) (**license plate recognition, CMMDP, bus lane enforcement, red light enforcement, speed detection, 
@@ -45,7 +52,7 @@ On high-end NVIDIA GPUs like the **Tesla V100 the frame rate is 315 fps which me
 On low-end CPUs like the **Raspberry Pi 4 the average [frame rate is 12fps](samples/c++/benchmark/README.md#peformance-numbers)**.
 
 Don't take our word for it, come check our implementation. **No registration, license key or internet connection is required**, just clone the code and start coding/testing. Everything runs on the device, no data is leaving your computer. 
-The code released here comes with many ready-to-use samples for [Android](#sample-applications-android) and [Raspberry Pi](#sample-applications-others) to help you get started easily. 
+The code released here comes with many ready-to-use samples for [Android](#sample-applications-android), [Raspberry Pi](#sample-applications-others), [Linux](#sample-applications-others) and [Windows](#sample-applications-others) to help you get started easily. 
 
 You can also check our online [cloud-based implementation](https://www.doubango.org/webapps/alpr/) (*no registration required*) to check out the accuracy and precision before starting to play with the SDK.
 
@@ -53,7 +60,7 @@ Please check full documentation at https://www.doubango.org/SDKs/anpr/docs/
 
 <a name="getting-started"></a>
 # Getting started # 
-The SDK works on [many platforms](https://www.doubango.org/SDKs/anpr/docs/Architecture_overview.html#supportedoperatingsystems) and comes with support for many [programming languages](https://www.doubango.org/SDKs/anpr/docs/Architecture_overview.html#supportedprogramminglanguages) but the next sections focus on [Android](#android) and [Raspberry pi](#others). 
+The SDK works on [many platforms](https://www.doubango.org/SDKs/anpr/docs/Architecture_overview.html#supportedoperatingsystems) and comes with support for many [programming languages](https://www.doubango.org/SDKs/anpr/docs/Architecture_overview.html#supportedprogramminglanguages) but the next sections focus on [Android](#android), [Raspberry Pi, Linux and Windows](#others). 
 
 <a name="android"></a>
 # Android #
@@ -216,28 +223,84 @@ The C++ API is defined [here](https://www.doubango.org/SDKs/anpr/docs/cpp-api.ht
 	}
 ```
 
-Again, please check the sample applications for [Android](#sample-applications-android) and [Raspberry Pi](#sample-applications-others) and [full documentation](https://www.doubango.org/SDKs/anpr/docs/) for more information.
+Again, please check the sample applications for [Android](#sample-applications-android), [Raspberry Pi, Linux and Windows](#sample-applications-others) and [full documentation](https://www.doubango.org/SDKs/anpr/docs/) for more information.
 
 <a name="others"></a>
-# Raspberry Pi (Raspbian OS) and others #
+# Raspberry Pi (Raspbian OS), Linux, Windows and others #
 
 <a name="sample-applications-others"></a>
 ## Sample applications (Raspberry Pi) ##
-The source code comes with #2 [C++ sample applications](samples/c++): [Benchmark](#sample-application-benchmark-others) and [Recognizer](#sample-application-recognizer-others). These sample applications can be used on all supported platforms: **Android**, **Windows**, **Raspberry pi**, **iOS**, **OSX**, **Linux**...
+The source code comes with #2 [C++ sample applications](samples/c++): [Benchmark](#sample-application-benchmark-others) and [Recognizer](#sample-application-recognizer-others). These sample applications can be used on all supported platforms: **Android**, **Windows**, **Raspberry Pi**, **iOS**, **OSX**, **Linux**...
 
 <a name="sample-application-benchmark-others"></a>
-### Benchmark (Raspberry Pi) ###
+### Benchmark (Raspberry Pi, Linux, Windows and others) ###
 This application is used to check everything is ok and running as fast as expected. 
-The information about the maximum frame rate (**47fps** on Snapdragon 855 devices and **12fps** on Raspberry Pi 4) could be checked using this application. 
+The information about the maximum frame rate (**105fps** on GTX 1070, **47fps** on Snapdragon 855 and **12fps** on Raspberry Pi 4) could be checked using this application. 
 It's open source and doesn't require registration or license key.
 
 For more information on how to build and run this sample please check [samples/c++/benchmark](samples/c++/benchmark/README.md).
 
 <a name="sample-application-recognizer-others"></a>
-### Recognizer (Raspberry Pi) ###
+### Recognizer (Raspberry Pi, Linux, Windows and others) ###
 This is a command line application used to detect and recognize a license plate from any JPEG/PNG/BMP image.
 
 For more information on how to build and run this sample please check [samples/c++/recognizer](samples/c++/recognizer/README.md).
+
+<a name="using-the-cpp-api-others"></a>
+## Using the C++ API ##
+The C++ API is defined at https://www.doubango.org/SDKs/anpr/docs/cpp-api.html.
+
+```cpp
+	#include <ultimateALPR-SDK-API-PUBLIC.h> // Include the API header file
+
+	// JSON configuration string
+	// More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html
+	static const char* __jsonConfig =
+	"{"
+	"\"debug_level\": \"info\","
+	"\"debug_write_input_image_enabled\": false,"
+	"\"debug_internal_data_path\": \".\","
+	""
+	"\"num_threads\": -1,"
+	"\"gpgpu_enabled\": true,"
+	""
+	"\"detect_roi\": [0, 0, 0, 0],"
+	"\"detect_minscore\": 0.1,"
+	""
+	"\"pyramidal_search_enabled\": true,"
+	"\"pyramidal_search_sensitivity\": 0.28,"
+	"\"pyramidal_search_minscore\": 0.3,"
+	"\"pyramidal_search_min_image_size_inpixels\": 800,"
+	""
+	"\"recogn_minscore\": 0.3,"
+	"\"recogn_score_type\": \"min\""
+	"}";
+
+	// Local variable
+	UltAlprSdkResult result;
+
+	// Initialize the engine (should be done once)
+	ULTALPR_SDK_ASSERT((result = UltAlprSdkEngine::init(
+		__jsonConfig
+	)).isOK());
+
+	// Processing (detection + recognition)
+	// Call this function for every video frame
+	const void* imageData = nullptr;
+	ULTALPR_SDK_ASSERT((result = UltAlprSdkEngine::process(
+			ULTMICR_SDK_IMAGE_TYPE_RGB24,
+			imageData,
+			imageWidth,
+			imageHeight
+		)).isOK());
+
+	// DeInit
+	// Call this function before exiting the app to free the allocate resources
+	// You must not call process() after calling this function
+	ULTALPR_SDK_ASSERT((result = UltAlprSdkEngine::deInit()).isOK());
+```
+
+Again, please check the [sample applications](#Sample-applications) for more information on how to use the API.
 
 <a name="technical-questions"></a>
  # Technical questions #

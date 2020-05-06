@@ -1,4 +1,4 @@
-/* Copyright (C) 2011-2019 Doubango Telecom <https://www.doubango.org>
+/* Copyright (C) 2011-2020 Doubango Telecom <https://www.doubango.org>
 * File author: Mamadou DIOP (Doubango Telecom, France).
 * License: For non commercial use only.
 * Source code: https://github.com/DoubangoTelecom/ultimateALPR-SDK
@@ -6,14 +6,14 @@
 */
 
 /*
-	https://github.com/DoubangoTelecom/ultimateALPR/blob/master/SDK_dist/samples/c++/licenser/README.md
+	https://github.com/DoubangoTelecom/ultimateALPR/blob/master/SDK_dist/samples/c++/runtimeKey/README.md
 	Usage: 
-		licenser \
+		runtimeKey \
 			[--json <json-output:bool>] \
 			[--assets <path-to-assets-folder>]
 
 	Example:
-		licenser \
+		runtimeKey \
 			--json false \
 			--assets C:/Projects/GitHub/ultimate/ultimateMRZ/SDK_dist/assets
 		
@@ -83,7 +83,7 @@ static void printUsage(const std::string& message /*= ""*/)
 
 	ULTALPR_SDK_PRINT_INFO(
 		"\n********************************************************************************\n"
-		"licenser\n"
+		"runtimeKey\n"
 		"\t[--json <json-output:bool>] \n"
 		"\n"
 		"Options surrounded with [] are optional.\n"

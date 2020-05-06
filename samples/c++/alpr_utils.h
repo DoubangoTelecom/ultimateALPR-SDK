@@ -1,4 +1,4 @@
-#if !defined(_ULTIMATE_ALPR_SDK_SAMPLES_UTILS_H_)
+﻿#if !defined(_ULTIMATE_ALPR_SDK_SAMPLES_UTILS_H_)
 #define _ULTIMATE_ALPR_SDK_SAMPLES_UTILS_H_
 
 #include <ultimateALPR-SDK-API-PUBLIC.h>
@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <map>
 #include <sys/stat.h>
+#include <codecvt>
 
 // Not part of the SDK, used to decode images -> https://github.com/nothings/stb
 #define STB_IMAGE_IMPLEMENTATION

@@ -1,0 +1,3 @@
+There is 1 C# sample (more will be added): [Recognizer](recognizer). Check [here](recognizer/README.md) on how to build.
+
+The C# samples are common to all platforms: **Android**, **Windows**, **iOS**, **Raspberry Pi (3 or 4)**, **Linux**...

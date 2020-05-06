@@ -35,12 +35,20 @@ public class UltAlprSdkResult {
     }
   }
 
-  public UltAlprSdkResult(int code, String phrase, String json, long numPlates) {
-    this(ultimateAlprSdkJNI.new_UltAlprSdkResult__SWIG_0(code, phrase, json, numPlates), true);
+  public UltAlprSdkResult() {
+    this(ultimateAlprSdkJNI.new_UltAlprSdkResult__SWIG_0(), true);
+  }
+
+  public UltAlprSdkResult(int code, String phrase, String json, long numZones) {
+    this(ultimateAlprSdkJNI.new_UltAlprSdkResult__SWIG_1(code, phrase, json, numZones), true);
   }
 
   public UltAlprSdkResult(int code, String phrase, String json) {
-    this(ultimateAlprSdkJNI.new_UltAlprSdkResult__SWIG_1(code, phrase, json), true);
+    this(ultimateAlprSdkJNI.new_UltAlprSdkResult__SWIG_2(code, phrase, json), true);
+  }
+
+  public UltAlprSdkResult(UltAlprSdkResult other) {
+    this(ultimateAlprSdkJNI.new_UltAlprSdkResult__SWIG_3(UltAlprSdkResult.getCPtr(other), other), true);
   }
 
   public int code() {

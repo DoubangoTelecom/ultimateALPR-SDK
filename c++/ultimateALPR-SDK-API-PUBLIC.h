@@ -14,8 +14,8 @@ ultimateALPR SDK public header
 #include <string>
 
 #define ULTALPR_SDK_VERSION_MAJOR		2
-#define ULTALPR_SDK_VERSION_MINOR		4
-#define ULTALPR_SDK_VERSION_MICRO		2
+#define ULTALPR_SDK_VERSION_MINOR		7
+#define ULTALPR_SDK_VERSION_MICRO		0
 
 // Windows's symbols export
 #if defined(SWIG)
@@ -145,29 +145,35 @@ namespace ultimateAlprSdk
 		* Available since: 2.0.0
 		*/
 		ULTALPR_SDK_IMAGE_TYPE_YUV444P,
+
+		/*! Grayscale image with single channel (luminance only). Each pixel is stored in single byte (8 bit Y samples).
+		*
+		* Available since: 2.6.2
+		*/
+		ULTALPR_SDK_IMAGE_TYPE_Y,
 	};
 
 	/*! Result returned by the \ref UltAlprSdkEngine "engine" at initialization, deInitialization and processing stages.
 	*/
-	class UltAlprSdkResult {
+	class ULTIMATE_ALPR_SDK_PUBLIC_API UltAlprSdkResult {
 	public:
+		UltAlprSdkResult();
+		UltAlprSdkResult(const int code, const char* phrase, const char* json, const size_t numZones = 0);
+		UltAlprSdkResult(const UltAlprSdkResult& other);
+		virtual ~UltAlprSdkResult();
 #if !defined(SWIG)
-		UltAlprSdkResult() = delete;
-#endif /* SWIG */
-		UltAlprSdkResult(const int code, const char* phrase, const char* json, const size_t numPlates = 0)
-		: code_(code), phrase_(phrase), json_(json), numPlates_(numPlates) {}
-		
-		virtual ~UltAlprSdkResult() {}
+		UltAlprSdkResult& operator=(const UltAlprSdkResult& other) { return operatorAssign(other); }
+#endif
 
 		/*! The result code. 0 if success, nonzero otherwise.
 		*/
 		inline int code()const { return code_; }
 		/*! Short description for the \ref code.
 		*/
-		inline const char* phrase()const { return phrase_.c_str(); }
+		inline const char* phrase()const { return phrase_; }
 		/*! The license plates as JSON content string. May be null if no plate found.
 		*/
-		inline const char* json()const { return json_.c_str(); }
+		inline const char* json()const { return json_; }
 		/*! Number of license plates in \ref json string. This is a helper function to quickly check whether the result contains license plates
 			without parsing the \ref json string.
 		*/
@@ -179,10 +185,17 @@ namespace ultimateAlprSdk
 		static UltAlprSdkResult bodyless(const int code, const char* phrase) { return UltAlprSdkResult(code, phrase, ""); }
 		static UltAlprSdkResult bodylessOK() { return UltAlprSdkResult(0, "OK", ""); }
 #endif /* SWIG */
+
+	private:
+		void ctor(const int code, const char* phrase, const char* json, const size_t numZones);
+#if !defined(SWIG)
+		UltAlprSdkResult& operatorAssign(const UltAlprSdkResult& other);
+#endif /* SWIG */
+
 	private:
 		int code_;
-		std::string phrase_;
-		std::string json_;
+		char* phrase_;
+		char* json_;
 		size_t numPlates_;
 	};
 

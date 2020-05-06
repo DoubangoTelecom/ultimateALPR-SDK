@@ -1,3 +1,5 @@
+- [GPGPU acceleration](#gpu-acceleration)
+- [Pre-built binaries](#prebuilt)
 - [Building](#building)
   - [Windows](#building-windows)
   - [Generic GCC](#building-generic-gcc)
@@ -15,6 +17,21 @@ our cloud-based solution at [https://www.doubango.org/webapps/alpr/](https://www
 
 This sample is open source and doesn't require registration or license key.
 
+<a name="gpu-acceleration"></a>
+# GPGPU acceleration #
+By default GPGPU acceleration is disabled. Check [here](../README.md#gpu-acceleration) for more information on how to enable.
+
+<a name="prebuilt"></a>
+# Pre-built binaries #
+
+If you don't want to build this sample by yourself then, use the pre-built versions:
+ - Windows: [recognizer.exe](../../../binaries/windows/x86_64/recognizer.exe) under [binaries/windows/x86_64](../../../binaries/windows/x86_64)
+ - Linux: [recognizer](../../../binaries/linux/x86_64/recognizer) under [binaries/linux/x86_64](../../../binaries/linux/x86_64). Built on Ubuntu 18. **You'll need to download libtensorflow.so as explained [here](../README.md#gpu-acceleration-tensorflow-linux)**.
+ - Raspberry Pi: [recognizer](../../../binaries/raspbian/armv7l/recognizer) under [binaries/raspbian/armv7l](../../../binaries/raspbian/armv7l)
+ - Android: check [android](../../android) folder
+ 
+On **Windows**, the easiest way to try this sample is to navigate to [binaries/windows/x86_64](../../../binaries/windows/x86_64/) and run [binaries/windows/x86_64/recognizer.bat](../../../binaries/windows/x86_64/recognizer.bat). You can edit these files to use your own images and configuration options.
+
 <a name="building"></a>
 # Building #
 
@@ -22,7 +39,13 @@ This sample contains [a single C++ source file](recognizer.cxx) and is easy to b
 
 <a name="building-windows"></a>
 ## Windows ##
-You'll need Visual Studio and the project is at [recognizer.vcxproj](recognizer.vcxproj).
+You'll need Visual Studio to build the code. The VS project is at [recognizer.vcxproj](recognizer.vcxproj). Open it.
+ 1. You will need to change the **"Command Arguments"** like the [below image](../../../VC++_config.jpg). Default value: `--image $(ProjectDir)..\..\..\assets\images\lic_us_1280x720.jpg --charset latin --assets $(ProjectDir)..\..\..\assets`
+ 2. You will need to change the **"Environment"** variable like the [below image](../../../VC++_config.jpg). Default value: `PATH=$(VCRedistPaths)%PATH%;$(ProjectDir)..\..\..\binaries\windows\x86_64`
+ 
+![VC++ config](../../../VCpp_config.jpg)
+ 
+You're now ready to build and run the sample.
 
 <a name="building-generic-gcc"></a>
 ## Generic GCC ##
@@ -32,13 +55,13 @@ cd ultimateALPR-SDK/samples/c++/recognizer
 
 g++ recognizer.cxx -O3 -I../../../c++ -L../../../binaries/<yourOS>/<yourArch> -lultimate_alpr-sdk -o recognizer
 ```
-- You've to change `yourOS` and  `yourArch` with the correct values. For example, on Android ARM64 they would be equal to `android` and `jniLibs/arm64-v8a` respectively.
-- If you're cross compiling then, you'll have to change `g++` with the correct triplet. For example, on Android ARM64 the triplet would be equal to `aarch64-linux-android-g++`.
+- You've to change `yourOS` and  `yourArch` with the correct values. For example, on **Linux x86_64** they would be equal to `linux` and `x86_64` respectively.
+- If you're cross compiling then, you'll have to change `g++` with the correct triplet. For example, on Linux host for Android ARM64 target the triplet would be equal to `aarch64-linux-android-g++`.
 
 <a name="building-rpi"></a>
 ## Raspberry Pi (Raspbian OS) ##
 
-To build the sample for Raspberry Pi you can either do it on the device itself or cross compile it on [Windows](#cross-compilation-rpi-install-windows), [Linux](#cross-compilation-rpi-install-ubunt) or OSX machines. 
+To build the sample for Raspberry Pi you can either do it on the device itself or cross compile it on [Windows](../#cross-compilation-rpi-install-windows), [Linux](../#cross-compilation-rpi-install-ubuntu) or OSX machines. 
 For more information on how to install the toolchain for cross compilation please check [here](../README.md#cross-compilation-rpi).
 
 ```
@@ -63,14 +86,16 @@ recognizer \
       [--assets <path-to-assets-folder>] \
       [--parallel <whether-to-enable-parallel-mode:true/false>] \
       [--rectify <whether-to-enable-rectification-layer:true/false>] \
+      [--charset <recognition-charset:latin/korean/chinese>] \
       [--tokenfile <path-to-license-token-file>] \
       [--tokendata <base64-license-token-data>]
 ```
 Options surrounded with **[]** are optional.
 - `--image` Path to the image(JPEG/PNG/BMP) to process. You can use default image at [../../../assets/images/lic_us_1280x720.jpg](../../../assets/images/lic_us_1280x720.jpg).
 - `--assets` Path to the [assets](../../../assets) folder containing the configuration files and models. Default value is the current folder.
+- `--charset` Defines the recognition charset (a.k.a alphabet) value (latin, korean, chinese...). Default: *latin*.
 - `--parallel` Whether to enabled the parallel mode. More info about the parallel mode at [https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html). Default: *false*.
-- `--rectify` Whether to enable the rectification layer. More info about the rectification layer at [https://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html](https://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html). Default: *false*.
+- `--rectify` Whether to enable the rectification layer. More info about the rectification layer at [https://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html](https://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html). Always enabled on x86_64 CPUs. Default: *false*.
 - `--tokenfile` Path to the file containing the base64 license token if you have one. If not provided then, the application will act like a trial version. Default: *null*.
 - `--tokendata` Base64 license token if you have one. If not provided then, the application will act like a trial version. Default: *null*.
 
@@ -82,16 +107,25 @@ For example, on **Raspberry Pi** you may call the recognizer application using t
 LD_LIBRARY_PATH=../../../binaries/raspbian/armv7l:$LD_LIBRARY_PATH ./recognizer \
     --image ../../../assets/images/lic_us_1280x720.jpg \
     --assets ../../../assets \
+    --charset latin \
     --parallel false \
     --rectify false
 ```
-On Android ARM64 you may use the next command:
+On **Linux x86_64**, you may use the next command:
 ```
-LD_LIBRARY_PATH=../../../binaries/android/jniLibs/arm64-v8a:$LD_LIBRARY_PATH ./recognizer \
+LD_LIBRARY_PATH=../../../binaries/linux/x86_64:$LD_LIBRARY_PATH ./recognizer \
     --image ../../../assets/images/lic_us_1280x720.jpg \
     --assets ../../../assets \
-    --parallel false \
-    --rectify false
+    --charset latin \
+    --parallel false
+```
+On **Windows x86_64**, you may use the next command:
+```
+recognizer.exe ^
+    --image ../../../assets/images/lic_us_1280x720.jpg ^
+    --assets ../../../assets ^
+    --charset latin ^
+    --parallel false
 ```
 
 Please note that if you're cross compiling the application then you've to make sure to copy the application and both the [assets](../../../assets) and [binaries](../../../binaries) folders to the target device.

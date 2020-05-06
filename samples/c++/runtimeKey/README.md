@@ -1,3 +1,5 @@
+- [GPGPU acceleration](#gpu-acceleration)
+- [Pre-built binaries](#prebuilt)
 - [Building](#building)
   - [Windows](#building-windows)
   - [Generic GCC](#building-generic-gcc)
@@ -10,6 +12,19 @@
 This application is used as reference code for developers to show how to use the [C++ API](https://www.doubango.org/SDKs/anpr/docs/cpp-api.html) to
 generate a runtime key. Once a runtime key is generated it must be [activated to produce a token](https://www.doubango.org/SDKs/LicenseManager/docs/Activation_use_cases.html).
 
+<a name="gpu-acceleration"></a>
+# GPGPU acceleration #
+By default GPGPU acceleration is disabled. Check [here](../README.md#gpu-acceleration) for more information on how to enable.
+
+<a name="prebuilt"></a>
+# Pre-built binaries #
+
+If you don't want to build this sample by yourself then, use the pre-built versions:
+ - Windows: [runtimeKey.exe](../../../binaries/windows/x86_64/runtimeKey.exe) under [binaries/windows/x86_64](../../../binaries/windows/x86_64)
+ - Linux: [runtimeKey](../../../binaries/linux/x86_64/runtimeKey) under [binaries/linux/x86_64](../../../binaries/linux/x86_64). Built on Ubuntu 18. **You'll need to download libtensorflow.so as explained [here](../README.md#gpu-acceleration-tensorflow-linux)**.
+ - Raspberry Pi: [runtimeKey](../../../binaries/raspbian/armv7l/runtimeKey) under [binaries/raspbian/armv7l](../../../binaries/raspbian/armv7l)
+ - Android: check [android](../../android) folder
+
 <a name="building"></a>
 # Building #
 
@@ -17,7 +32,13 @@ This sample contains [a single C++ source file](runtimeKey.cxx) and is easy to b
 
 <a name="building-windows"></a>
 ## Windows ##
-You'll need Visual Studio and the project is at [runtimeKey.vcxproj](runtimeKey.vcxproj).
+You'll need Visual Studio to build the code. The VS project is at [runtimeKey.vcxproj](runtimeKey.vcxproj). Open it.
+ 1. You will need to change the **"Command Arguments"** like the [below image](../../../VC++_config.jpg). Default value: `--assets $(ProjectDir)..\..\..\assets`
+ 2. You will need to change the **"Environment"** variable like the [below image](../../../VC++_config.jpg). Default value: `PATH=$(VCRedistPaths)%PATH%;$(ProjectDir)..\..\..\binaries\windows\x86_64`
+ 
+![VC++ config](../../../VCpp_config.jpg)
+ 
+You're now ready to build and run the sample.
 
 <a name="building-generic-gcc"></a>
 ## Generic GCC ##
@@ -27,13 +48,13 @@ cd ultimateALPR-SDK/samples/c++/runtimeKey
 
 g++ runtimeKey.cxx -O3 -I../../../c++ -L../../../binaries/<yourOS>/<yourArch> -lultimate_alpr-sdk -o runtimeKey
 ```
-- You've to change `yourOS` and  `yourArch` with the correct values. For example, on Android ARM64 they would be equal to `android` and `jniLibs/arm64-v8a` respectively.
-- If you're cross compiling then, you'll have to change `g++` with the correct triplet. For example, on Android ARM64 the triplet would be equal to `aarch64-linux-android-g++`.
+- You've to change `yourOS` and  `yourArch` with the correct values. For example, on **Linux x86_64** they would be equal to `linux` and `x86_64` respectively.
+- If you're cross compiling then, you'll have to change `g++` with the correct triplet. For example, on Linux host for Android ARM64 target the triplet would be equal to `aarch64-linux-android-g++`.
 
 <a name="building-rpi"></a>
 ## Raspberry Pi (Raspbian OS) ##
 
-To build the sample for Raspberry Pi you can either do it on the device itself or cross compile it on [Windows](#cross-compilation-rpi-install-windows), [Linux](#cross-compilation-rpi-install-ubunt) or OSX machines. 
+To build the sample for Raspberry Pi you can either do it on the device itself or cross compile it on [Windows](../#cross-compilation-rpi-install-windows), [Linux](../#cross-compilation-rpi-install-ubuntu) or OSX machines. 
 For more information on how to install the toolchain for cross compilation please check [here](../README.md#cross-compilation-rpi).
 
 ```
@@ -67,13 +88,19 @@ Options surrounded with **[]** are optional.
 For example, on **Raspberry Pi** you may call the runtimeKey application using the following command:
 ```
 LD_LIBRARY_PATH=../../../binaries/raspbian/armv7l:$LD_LIBRARY_PATH ./runtimeKey \
-    --json false \
+    --json true \
     --assets ../../../assets
 ```
-On Android ARM64 you may use the next command:
+On **Linux x86_64** you may use the next command:
 ```
-LD_LIBRARY_PATH=../../../binaries/android/jniLibs/arm64-v8a:$LD_LIBRARY_PATH ./runtimeKey \
-    --json false \
+LD_LIBRARY_PATH=../../../binaries/linux/x86_64:$LD_LIBRARY_PATH ./runtimeKey \
+    --json true \
+    --assets ../../../assets
+```
+On **Windows x86_64**, you may use the next command:
+```
+runtimeKey.exe ^
+    --json true ^
     --assets ../../../assets
 ```
 

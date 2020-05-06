@@ -41,10 +41,17 @@ public class UltAlprSdkResult : IDisposable {
     }
   }
 
-  public UltAlprSdkResult(int code, string phrase, string json, uint numPlates) : this(ultimateAlprSdkPINVOKE.new_UltAlprSdkResult__SWIG_0(code, phrase, json, numPlates), true) {
+  public UltAlprSdkResult() : this(ultimateAlprSdkPINVOKE.new_UltAlprSdkResult__SWIG_0(), true) {
   }
 
-  public UltAlprSdkResult(int code, string phrase, string json) : this(ultimateAlprSdkPINVOKE.new_UltAlprSdkResult__SWIG_1(code, phrase, json), true) {
+  public UltAlprSdkResult(int code, string phrase, string json, uint numZones) : this(ultimateAlprSdkPINVOKE.new_UltAlprSdkResult__SWIG_1(code, phrase, json, numZones), true) {
+  }
+
+  public UltAlprSdkResult(int code, string phrase, string json) : this(ultimateAlprSdkPINVOKE.new_UltAlprSdkResult__SWIG_2(code, phrase, json), true) {
+  }
+
+  public UltAlprSdkResult(UltAlprSdkResult other) : this(ultimateAlprSdkPINVOKE.new_UltAlprSdkResult__SWIG_3(UltAlprSdkResult.getCPtr(other)), true) {
+    if (ultimateAlprSdkPINVOKE.SWIGPendingException.Pending) throw ultimateAlprSdkPINVOKE.SWIGPendingException.Retrieve();
   }
 
   public int code() {

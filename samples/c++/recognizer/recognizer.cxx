@@ -1,4 +1,4 @@
-/* Copyright (C) 2011-2019 Doubango Telecom <https://www.doubango.org>
+/* Copyright (C) 2011-2020 Doubango Telecom <https://www.doubango.org>
 * File author: Mamadou DIOP (Doubango Telecom, France).
 * License: For non commercial use only.
 * Source code: https://github.com/DoubangoTelecom/ultimateALPR-SDK
@@ -13,6 +13,7 @@
 			[--parallel <whether-to-enable-parallel-mode:true/false>] \
 			[--rectify <whether-to-enable-rectification-layer:true/false>] \
 			[--assets <path-to-assets-folder>] \
+			[--charset <recognition-charset:latin/korean/chinese>] \
 			[--tokenfile <path-to-license-token-file>] \
 			[--tokendata <base64-license-token-data>]
 
@@ -22,14 +23,18 @@
 			--parallel true \
 			--rectify false \
 			--assets C:/Projects/GitHub/ultimate/ultimateALPR/SDK_dist/assets \
+			--charset latin \
 			--tokenfile C:/Projects/GitHub/ultimate/ultimateALPR/SDK_dev/tokens/windows-iMac.lic
 		
 */
 
 #include <ultimateALPR-SDK-API-PUBLIC.h>
 #include "../alpr_utils.h"
+
+#include <iostream> // std::cout
 #if defined(_WIN32)
-#include <algorithm> // std::replace
+#	include <Windows.h> // SetConsoleOutputCP
+#	include <algorithm> // std::replace
 #endif
 
 using namespace ultimateAlprSdk;
@@ -49,7 +54,7 @@ static const char* __jsonConfig =
 ""
 "\"pyramidal_search_enabled\": true,"
 "\"pyramidal_search_sensitivity\": 0.28,"
-"\"pyramidal_search_minscore\": 0.5,"
+"\"pyramidal_search_minscore\": 0.3,"
 "\"pyramidal_search_min_image_size_inpixels\": 800,"
 ""
 "\"recogn_minscore\": 0.3,"
@@ -63,11 +68,14 @@ static const char* __jsonConfig =
 #	define ASSET_MGR_PARAM() 
 #endif /* ULTALPR_SDK_OS_ANDROID */
 
+
 /*
 * Parallel callback function used for notification. Not mandatory.
 * More info about parallel delivery: https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html
 */
 class MyUltAlprSdkParallelDeliveryCallback : public UltAlprSdkParallelDeliveryCallback {
+public:
+	MyUltAlprSdkParallelDeliveryCallback(const std::string& charset) : m_strCharset(charset) {}
 	virtual void onNewResult(const UltAlprSdkResult* result) const override {
 		static size_t numParallelDeliveryResults = 0;
 		ULTALPR_SDK_ASSERT(result != nullptr);
@@ -79,6 +87,8 @@ class MyUltAlprSdkParallelDeliveryCallback : public UltAlprSdkParallelDeliveryCa
 			!json.empty() ? json.c_str() : "{}"
 		);
 	}
+private:
+	std::string m_strCharset;
 };
 
 static void printUsage(const std::string& message = "");
@@ -88,12 +98,17 @@ static void printUsage(const std::string& message = "");
 */
 int main(int argc, char *argv[])
 {
+	// Activate UT8 display
+#if defined(_WIN32)
+	SetConsoleOutputCP(CP_UTF8);
+#endif
+
 	// local variables
-	UltAlprSdkResult result(0, "OK", "{}");
-	MyUltAlprSdkParallelDeliveryCallback parallelDeliveryCallbackCallback;
+	UltAlprSdkResult result;
 	std::string assetsFolder, licenseTokenData, licenseTokenFile;
 	bool isParallelDeliveryEnabled = false; // Single image -> no need for parallel processing
 	bool isRectificationEnabled = false;
+	std::string charset = "latin";
 	std::string pathFileImage;
 
 	// Parsing args
@@ -117,6 +132,9 @@ int main(int argc, char *argv[])
 		std::replace(assetsFolder.begin(), assetsFolder.end(), '\\', '/');
 #endif
 	}
+	if (args.find("--charset") != args.end()) {
+		charset = args["--charset"];
+	}
 	if (args.find("--rectify") != args.end()) {
 		isRectificationEnabled = (args["--rectify"].compare("true") == 0);
 	}	
@@ -134,6 +152,9 @@ int main(int argc, char *argv[])
 	std::string jsonConfig = __jsonConfig;
 	if (!assetsFolder.empty()) {
 		jsonConfig += std::string(",\"assets_folder\": \"") + assetsFolder + std::string("\"");
+	}
+	if (!charset.empty()) {
+		jsonConfig += std::string(",\"charset\": \"") + charset + std::string("\"");
 	}
 	jsonConfig += std::string(",\"recogn_rectify_enabled\": ") + (isRectificationEnabled ? "true" : "false");
 	if (!licenseTokenFile.empty()) {
@@ -154,6 +175,7 @@ int main(int argc, char *argv[])
 
 	// Init
 	ULTALPR_SDK_PRINT_INFO("Starting recognizer...");
+	MyUltAlprSdkParallelDeliveryCallback parallelDeliveryCallbackCallback(charset);
 	ULTALPR_SDK_ASSERT((result = UltAlprSdkEngine::init(
 		ASSET_MGR_PARAM()
 		jsonConfig.c_str(),
@@ -161,6 +183,8 @@ int main(int argc, char *argv[])
 	)).isOK());
 
 	// Recognize/Process
+	// We load the models when this function is called for the first time. This make the first inference slow.
+	// Use benchmark application to compute the average inference time: https://github.com/DoubangoTelecom/ultimateALPR-SDK/tree/master/samples/c%2B%2B/benchmark
 	ULTALPR_SDK_ASSERT((result = UltAlprSdkEngine::process(
 		fileImage.type, // If you're using data from your camera then, the type would be YUV-family instead of RGB-family. https://www.doubango.org/SDKs/anpr/docs/cpp-api.html#_CPPv4N15ultimateAlprSdk22ULTALPR_SDK_IMAGE_TYPEE
 		fileImage.uncompressedData,
@@ -170,7 +194,7 @@ int main(int argc, char *argv[])
 	ULTALPR_SDK_PRINT_INFO("Processing done.");
 
 	// Print latest result
-	if (!isParallelDeliveryEnabled) { // for parallel delivery the result will be printed by the callback function
+	if (!isParallelDeliveryEnabled && result.json()) { // for parallel delivery the result will be printed by the callback function
 		const std::string& json_ = result.json();
 		if (!json_.empty()) {
 			ULTALPR_SDK_PRINT_INFO("result: %s", json_.c_str());
@@ -210,6 +234,7 @@ static void printUsage(const std::string& message /*= ""*/)
 		"\n"
 		"--image: Path to the image(JPEG/PNG/BMP) to process. You can use default image at ../../../assets/images/lic_us_1280x720.jpg.\n\n"
 		"--assets: Path to the assets folder containing the configuration files and models. Default value is the current folder.\n\n"
+		"--charset: Defines the recognition charset (a.k.a alphabet) value (latin, korean, chinese...). Default: latin.\n\n"
 		"--parallel: Whether to enabled the parallel mode.More info about the parallel mode at https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html. Default: true.\n\n"
 		"--rectify: Whether to enable the rectification layer. More info about the rectification layer at https ://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html. Default: false.\n\n"
 		"--tokenfile: Path to the file containing the base64 license token if you have one. If not provided then, the application will act like a trial version. Default: null.\n\n"

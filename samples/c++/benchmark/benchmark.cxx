@@ -1,4 +1,4 @@
-/* Copyright (C) 2011-2019 Doubango Telecom <https://www.doubango.org>
+/* Copyright (C) 2011-2020 Doubango Telecom <https://www.doubango.org>
 * File author: Mamadou DIOP (Doubango Telecom, France).
 * License: For non commercial use only.
 * Source code: https://github.com/DoubangoTelecom/ultimateALPR-SDK
@@ -13,6 +13,7 @@
 			--positive <path-to-image-with-a-plate> \
 			--negative <path-to-image-without-a-plate> \
 			[--assets <path-to-assets-folder>] \
+			[--charset <recognition-charset:latin/korean/chinese>] \
 			[--loops <number-of-times-to-run-the-loop:[1, inf]>] \
 			[--rate <positive-rate:[0.0, 1.0]>] \
 			[--parallel <whether-to-enable-parallel-mode:true/false>] \
@@ -29,6 +30,7 @@
 			--parallel true \
 			--rectify false \
 			--assets C:/Projects/GitHub/ultimate/ultimateALPR/SDK_dist/assets \
+			--charset latin \
 			--tokenfile C:/Projects/GitHub/ultimate/ultimateALPR/SDK_dev/tokens/windows-iMac.lic
 		
 */
@@ -60,7 +62,7 @@ static const char* __jsonConfig =
 ""
 "\"pyramidal_search_enabled\": false,"
 "\"pyramidal_search_sensitivity\": 0.28,"
-"\"pyramidal_search_minscore\": 0.5,"
+"\"pyramidal_search_minscore\": 0.8,"
 "\"pyramidal_search_min_image_size_inpixels\": 800,"
 ""
 "\"recogn_minscore\": 0.3,"
@@ -73,6 +75,9 @@ static const char* __jsonConfig =
 #else
 #	define ASSET_MGR_PARAM() 
 #endif /* ULTALPR_SDK_OS_ANDROID */
+
+// Including <Windows.h> add clashes between "std::max" and "::max"
+#define ULTAPR_MAX(a, b) (((a) > (b)) ? (a) : (b))
 
 /*
 * Parallel callback function used for notification. Not mandatory.
@@ -100,11 +105,12 @@ static void printUsage(const std::string& message = "");
 int main(int argc, char *argv[])
 {
 	// local variables
-	UltAlprSdkResult result(0, "OK", "{}");
+	UltAlprSdkResult result;
 	MyUltAlprSdkParallelDeliveryCallback parallelDeliveryCallbackCallback;
 	std::string assetsFolder, licenseTokenData, licenseTokenFile;
 	bool isParallelDeliveryEnabled = true;
 	bool isRectificationEnabled = false;
+	std::string charset = "latin";
 	size_t loopCount = 100;
 	double percentPositives = .2; // 20%
 	std::string pathFilePositive;
@@ -151,6 +157,9 @@ int main(int argc, char *argv[])
 		std::replace(assetsFolder.begin(), assetsFolder.end(), '\\', '/');
 #endif
 	}
+	if (args.find("--charset") != args.end()) {
+		charset = args["--charset"];
+	}
 	if (args.find("--rectify") != args.end()) {
 		isRectificationEnabled = (args["--rectify"].compare("true") == 0);
 	}
@@ -169,6 +178,9 @@ int main(int argc, char *argv[])
 	std::string jsonConfig = __jsonConfig;
 	if (!assetsFolder.empty()) {
 		jsonConfig += std::string(",\"assets_folder\": \"") + assetsFolder + std::string("\"");
+	}
+	if (!charset.empty()) {
+		jsonConfig += std::string(",\"charset\": \"") + charset + std::string("\"");
 	}
 	jsonConfig += std::string(",\"recogn_rectify_enabled\": ") + (isRectificationEnabled ? "true" : "false");
 	if (!licenseTokenFile.empty()) {
@@ -196,7 +208,8 @@ int main(int argc, char *argv[])
 
 	// Create image indices
 	std::vector<size_t> indices(loopCount, 0);
-	const int numPositives = (int)std::max(loopCount * percentPositives, 1.);
+
+	const int numPositives = static_cast<int>(ULTAPR_MAX(loopCount * percentPositives, 1.));
 	for (int i = 0; i < numPositives; ++i) {
 		indices[i] = 1; // positive index
 	}
@@ -283,6 +296,7 @@ static void printUsage(const std::string& message /*= ""*/)
 		"--positive: Path to an image(JPEG/PNG/BMP) with a license plate.This image will be used to evaluate the recognizer. You can use default image at ../../../assets/images/lic_us_1280x720.jpg.\n\n"
 		"--negative: Path to an image(JPEG/PNG/BMP) without a license plate.This image will be used to evaluate the decoder. You can use default image at ../../../assets/images/london_traffic.jpg.\n\n"
 		"--assets: Path to the assets folder containing the configuration files and models.Default value is the current folder.\n\n"
+		"--charset: Defines the recognition charset value (latin, korean, chinese...). Default: latin.\n\n"
 		"--loops: Number of times to run the processing pipeline.\n\n"
 		"--rate: Percentage value within[0.0, 1.0] defining the positive rate. The positive rate defines the percentage of images with a plate.\n\n"
 		"--parallel: Whether to enabled the parallel mode. More info about the parallel mode at https ://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html. Default: true.\n\n"

@@ -14,8 +14,10 @@ public class ultimateAlprSdkJNI {
     System.loadLibrary("ultimateALPR_SDK");
   }
 
-  public final static native long new_UltAlprSdkResult__SWIG_0(int jarg1, String jarg2, String jarg3, long jarg4);
-  public final static native long new_UltAlprSdkResult__SWIG_1(int jarg1, String jarg2, String jarg3);
+  public final static native long new_UltAlprSdkResult__SWIG_0();
+  public final static native long new_UltAlprSdkResult__SWIG_1(int jarg1, String jarg2, String jarg3, long jarg4);
+  public final static native long new_UltAlprSdkResult__SWIG_2(int jarg1, String jarg2, String jarg3);
+  public final static native long new_UltAlprSdkResult__SWIG_3(long jarg1, UltAlprSdkResult jarg1_);
   public final static native void delete_UltAlprSdkResult(long jarg1);
   public final static native int UltAlprSdkResult_code(long jarg1, UltAlprSdkResult jarg1_);
   public final static native String UltAlprSdkResult_phrase(long jarg1, UltAlprSdkResult jarg1_);

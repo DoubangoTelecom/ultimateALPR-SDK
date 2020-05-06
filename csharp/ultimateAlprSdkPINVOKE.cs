@@ -199,10 +199,16 @@ class ultimateAlprSdkPINVOKE {
   public static extern int ULTALPR_SDK_VERSION_MICRO_get();
 
   [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_new_UltAlprSdkResult__SWIG_0")]
-  public static extern IntPtr new_UltAlprSdkResult__SWIG_0(int jarg1, string jarg2, string jarg3, uint jarg4);
+  public static extern IntPtr new_UltAlprSdkResult__SWIG_0();
 
   [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_new_UltAlprSdkResult__SWIG_1")]
-  public static extern IntPtr new_UltAlprSdkResult__SWIG_1(int jarg1, string jarg2, string jarg3);
+  public static extern IntPtr new_UltAlprSdkResult__SWIG_1(int jarg1, string jarg2, string jarg3, uint jarg4);
+
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_new_UltAlprSdkResult__SWIG_2")]
+  public static extern IntPtr new_UltAlprSdkResult__SWIG_2(int jarg1, string jarg2, string jarg3);
+
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_new_UltAlprSdkResult__SWIG_3")]
+  public static extern IntPtr new_UltAlprSdkResult__SWIG_3(HandleRef jarg1);
 
   [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_delete_UltAlprSdkResult")]
   public static extern void delete_UltAlprSdkResult(HandleRef jarg1);
