@@ -72,7 +72,7 @@ static bool alprDecodeFile(const std::string& path, AlprFile& alprFile)
 	int width, height, channels;
 	stbi_uc* uncompressedData = stbi_load_from_file(file, &width, &height, &channels, 0);
 	fclose(file);
-	if (!uncompressedData || width <= 0 || height <= 0 || (channels != 3 && channels != 4)) {
+	if (!uncompressedData || width <= 0 || height <= 0 || (channels != 1 && channels != 3 && channels != 4)) {
 		ULTALPR_SDK_PRINT_ERROR("Invalid file(%s, %d, %d, %d)", path.c_str(), width, height, channels);
 		if (uncompressedData) {
 			free(uncompressedData);
@@ -84,7 +84,7 @@ static bool alprDecodeFile(const std::string& path, AlprFile& alprFile)
 	// If you're using data from your camera then, it should be YUV-family and you don't need
 	// to convert to RGB-family.
 	// List of supported types: https://www.doubango.org/SDKs/anpr/docs/cpp-api.html#_CPPv4N15ultimateAlprSdk22ULTALPR_SDK_IMAGE_TYPEE
-	alprFile.type = (channels == 3) ? ULTALPR_SDK_IMAGE_TYPE_RGB24 : ULTALPR_SDK_IMAGE_TYPE_RGBA32;
+	alprFile.type = (channels == 3) ? ULTALPR_SDK_IMAGE_TYPE_RGB24 : (channels == 1 ? ULTALPR_SDK_IMAGE_TYPE_Y : ULTALPR_SDK_IMAGE_TYPE_RGBA32);
 	alprFile.uncompressedData = uncompressedData;
 	alprFile.width = static_cast<size_t>(width);
 	alprFile.height = static_cast<size_t>(height);
