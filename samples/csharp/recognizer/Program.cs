@@ -249,20 +249,38 @@ namespace recognizer
                 throw new System.IO.FileNotFoundException("File not found:" + file);
             }
             Bitmap image = new Bitmap(file);
+            int bytesPerPixel = Image.GetPixelFormatSize(image.PixelFormat) >> 3;
+            if (bytesPerPixel != 1 && bytesPerPixel != 3 && bytesPerPixel != 4)
+            {
+                throw new System.Exception("Invalid BPP:" + bytesPerPixel);
+            }
 
+            // Extract Exif orientation
+            const int ExifOrientationTagId = 0x112;
+            int orientation = 1;
+            if (Array.IndexOf(image.PropertyIdList, ExifOrientationTagId) > -1)
+            {
+                int orientation_ = image.GetPropertyItem(ExifOrientationTagId).Value[0];
+                if (orientation_ >= 1 && orientation_ <= 8)
+                {
+                    orientation = orientation_;
+                }
+            }
 
             // Processing: Detection + recognition
             // First inference is expected to be slow (deep learning models mapping to CPU/GPU memory)
-            BitmapData imageData = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
+            BitmapData imageData = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), ImageLockMode.ReadOnly, image.PixelFormat);
             try
             {
                 // For packed formats (RGB-family): https://www.doubango.org/SDKs/anpr/docs/cpp-api.html#_CPPv4N15ultimateAlprSdk16UltAlprSdkEngine7processEK22ULTALPR_SDK_IMAGE_TYPEPKvK6size_tK6size_tK6size_tKi
                 // For YUV formats (data from camera): https://www.doubango.org/SDKs/anpr/docs/cpp-api.html#_CPPv4N15ultimateAlprSdk16UltAlprSdkEngine7processEK22ULTALPR_SDK_IMAGE_TYPEPKvPKvPKvK6size_tK6size_tK6size_tK6size_tK6size_tK6size_tKi
                 result = CheckResult("Process", UltAlprSdkEngine.process(
-                        ULTALPR_SDK_IMAGE_TYPE.ULTALPR_SDK_IMAGE_TYPE_RGB24, // TODO(dmi): not correct. C# image decoder outputs BGR24 instead of RGB24
+                        (bytesPerPixel == 1) ? ULTALPR_SDK_IMAGE_TYPE.ULTALPR_SDK_IMAGE_TYPE_Y : (bytesPerPixel == 4 ? ULTALPR_SDK_IMAGE_TYPE.ULTALPR_SDK_IMAGE_TYPE_BGRA32 : ULTALPR_SDK_IMAGE_TYPE.ULTALPR_SDK_IMAGE_TYPE_BGR24),
                         imageData.Scan0,
-                        (uint)image.Width,
-                        (uint)image.Height
+                        (uint)imageData.Width,
+                        (uint)imageData.Height,
+                        (uint)(imageData.Stride / bytesPerPixel),
+                        orientation
                     ));
                 // Print result to console
                 Console.WriteLine("Result: {0}", result.json());

@@ -87,6 +87,7 @@ ULTALPR_SDK_IMAGE_TYPE_YVU420P = _ultimateAlprSdk.ULTALPR_SDK_IMAGE_TYPE_YVU420P
 ULTALPR_SDK_IMAGE_TYPE_YUV422P = _ultimateAlprSdk.ULTALPR_SDK_IMAGE_TYPE_YUV422P
 ULTALPR_SDK_IMAGE_TYPE_YUV444P = _ultimateAlprSdk.ULTALPR_SDK_IMAGE_TYPE_YUV444P
 ULTALPR_SDK_IMAGE_TYPE_Y = _ultimateAlprSdk.ULTALPR_SDK_IMAGE_TYPE_Y
+ULTALPR_SDK_IMAGE_TYPE_BGR24 = _ultimateAlprSdk.ULTALPR_SDK_IMAGE_TYPE_BGR24
 class UltAlprSdkResult(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, UltAlprSdkResult, name, value)
