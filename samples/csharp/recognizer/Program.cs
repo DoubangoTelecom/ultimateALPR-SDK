@@ -249,6 +249,13 @@ namespace recognizer
                 throw new System.IO.FileNotFoundException("File not found:" + file);
             }
             Bitmap image = new Bitmap(file);
+            if (Image.GetPixelFormatSize(image.PixelFormat) == 24 && ((image.Width * 3) & 3) != 0)
+            {
+                //!\\ Not DWORD aligned -> the stride will be multiple of 4-bytes instead of 3-bytes
+                // ultimateMICR requires stride to be in samples unit instead of in bytes
+                Console.Error.WriteLine(String.Format("//!\\ The image width ({0}) not a multiple of DWORD.", image.Width));
+                image = new Bitmap(image, new Size((image.Width + 3) & -4, image.Height));
+            }
             int bytesPerPixel = Image.GetPixelFormatSize(image.PixelFormat) >> 3;
             if (bytesPerPixel != 1 && bytesPerPixel != 3 && bytesPerPixel != 4)
             {
