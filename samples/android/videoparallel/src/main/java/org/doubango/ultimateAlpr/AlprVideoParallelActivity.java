@@ -108,7 +108,7 @@ public class AlprVideoParallelActivity extends AlprActivity {
 
     /**
      * Define a threshold for the detection score. Any detection with a score below that threshold will be ignored. 0.f being poor confidence and 1.f excellent confidence.
-     * JSON name: "detect_minscore",
+     * JSON name: "detect_minscore"
      * Default: 0.3f
      * type: float
      * pattern: ]0.f, 1.f]
