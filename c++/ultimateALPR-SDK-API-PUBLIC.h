@@ -14,15 +14,15 @@ ultimateALPR SDK public header
 #include <string>
 
 #define ULTALPR_SDK_VERSION_MAJOR		2
-#define ULTALPR_SDK_VERSION_MINOR		8
-#define ULTALPR_SDK_VERSION_MICRO		1
+#define ULTALPR_SDK_VERSION_MINOR		9
+#define ULTALPR_SDK_VERSION_MICRO		0
 
 // Windows's symbols export
 #if defined(SWIG)
 # 	define ULTIMATE_ALPR_SDK_PUBLIC_API
 #else
 #	if (defined(WIN32) || defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN16) || defined(_WIN64) || defined(__WIN32__) || defined(__TOS_WIN__) || defined(__WINDOWS__)) && !defined(ULTALPR_SDK_STATIC)
-#		if defined(ULTIMATE_ALPR_SDK_PUBLIC_EXPORTS)
+#		if defined (ULTIMATE_ALPR_SDK_PUBLIC_EXPORTS)
 # 			define ULTIMATE_ALPR_SDK_PUBLIC_API		__declspec(dllexport)
 #		else
 # 			define ULTIMATE_ALPR_SDK_PUBLIC_API		__declspec(dllimport)
@@ -326,4 +326,4 @@ namespace ultimateAlprSdk
 
 } // namespace ultimateAlprSdk 
 
-#endif /* _ULTIMATE_ALPR_SDK_API_PUBLIC_H_ */
+#endif // _ULTIMATE_ALPR_SDK_API_PUBLIC_H_
