@@ -23,13 +23,15 @@ By default GPGPU acceleration is disabled. Check [here](../README.md#gpu-acceler
 <a name="peformance-numbers"></a>
 # Peformance numbers #
 
+These performance numbers are obtained using **version 2.9 with models released on July 11, 2020**. You can use any version released after this date.
+
 Some performance numbers on mid-range GPU (**GTX 1070**), high-range ARM CPU (**Galaxy S10+**), low-range ARM CPU (**Raspberry Pi 4**) devices using **720p (1280x720)** images:
 
 |  | 0.0 rate | 0.2 rate | 0.5 rate | 0.7 rate | 1.0 rate |
 |-------- | --- | --- | --- | --- | --- |
 | **GTX 1070 (Ubuntu 18)** | 9516 millis <br />**105.07 fps** | 9963 millis <br/> 100.36 fps | 10701 millis <br/> 93.44 fps | 11109 millis <br/> 90.01 fps | 11704 millis <br/> 85.43 fps |
-| **i7-4790K (Windows 7)** | 4251 millis <br />**23.52 fps** | 4598 millis <br/> 21.74 fps | 4851 millis <br/> 20.61 fps | 5117 millis <br/> 19.54 fps | 5553 millis <br/> 18.00 fps |
-| **i7-4770HQ (Windows 10)** | 6040 millis <br />**16.55 fps** | 6342 millis <br/> 15.76 fps | 7065 millis <br/> 14.15 fps | 7279 millis <br/> 13.73 fps | 7965 millis <br/> 12.55 fps |
+| **i7-4790K (Windows 7)** | 3246 millis <br />**30.79 fps** | 3468 millis <br/> 28.83 fps | 4041 millis <br/> 24.74 fps | 4098 millis <br/> 24.40 fps | 4464 millis <br/> 22.39 fps |
+| **i7-4770HQ (Windows 10)** | 1329 millis <br />**23.09 fps** | 4640 millis <br/> 21.55 fps | 5409 millis <br/> 18.48 fps | 5761 millis <br/> 17.35 fps | 6242 millis <br/> 16.02 fps |
 | **Galaxy S10+ (Android)** | 21344 millis <br/> **46.85 fps** | 25815 millis <br/> 38.73 fps | 29712 millis <br/> 33.65 fps | 33352 millis <br/> 29.98 fps | 37825 millis <br/> 26.43 fps |
 | **Raspberry Pi 4 (Raspbian Buster)** | 81890 millis <br />**12.21 fps** | 89770 millis <br/> 11.13 fps | 115190 millis <br/> 8.68 fps | 122950 millis <br/> 8.13fps | 141460 millis <br/> 7.06 fps |
 
