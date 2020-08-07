@@ -9,11 +9,6 @@
 package org.doubango.ultimateAlpr.Sdk;
 
 public class ultimateAlprSdkJNI {
-
-  static {
-    System.loadLibrary("ultimateALPR_SDK");
-  }
-
   public final static native long new_UltAlprSdkResult__SWIG_0();
   public final static native long new_UltAlprSdkResult__SWIG_1(int jarg1, String jarg2, String jarg3, long jarg4);
   public final static native long new_UltAlprSdkResult__SWIG_2(int jarg1, String jarg2, String jarg3);

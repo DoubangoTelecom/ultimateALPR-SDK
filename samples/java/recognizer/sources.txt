@@ -1,0 +1,8 @@
+Recognizer.java
+../../../java/org/doubango/ultimateAlpr/Sdk/ultimateAlprSdk.java
+../../../java/org/doubango/ultimateAlpr/Sdk/ultimateAlprSdkConstants.java
+../../../java/org/doubango/ultimateAlpr/Sdk/ultimateAlprSdkJNI.java
+../../../java/org/doubango/ultimateAlpr/Sdk/ULTALPR_SDK_IMAGE_TYPE.java
+../../../java/org/doubango/ultimateAlpr/Sdk/UltAlprSdkEngine.java
+../../../java/org/doubango/ultimateAlpr/Sdk/UltAlprSdkResult.java
+../../../java/org/doubango/ultimateAlpr/Sdk/UltAlprSdkParallelDeliveryCallback.java

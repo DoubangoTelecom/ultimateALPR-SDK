@@ -14,7 +14,7 @@ ultimateALPR SDK public header
 #include <string>
 
 #define ULTALPR_SDK_VERSION_MAJOR		2
-#define ULTALPR_SDK_VERSION_MINOR		9
+#define ULTALPR_SDK_VERSION_MINOR		11
 #define ULTALPR_SDK_VERSION_MICRO		0
 
 // Windows's symbols export
@@ -220,7 +220,7 @@ namespace ultimateAlprSdk
 	public:
 		virtual ~UltAlprSdkParallelDeliveryCallback() {  }
 		/*! Notification function to override in order to receive the results. */
-		virtual void onNewResult(const UltAlprSdkResult* result) const = 0;
+		virtual void onNewResult(const UltAlprSdkResult* newResult) const = 0;
 	};
 
 	/*! The Automatic Number/License Plate Recognition (ANPR/ALPR) engine.
