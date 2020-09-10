@@ -23,7 +23,7 @@ We use [Tensorflow](https://www.tensorflow.org/) and [OpenVINO](https://docs.ope
 
 <a name="gpu-acceleration-openvino"></a>
 ## OpenVINO ##
-By default we use the "CPU" device when OpenVINO is enable. If you have an Intel GPU and want to use it, then change the device type to "GPU" (`--openvino-device="GNA"|"HETERO"|"CPU"|"MULTI"|"GPU"|"MYRIAD"|"HDDL"|"FPGA"` command). More information at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino-device.
+By default we use the "CPU" device when OpenVINO is enabled. If you have an Intel GPU and want to use it, then change the device type to "GPU" (`--openvino_device="GNA"|"HETERO"|"CPU"|"MULTI"|"GPU"|"MYRIAD"|"HDDL"|"FPGA"` command). More information at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino-device.
 
 <a name="gpu-acceleration-tensorflow"></a>
 ## Tensorflow libraries ##
