@@ -1,3 +1,5 @@
+- [Dependencies](#dependencies)
+  - [Debugging missing dependencies](#dependencies-debugging)
 - [GPGPU acceleration](#gpu-acceleration)
 - [Pre-built binaries](#prebuilt)
 - [Building](#building)
@@ -12,6 +14,16 @@
 This application is used as reference code for developers to show how to use the [C++ API](https://www.doubango.org/SDKs/anpr/docs/cpp-api.html) to
 generate a runtime key. Once a runtime key is generated it must be [activated to produce a token](https://www.doubango.org/SDKs/LicenseManager/docs/Activation_use_cases.html).
 
+<a name="dependencies"></a>
+# Dependencies #
+**The SDK is developed in C++11** and you'll need **glibc 2.27+** on *Linux* and **[Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)** (any later version is ok) on *Windows*.  **You most likely already have these dependencies on you machine** as almost every program require it.
+
+<a name="dependencies-debugging"></a>
+## Debugging missing dependencies ##
+To check if all dependencies are present:
+- **Windows x86_64:** Use [Dependency Walker](https://www.dependencywalker.com/) on [binaries/windows/x86_64/ultimateALPR-SDK.dll](../../../binaries/windows/x86_64/ultimateALPR-SDK.dll) and [binaries/windows/x86_64/ultimatePluginOpenVINO.dll](../../../binaries/windows/x86_64/ultimatePluginOpenVINO.dll) if you're planning to use [OpenVINO](https://docs.openvinotoolkit.org/).
+- **Linux x86_64:** Use `ldd <your-shared-lib>` on [binaries/linux/x86_64/libultimate_alpr-sdk.so](../../../binaries/linux/x86_64/libultimate_alpr-sdk.so) and [binaries/linux/x86_64/libultimatePluginOpenVINO.so](../../../binaries/linux/x86_64/libultimatePluginOpenVINO.so) if you're planning to use [OpenVINO](https://docs.openvinotoolkit.org/).
+
 <a name="gpu-acceleration"></a>
 # GPGPU acceleration #
 By default GPGPU acceleration is disabled. Check [here](../README.md#gpu-acceleration) for more information on how to enable.
@@ -20,8 +32,9 @@ By default GPGPU acceleration is disabled. Check [here](../README.md#gpu-acceler
 # Pre-built binaries #
 
 If you don't want to build this sample by yourself then, use the pre-built versions:
- - Windows: [runtimeKey.exe](../../../binaries/windows/x86_64/runtimeKey.exe) under [binaries/windows/x86_64](../../../binaries/windows/x86_64)
- - Linux: [runtimeKey](../../../binaries/linux/x86_64/runtimeKey) under [binaries/linux/x86_64](../../../binaries/linux/x86_64). Built on Ubuntu 18. **You'll need to download libtensorflow.so as explained [here](../README.md#gpu-acceleration-tensorflow-linux)**.
+ - Windows x86_64: [runtimeKey.exe](../../../binaries/windows/x86_64/runtimeKey.exe) under [binaries/windows/x86_64](../../../binaries/windows/x86_64)
+ - Linux x86_64: [runtimeKey](../../../binaries/linux/x86_64/runtimeKey) under [binaries/linux/x86_64](../../../binaries/linux/x86_64). Built on Ubuntu 18. **You'll need to download libtensorflow.so as explained [here](../README.md#gpu-acceleration-tensorflow-linux)**.
+ - Linux aarch64: [runtimeKey](../../../binaries/linux/aarch64/runtimeKey) under [binaries/linux/aarch64](../../../binaries/linux/aarch64).
  - Raspberry Pi: [runtimeKey](../../../binaries/raspbian/armv7l/runtimeKey) under [binaries/raspbian/armv7l](../../../binaries/raspbian/armv7l)
  - Android: check [android](../../android) folder
 
@@ -94,6 +107,12 @@ LD_LIBRARY_PATH=../../../binaries/raspbian/armv7l:$LD_LIBRARY_PATH ./runtimeKey 
 On **Linux x86_64** you may use the next command:
 ```
 LD_LIBRARY_PATH=../../../binaries/linux/x86_64:$LD_LIBRARY_PATH ./runtimeKey \
+    --json true \
+    --assets ../../../assets
+```
+On **Linux aarch64** you may use the next command:
+```
+LD_LIBRARY_PATH=../../../binaries/linux/aarch64:$LD_LIBRARY_PATH ./runtimeKey \
     --json true \
     --assets ../../../assets
 ```

@@ -20,6 +20,10 @@
  - Open source Computer Vision Library: https://github.com/DoubangoTelecom/compv
   
 <hr />
+
+**Keywords:** `License Plate Recognition (LPR)`, `License Plate Country Identification (LPCI)`, `Vehicle Color Recognition (VCR)`, `Vehicle Make Model Recognition (VMMR)`, `Vehicle Direction Tracking (VDT)` and `Vehicle Speed Estimation (VSE)`
+
+<hr />
   
 Have you ever seen a deep learning based [ANPR/ALPR (Automatic Number/License Plate Recognition)](https://en.wikipedia.org/wiki/Automatic_number-plate_recognition) engine running at **47fps on ARM device** (Android, Snapdragon 855, 720p video resolution)? <br />
 
@@ -34,19 +38,22 @@ Being able to run all ITS applications on the device **will significantly lower 
 Please check [Device-based versus Cloud-based solution](https://www.doubango.org/SDKs/anpr/docs/Device-based_versus_Cloud-based_solution.html) section for more information about how this would reduce the cost.
 
 <p align="center" style="text-align: center">
-  <img src="https://www.doubango.org/SDKs/anpr/docs/_images/theverge_with_pysearch.jpg">
+  <img src="https://www.doubango.org/SDKs/anpr/docs/_images/bmw_x5_white.jpg">
   <br />
   <em><u><a href="#sample-application-videoparallel-android">VideoParallel sample application</a> on Android</u></em>
 </p>
 <hr />
 
-The next [video](https://youtu.be/jozcaDMMgVU) ([https://youtu.be/jozcaDMMgVU](https://youtu.be/jozcaDMMgVU)) shows [Recognizer sample](#sample-application-recognizer-others) running on Windows: <br />
-[![Recognizer Running on Windows](https://www.doubango.org/SDKs/anpr/docs/_images/ScreenshotKorea.jpg)](https://www.youtube.com/watch?v=jozcaDMMgVU)
+The next [video](https://youtu.be/xQO7ABHTg1w) ([https://youtu.be/xQO7ABHTg1w](https://youtu.be/xQO7ABHTg1w)) shows the [Recognizer sample](#sample-application-recognizer-others) running on Windows: <br />
+[![Recognizer Running on Windows](https://www.doubango.org/SDKs/anpr/docs/_images/Screenshot-Youtube-6Highway-3.0.0-rc1.jpg)](https://www.youtube.com/watch?v=xQO7ABHTg1w)
 <hr />
 
-We're already working to bring this frame rate at 64fps and add support for CMMDP (**Color-Make Model-Direction-Prediction**) before march 2020. 
-We're confident that it's possible to have a complete [ITS](https://en.wikipedia.org/wiki/Intelligent_transportation_system) (**license plate recognition, CMMDP, bus lane enforcement, red light enforcement, speed detection, 
-congestion detection, double white line crossing detection, incident detection...**) system running above 40fps on ARM device.
+The code is accelerated on **CPU**, **GPU**, **VPU** and **FPGA**, thanks to [CUDA](https://developer.nvidia.com/cuda-toolkit) and [OpenVINO](https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/hardware.html).
+
+In addition to [License Plate Recognition (LPR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-licenseplaterecognition) we support [License Plate Country Identification (LPCI)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-licenseplatecountryidentification), [Vehicle Color Recognition (VCR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehiclecolorrecognition), [Vehicle Make Model Recognition (VMMR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehiclemakemodelrecognition), [Vehicle Direction Tracking (VDT)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehicledirectiontracking) and [Vehicle Speed Estimation (VSE)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehiclespeedestimation).
+
+
+On high-end NVIDIA GPUs like the **Tesla V100 the frame rate is 315 fps which means 3.17 millisecond inference time**. On high-end CPUs like **Intel Xeon the maximum frame rate could be up to 237fps**, thanks to [OpenVINO](https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/hardware.html). On low-end CPUs like the **Raspberry Pi 4 the average frame rate is 12fps**.
 
 On high-end NVIDIA GPUs like the **Tesla V100 the frame rate is 315 fps which means 3.17 millisecond inference time**.
 On low-end CPUs like the **Raspberry Pi 4 the average [frame rate is 12fps](samples/c++/benchmark/README.md#peformance-numbers)**.
@@ -74,7 +81,7 @@ The source code comes with #4 Android sample applications: [Benchmark](#sample-a
 <a name="sample-application-benchmark-android"></a>
 ### Benchmark (Android) ###
 This application is used to check everything is ok and running as fast as expected. 
-The information about the maximum frame rate (**105fps** on GTX 1070, **47fps** on Snapdragon 855 and **12fps** on Raspberry Pi 4) could be checked using this application. 
+The information about the maximum frame rate (**237fps** on Intel Xeon, **47fps** on Snapdragon 855 and **12fps** on Raspberry Pi 4) could be checked using this application. 
 It's open source and doesn't require registration or license key.
 
 <a name="sample-application-videoparallel-android"></a>
@@ -139,6 +146,8 @@ The C++ API is defined [here](https://www.doubango.org/SDKs/anpr/docs/cpp-api.ht
 	final static String CONFIG = "{" +
 		"\"debug_level\": \"info\"," + 
 		"\"gpgpu_enabled\": true," + 
+		"\"openvino_enabled\": true," +
+		"\"openvino_device\": \"CPU\"," +
 
 		"\"detect_minscore\": 0.1," + 
 		"\"detect_quantization_enabled\": true," + 
@@ -147,6 +156,10 @@ The C++ API is defined [here](https://www.doubango.org/SDKs/anpr/docs/cpp-api.ht
 		"\"pyramidal_search_sensitivity\": 0.28," +
 		"\"pyramidal_search_minscore\": 0.5," +
 		"\"pyramidal_search_quantization_enabled\": true," +
+
+		"\"klass_lpci_enabled\": true," +
+		"\"klass_vcr_enabled\": true," +
+		"\"klass_vmm_enabled\": true," +
 
 		"\"recogn_score_type\": \"min\"," + 
 		"\"recogn_minscore\": 0.3," + 
@@ -235,7 +248,7 @@ The source code comes with #2 [C++ sample applications](samples/c++): [Benchmark
 <a name="sample-application-benchmark-others"></a>
 ### Benchmark (Raspberry Pi, Linux, Windows and others) ###
 This application is used to check everything is ok and running as fast as expected. 
-The information about the maximum frame rate (**105fps** on GTX 1070, **47fps** on Snapdragon 855 and **12fps** on Raspberry Pi 4) could be checked using this application. 
+The information about the maximum frame rate (**237fps** on Intel Xeon, **47fps** on Snapdragon 855 and **12fps** on Raspberry Pi 4) could be checked using this application. 
 It's open source and doesn't require registration or license key.
 
 For more information on how to build and run this sample please check [samples/c++/benchmark](samples/c++/benchmark/README.md).
@@ -263,6 +276,8 @@ The C++ API is defined at https://www.doubango.org/SDKs/anpr/docs/cpp-api.html.
 	""
 	"\"num_threads\": -1,"
 	"\"gpgpu_enabled\": true,"
+	"\"openvino_enabled\": true,"
+	"\"openvino_device\": \"CPU\","
 	""
 	"\"detect_roi\": [0, 0, 0, 0],"
 	"\"detect_minscore\": 0.1,"
@@ -271,6 +286,10 @@ The C++ API is defined at https://www.doubango.org/SDKs/anpr/docs/cpp-api.html.
 	"\"pyramidal_search_sensitivity\": 0.28,"
 	"\"pyramidal_search_minscore\": 0.3,"
 	"\"pyramidal_search_min_image_size_inpixels\": 800,"
+	""
+	"\"klass_lpci_enabled\": true,"
+	"\"klass_vcr_enabled\": true,"
+	"\"klass_vmm_enabled\": true,"
 	""
 	"\"recogn_minscore\": 0.3,"
 	"\"recogn_score_type\": \"min\""

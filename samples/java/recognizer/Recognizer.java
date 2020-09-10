@@ -65,7 +65,7 @@ public class Recognizer {
    * JSON name: "num_threads"
    * Default: -1
    * type: int
-   * pattern: [-inf, +inf]
+   * pattern: ]-inf, +inf[
    * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#num-threads
    */
   static final int CONFIG_NUM_THREADS = -1;
@@ -82,6 +82,46 @@ public class Recognizer {
    * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#gpgpu-enabled
    */
   static final boolean CONFIG_GPGPU_ENABLED = true;
+
+  /**
+	* The parallel processing method could introduce delay/latency in the delivery callback on low-end CPUs. 
+	* This parameter controls the maximum latency you can tolerate. The unit is number of frames. 
+	* The default value is -1 which means auto.
+	* JSON name: "max_latency"
+	* Default: -1
+	* type: int
+	* pattern: [0, +inf[
+	* More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#max-latency
+	*/
+  static final int CONFIG_MAX_LATENCY = -1;
+
+
+  /**
+   * Whether to use OpenVINO instead of Tensorflow as deep learning backend engine. OpenVINO is used for detection and classification but not for OCR. 
+   * OpenVINO is always faster than Tensorflow on Intel products (CPUs, VPUs, GPUs, FPGAs…) and we highly recommend using it. 
+   * We require a CPU with support for both AVX2 and FMA features before trying to load OpenVINO plugin (shared library). 
+   * OpenVINO will be disabled with a fallback on Tensorflow if these CPU features are not detected.
+   * JSON name: "openvino_enabled"
+   * Default: true
+   * type: bool
+   * pattern: true | false
+   * Available since: 3.0.0
+   * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino-enabled
+   */
+   static final boolean CONFIG_OPENVINO_ENABLED = true;
+
+   /**
+   * OpenVINO device to use for computations. We recommend using "CPU" which is always correct. 
+   * If you have an Intel GPU, VPU or FPGA, then you can change this value. 
+   * If you try to use any other value than "CPU" without having the right device, then OpenVINO will be completely disabled with a fallback on Tensorflow. 
+   * JSON name: "openvino_device"
+   * Default: "CPU"
+   * type: string
+   * pattern: "GNA" | "HETERO" | "CPU" | "MULTI" | "GPU" | "MYRIAD" | "HDDL " | "FPGA"
+   * Available since: 3.0.0
+   * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino-device
+   */
+   static final String CONFIG_OPENVINO_DEVICE = "CPU";
 
    /**
    * Define a threshold for the detection score. Any detection with a score below that threshold will be ignored. 0.f being poor confidence and 1.f excellent confidence.
@@ -158,6 +198,55 @@ public class Recognizer {
    * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#pyramidal-search-min-image-size-inpixels
    */
   static final int CONFIG_PYRAMIDAL_SEARCH_MIN_IMAGE_SIZE_INPIXELS = 800; // pixels
+
+   /**
+   * Whether to enable License Plate Country Identification (LPCI) function (https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci). 
+   * To avoid adding latency to the pipeline only enable this function if you really need it.
+   * JSON name: "klass_lpci_enabled"
+   * Default: false
+   * type: bool
+   * pattern: true | false
+   * Available since: 3.0.0
+   * More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-lpci-enabled
+   */
+   static final boolean CONFIG_KLASS_LPCI_ENABLED = false;
+
+   /**
+   * Whether to enable Vehicle Color Recognition (VCR) function (https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr). 
+   * To avoid adding latency to the pipeline only enable this function if you really need it.
+   * JSON name: "klass_vcr_enabled"
+   * Default: false
+   * type: bool
+   * pattern: true | false
+   * Available since: 3.0.0
+   * More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vcr-enabled
+   */
+  static final boolean CONFIG_KLASS_VCR_ENABLED = false;
+
+   /**
+   * Whether to enable Vehicle Make Model Recognition (VMMR) function (https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr).
+   * To avoid adding latency to the pipeline only enable this function if you really need it.
+   * JSON name: "klass_vmmr_enabled"
+   * Default: false
+   * type: bool
+   * pattern: true | false
+   * More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vmmr-enabled
+   */
+  static final boolean CONFIG_KLASS_VMMR_ENABLED = false;
+
+   /**
+   * 1/G coefficient value to use for gamma correction operation in order to enhance the car color before applying VCR classification. 
+   * More information on gamma correction could be found at https://en.wikipedia.org/wiki/Gamma_correction. 
+   * Values higher than 1.0f mean lighter and lower than 1.0f mean darker. Value equal to 1.0f mean bypass gamma correction operation.
+   * This parameter in action: https://www.doubango.org/SDKs/anpr/docs/Improving_the_accuracy.html#gamma-correction
+   * * JSON name: "recogn_minscore"
+   * Default: 1.5
+   * type: float
+   * pattern: [0.f, inf[
+   * Available since: 3.0.0
+   * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vcr-gamma
+   */
+  static final double CONFIG_KLASS_VCR_GAMMA = 1.5;
 
    /**
    * Define a threshold for the overall recognition score. Any recognition with a score below that threshold will be ignored.
@@ -340,6 +429,9 @@ public class Recognizer {
          "" +
          "\"num_threads\": %d," +
          "\"gpgpu_enabled\": %s," +
+		 "\"max_latency\": %d," +
+         "\"openvino_enabled\": %s," +
+         "\"openvino_device\": \"%s\"," +
          "" +
          "\"detect_roi\": [%s]," +
          "\"detect_minscore\": %f," +
@@ -348,6 +440,11 @@ public class Recognizer {
          "\"pyramidal_search_sensitivity\": %f," +
          "\"pyramidal_search_minscore\": %f," +
          "\"pyramidal_search_min_image_size_inpixels\": %d," +
+         "" +
+         "\"klass_lpci_enabled\": %s," +
+         "\"klass_vcr_enabled\": %s," +
+         "\"klass_vmmr_enabled\": %s," +
+         "\"klass_vcr_gamma\": %f," +
          "" +
          "\"recogn_minscore\": %f," +
          "\"recogn_score_type\": \"%s\"," +
@@ -364,6 +461,9 @@ public class Recognizer {
 
          CONFIG_NUM_THREADS,
          CONFIG_GPGPU_ENABLED ? "true" : "false",
+		 CONFIG_MAX_LATENCY,
+         CONFIG_OPENVINO_ENABLED ? "true" : "false",
+         CONFIG_OPENVINO_DEVICE,
 
          CONFIG_DETECT_ROI.stream().map(String::valueOf).collect(Collectors.joining(",")),
          CONFIG_DETECT_MINSCORE,
@@ -372,6 +472,11 @@ public class Recognizer {
          CONFIG_PYRAMIDAL_SEARCH_SENSITIVITY,
          CONFIG_PYRAMIDAL_SEARCH_MINSCORE,
          CONFIG_PYRAMIDAL_SEARCH_MIN_IMAGE_SIZE_INPIXELS,
+
+         CONFIG_KLASS_LPCI_ENABLED ? "true" : "false",
+         CONFIG_KLASS_VCR_ENABLED ? "true" : "false",
+         CONFIG_KLASS_VMMR_ENABLED ? "true" : "false",
+         CONFIG_KLASS_VCR_GAMMA,
 
          CONFIG_RECOGN_MINSCORE,
          CONFIG_RECOGN_SCORE_TYPE,

@@ -26,21 +26,33 @@ import androidx.annotation.NonNull;
 
 import org.doubango.ultimateAlpr.Sdk.UltAlprSdkResult;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class AlprPlateView extends View {
 
     static final String TAG = AlprPlateView.class.getCanonicalName();
 
+    static final float LPCI_MIN_CONFIDENCE = 80.f;
+    static final float VCR_MIN_CONFIDENCE = 80.f;
+    static final float VMMR_MIN_CONFIDENCE = 70.f;
+    static final float VMMR_FUSE_DEFUSE_MIN_CONFIDENCE = 40.f;
+    static final int VMMR_FUSE_DEFUSE_MIN_OCCURRENCES = 3;
+
     static final float TEXT_NUMBER_SIZE_DIP = 20;
-    static final float TEXT_CONFIDENCE_SIZE_DIP = 15;
+    static final float TEXT_LPCI_SIZE_DIP = 15;
+    static final float TEXT_CAR_SIZE_DIP = 15;
     static final float TEXT_INFERENCE_TIME_SIZE_DIP = 10;
     static final int STROKE_WIDTH = 10;
 
     private final Paint mPaintTextNumber;
     private final Paint mPaintTextNumberBackground;
-    private final Paint mPaintTextConfidence;
-    private final Paint mPaintTextConfidenceBackground;
+    private final Paint mPaintTextLPCI;
+    private final Paint mPaintTextLPCIBackground;
+    private final Paint mPaintTextCar;
+    private final Paint mPaintTextCarBackground;
     private final Paint mPaintBorder;
     private final Paint mPaintTextDurationTime;
     private final Paint mPaintTextDurationTimeBackground;
@@ -79,17 +91,29 @@ public class AlprPlateView extends View {
         mPaintTextNumberBackground.setStrokeWidth(STROKE_WIDTH);
         mPaintTextNumberBackground.setStyle(Paint.Style.FILL_AND_STROKE);
 
-        mPaintTextConfidence = new Paint();
-        mPaintTextConfidence.setTextSize(TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, TEXT_CONFIDENCE_SIZE_DIP, getResources().getDisplayMetrics()));
-        mPaintTextConfidence.setColor(Color.BLUE);
-        mPaintTextConfidence.setStyle(Paint.Style.FILL_AND_STROKE);
-        mPaintTextConfidence.setTypeface(Typeface.create(fontALPR, Typeface.BOLD));
+        mPaintTextLPCI = new Paint();
+        mPaintTextLPCI.setTextSize(TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, TEXT_LPCI_SIZE_DIP, getResources().getDisplayMetrics()));
+        mPaintTextLPCI.setColor(Color.WHITE);
+        mPaintTextLPCI.setStyle(Paint.Style.FILL_AND_STROKE);
+        mPaintTextLPCI.setTypeface(Typeface.create(fontALPR, Typeface.BOLD));
 
-        mPaintTextConfidenceBackground = new Paint();
-        mPaintTextConfidenceBackground.setColor(Color.YELLOW);
-        mPaintTextConfidenceBackground.setStrokeWidth(STROKE_WIDTH);
-        mPaintTextConfidenceBackground.setStyle(Paint.Style.FILL_AND_STROKE);
+        mPaintTextLPCIBackground = new Paint();
+        mPaintTextLPCIBackground.setColor(Color.BLUE);
+        mPaintTextLPCIBackground.setStrokeWidth(STROKE_WIDTH);
+        mPaintTextLPCIBackground.setStyle(Paint.Style.FILL_AND_STROKE);
+
+        mPaintTextCar = new Paint();
+        mPaintTextCar.setTextSize(TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, TEXT_CAR_SIZE_DIP, getResources().getDisplayMetrics()));
+        mPaintTextCar.setColor(Color.BLACK);
+        mPaintTextCar.setStyle(Paint.Style.FILL_AND_STROKE);
+        mPaintTextCar.setTypeface(Typeface.create(fontALPR, Typeface.BOLD));
+
+        mPaintTextCarBackground = new Paint();
+        mPaintTextCarBackground.setColor(Color.RED);
+        mPaintTextCarBackground.setStrokeWidth(STROKE_WIDTH);
+        mPaintTextCarBackground.setStyle(Paint.Style.FILL_AND_STROKE);
 
         mPaintBorder = new Paint();
         mPaintBorder.setStrokeWidth(STROKE_WIDTH);
@@ -199,65 +223,178 @@ public class AlprPlateView extends View {
         if (mPlates != null && !mPlates.isEmpty()) {
             for (final AlprUtils.Plate plate : mPlates) {
                 // Transform corners
-                final float[] warpedBox = plate.getWarpedBox();
-                final PointF cornerA = new PointF(tInfo.transformX(warpedBox[0]), tInfo.transformY(warpedBox[1]));
-                final PointF cornerB = new PointF(tInfo.transformX(warpedBox[2]), tInfo.transformY(warpedBox[3]));
-                final PointF cornerC = new PointF(tInfo.transformX(warpedBox[4]), tInfo.transformY(warpedBox[5]));
-                final PointF cornerD = new PointF(tInfo.transformX(warpedBox[6]), tInfo.transformY(warpedBox[7]));
+                final float[] plateWarpedBox = plate.getWarpedBox();
+                final PointF plateCornerA = new PointF(tInfo.transformX(plateWarpedBox[0]), tInfo.transformY(plateWarpedBox[1]));
+                final PointF plateCornerB = new PointF(tInfo.transformX(plateWarpedBox[2]), tInfo.transformY(plateWarpedBox[3]));
+                final PointF plateCornerC = new PointF(tInfo.transformX(plateWarpedBox[4]), tInfo.transformY(plateWarpedBox[5]));
+                final PointF plateCornerD = new PointF(tInfo.transformX(plateWarpedBox[6]), tInfo.transformY(plateWarpedBox[7]));
                 // Draw border
-                final Path pathBorder = new Path();
-                pathBorder.moveTo(cornerA.x, cornerA.y);
-                pathBorder.lineTo(cornerB.x, cornerB.y);
-                pathBorder.lineTo(cornerC.x, cornerC.y);
-                pathBorder.lineTo(cornerD.x, cornerD.y);
-                pathBorder.lineTo(cornerA.x, cornerA.y);
-                pathBorder.close();
-                canvas.drawPath(pathBorder, mPaintBorder);
+                final Path platePathBorder = new Path();
+                platePathBorder.moveTo(plateCornerA.x, plateCornerA.y);
+                platePathBorder.lineTo(plateCornerB.x, plateCornerB.y);
+                platePathBorder.lineTo(plateCornerC.x, plateCornerC.y);
+                platePathBorder.lineTo(plateCornerD.x, plateCornerD.y);
+                platePathBorder.lineTo(plateCornerA.x, plateCornerA.y);
+                platePathBorder.close();
+                mPaintBorder.setColor(mPaintTextNumberBackground.getColor());
+                canvas.drawPath(platePathBorder, mPaintBorder);
 
                 // Draw text number
                 final String number = plate.getNumber();
                 Rect boundsTextNumber = new Rect();
                 mPaintTextNumber.getTextBounds(number, 0, number.length(), boundsTextNumber);
                 final RectF rectTextNumber = new RectF(
-                        cornerA.x,
-                        cornerA.y - boundsTextNumber.height(),
-                        cornerA.x + boundsTextNumber.width(),
-                        cornerA.y
+                        plateCornerA.x,
+                        plateCornerA.y - boundsTextNumber.height(),
+                        plateCornerA.x + boundsTextNumber.width(),
+                        plateCornerA.y
                 );
                 final Path pathTextNumber = new Path();
-                pathTextNumber.moveTo(cornerA.x, cornerA.y);
-                pathTextNumber.lineTo(Math.max(cornerB.x, (cornerA.x + rectTextNumber.width())), cornerB.y);
+                pathTextNumber.moveTo(plateCornerA.x, plateCornerA.y);
+                pathTextNumber.lineTo(Math.max(plateCornerB.x, (plateCornerA.x + rectTextNumber.width())), plateCornerB.y);
                 pathTextNumber.addRect(rectTextNumber, Path.Direction.CCW);
                 pathTextNumber.close();
                 canvas.drawPath(pathTextNumber, mPaintTextNumberBackground);
                 canvas.drawTextOnPath(number, pathTextNumber, 0, 0, mPaintTextNumber);
 
-                // Draw text confidence
-                final String confidence = String.format("%.2f%%", Math.min(plate.getRecognitionConfidence(), plate.getDetectionConfidence()));
-                Rect boundsTextConfidence = new Rect();
-                mPaintTextConfidence.getTextBounds(confidence, 0, confidence.length(), boundsTextConfidence);
-                final RectF rectTextConfidence = new RectF(
-                        cornerD.x,
-                        cornerD.y,
-                        cornerD.x + boundsTextConfidence.width(),
-                        cornerD.y + boundsTextConfidence.height()
-                );
-                final Path pathTextConfidence = new Path();
-                final double dx = cornerC.x - cornerD.x;
-                final double dy = cornerC.y - cornerD.y;
-                final double angle = Math.atan2(dy, dx);
-                final double cosT = Math.cos(angle);
-                final double sinT = Math.sin(angle);
-                final float Cx = cornerD.x + rectTextConfidence.width();
-                final float Cy = cornerC.y;
-                final PointF cornerCC = new PointF((float)(Cx * cosT - Cy * sinT), (float)(Cy * cosT + Cx * sinT));
-                final PointF cornerDD = new PointF((float)(cornerD.x * cosT - cornerD.y * sinT), (float)(cornerD.y * cosT + cornerD.x * sinT));
-                pathTextConfidence.moveTo(cornerDD.x, cornerDD.y + boundsTextConfidence.height());
-                pathTextConfidence.lineTo(cornerCC.x, cornerCC.y + boundsTextConfidence.height());
-                pathTextConfidence.addRect(rectTextConfidence, Path.Direction.CCW);
-                pathTextConfidence.close();
-                canvas.drawPath(pathTextConfidence, mPaintTextConfidenceBackground);
-                canvas.drawTextOnPath(confidence, pathTextConfidence, 0, 0, mPaintTextConfidence);
+                // Draw Car
+                if (plate.getCar() != null) {
+                    final AlprUtils.Car car = plate.getCar();
+                    if (car.getConfidence() >= 80.f) {
+                        // Vehicle Color Recognition (VCR): https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr
+                        String color = null;
+                        if (car.getColors() != null) {
+                            final AlprUtils.Car.Color colorObj = car.getColors().get(0); // sorted, most higher confidence first
+                            if (colorObj.getConfidence() >= VCR_MIN_CONFIDENCE) {
+                                color = colorObj.getName();
+                            }
+                        }
+
+                        // Vehicle Make Model Recognition (VMMR): https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr
+                        String make = null, model = null;
+                        if (car.getMakesModelsYears() != null) {
+                            final List<AlprUtils.Car.MakeModelYear> makesModelsYears = car.getMakesModelsYears();
+                            final AlprUtils.Car.MakeModelYear makeModelYear = makesModelsYears.get(0); // sorted, most higher confidence first
+                            if (makeModelYear.getConfidence() >= VMMR_MIN_CONFIDENCE) {
+                                make = makeModelYear.getMake();
+                                model = makeModelYear.getModel();
+                            }
+                            else {
+                                // Fuse and defuse: https://www.doubango.org/SDKs/anpr/docs/Improving_the_accuracy.html#fuse-and-defuse
+                                Map<String, Float> makes =  new HashMap<>();
+                                Map<String, Integer> occurrences =  new HashMap<>();
+								// Fuse makes
+                                for (final AlprUtils.Car.MakeModelYear mmy : makesModelsYears) {
+                                    makes.put(mmy.getMake(), AlprUtils.getOrDefault(makes, mmy.getMake(), 0.f) + mmy.getConfidence()); // Map.getOrDefault requires API level 24
+                                    occurrences.put(mmy.getMake(), AlprUtils.getOrDefault(occurrences, mmy.getMake(), 0) + 1); // Map.getOrDefault requires API level 24
+                                }
+                                // Find make with highest confidence. Stream requires Java8
+                                Iterator<Map.Entry<String, Float> > itMake = makes.entrySet().iterator();
+                                Map.Entry<String, Float> bestMake = itMake.next();
+                                while (itMake.hasNext()) {
+                                    Map.Entry<String, Float> makeE = itMake.next();
+                                    if (makeE.getValue() > bestMake.getValue()) {
+                                        bestMake = makeE;
+                                    }
+                                }
+								// Model fusion
+                                if (bestMake.getValue() >= VMMR_MIN_CONFIDENCE || (occurrences.get(bestMake.getKey()) >= VMMR_FUSE_DEFUSE_MIN_OCCURRENCES && bestMake.getValue() >= VMMR_FUSE_DEFUSE_MIN_CONFIDENCE)) {
+                                    make = bestMake.getKey();
+
+                                    // Fuse models
+                                    Map<String, Float> models =  new HashMap<>();
+                                    for (final AlprUtils.Car.MakeModelYear mmy : makesModelsYears) {
+                                        if (make.equals(mmy.getMake())) {
+                                            models.put(mmy.getModel(), AlprUtils.getOrDefault(models, mmy.getModel(), 0.f) + mmy.getConfidence()); // Map.getOrDefault requires API level 24
+                                        }
+                                    }
+                                    // Find model with highest confidence. Stream requires Java8
+                                    Iterator<Map.Entry<String, Float> > itModel = models.entrySet().iterator();
+                                    Map.Entry<String, Float> bestModel = itModel.next();
+                                    while (itModel.hasNext()) {
+                                        Map.Entry<String, Float> modelE = itModel.next();
+                                        if (modelE.getValue() > bestModel.getValue()) {
+                                            bestModel = modelE;
+                                        }
+                                    }
+                                    model = bestModel.getKey();
+                                }
+                            }
+                        }
+
+                        // Transform corners
+                        final float[] carWarpedBox = car.getWarpedBox();
+                        final PointF carCornerA = new PointF(tInfo.transformX(carWarpedBox[0]), tInfo.transformY(carWarpedBox[1]));
+                        final PointF carCornerB = new PointF(tInfo.transformX(carWarpedBox[2]), tInfo.transformY(carWarpedBox[3]));
+                        final PointF carCornerC = new PointF(tInfo.transformX(carWarpedBox[4]), tInfo.transformY(carWarpedBox[5]));
+                        final PointF carCornerD = new PointF(tInfo.transformX(carWarpedBox[6]), tInfo.transformY(carWarpedBox[7]));
+                        // Draw border
+                        final Path carPathBorder = new Path();
+                        carPathBorder.moveTo(carCornerA.x, carCornerA.y);
+                        carPathBorder.lineTo(carCornerB.x, carCornerB.y);
+                        carPathBorder.lineTo(carCornerC.x, carCornerC.y);
+                        carPathBorder.lineTo(carCornerD.x, carCornerD.y);
+                        carPathBorder.lineTo(carCornerA.x, carCornerA.y);
+                        carPathBorder.close();
+                        mPaintBorder.setColor(mPaintTextCarBackground.getColor());
+                        canvas.drawPath(carPathBorder, mPaintBorder);
+
+                        // Draw car information
+                        final String carText = String.format(
+                                "%s%s%s",
+                                make != null ? make : "Car",
+                                model != null ? ", " + model : "",
+                                color != null ? ", " + color : ""
+                        );
+                        Rect boundsTextCar = new Rect();
+                        mPaintTextCar.getTextBounds(carText, 0, carText.length(), boundsTextCar);
+                        final RectF rectTextCar = new RectF(
+                                carCornerA.x,
+                                carCornerA.y - boundsTextCar.height(),
+                                carCornerA.x + boundsTextCar.width(),
+                                carCornerA.y
+                        );
+                        final Path pathTextCar = new Path();
+                        pathTextCar.moveTo(carCornerA.x, carCornerA.y);
+                        pathTextCar.lineTo(Math.max(carCornerB.x, (carCornerA.x + rectTextCar.width())), carCornerB.y);
+                        pathTextCar.addRect(rectTextCar, Path.Direction.CCW);
+                        pathTextCar.close();
+                        canvas.drawPath(pathTextCar, mPaintTextCarBackground);
+                        canvas.drawTextOnPath(carText, pathTextCar, 0, 0, mPaintTextCar);
+                    }
+                }
+
+                // License Plate Country Identification (LPCI): https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci
+                if (plate.getCountries() != null) {
+                    final AlprUtils.Country country = plate.getCountries().get(0); // sorted, most higher confidence first
+                    if (country.getConfidence() >= LPCI_MIN_CONFIDENCE) {
+                        final String countryString = country.getCode();
+                        Rect boundsConfidenceLPCI = new Rect();
+                        mPaintTextLPCI.getTextBounds(countryString, 0, countryString.length(), boundsConfidenceLPCI);
+                        final RectF rectTextLPCI = new RectF(
+                                plateCornerD.x,
+                                plateCornerD.y,
+                                plateCornerD.x + boundsConfidenceLPCI.width(),
+                                plateCornerD.y +  boundsConfidenceLPCI.height()
+                        );
+                        final Path pathTextLPCI = new Path();
+                        final double dx = plateCornerC.x - plateCornerD.x;
+                        final double dy = plateCornerC.y - plateCornerD.y;
+                        final double angle = Math.atan2(dy, dx);
+                        final double cosT = Math.cos(angle);
+                        final double sinT = Math.sin(angle);
+                        final float Cx = plateCornerD.x + rectTextLPCI.width();
+                        final float Cy = plateCornerC.y;
+                        final PointF cornerCC = new PointF((float) (Cx * cosT - Cy * sinT), (float) (Cy * cosT + Cx * sinT));
+                        final PointF cornerDD = new PointF((float) (plateCornerD.x * cosT - plateCornerD.y * sinT), (float) (plateCornerD.y * cosT + plateCornerD.x * sinT));
+                        pathTextLPCI.moveTo(cornerDD.x, cornerDD.y + boundsConfidenceLPCI.height());
+                        pathTextLPCI.lineTo(cornerCC.x, cornerCC.y + boundsConfidenceLPCI.height());
+                        pathTextLPCI.addRect(rectTextLPCI, Path.Direction.CCW);
+                        pathTextLPCI.close();
+                        canvas.drawPath(pathTextLPCI, mPaintTextLPCIBackground);
+                        canvas.drawTextOnPath(countryString, pathTextLPCI, 0, 0, mPaintTextLPCI);
+                    }
+                }
             }
         }
     }

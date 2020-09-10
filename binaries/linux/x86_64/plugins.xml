@@ -1,0 +1,20 @@
+<ie>
+    <plugins>
+        <plugin name="GNA" location="libGNAPlugin.so">
+        </plugin>
+        <plugin name="HETERO" location="libHeteroPlugin.so">
+        </plugin>
+        <plugin name="CPU" location="libMKLDNNPlugin.so">
+        </plugin>
+        <plugin name="MULTI" location="libMultiDevicePlugin.so">
+        </plugin>
+        <plugin name="GPU" location="libclDNNPlugin.so">
+        </plugin>
+        <plugin name="MYRIAD" location="libmyriadPlugin.so">
+        </plugin>
+        <plugin name="HDDL" location="libHDDLPlugin.so">
+        </plugin>
+        <plugin name="FPGA" location="libdliaPlugin.so">
+        </plugin>
+    </plugins>
+</ie>

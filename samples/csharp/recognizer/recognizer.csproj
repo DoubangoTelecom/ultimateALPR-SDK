@@ -89,6 +89,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /y /d  "$(ProjectDir)..\..\..\binaries\windows\x86_64\*.dll" "$(ProjectDir)$(OutDir)"
+xcopy /y /d  "$(ProjectDir)..\..\..\binaries\windows\x86_64\*.xml" "$(ProjectDir)$(OutDir)"
 xcopy /y /d  "$(ProjectDir)..\..\..\binaries\windows\x86_64\*.so" "$(ProjectDir)$(OutDir)"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>

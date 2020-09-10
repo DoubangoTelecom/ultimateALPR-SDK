@@ -11,6 +11,8 @@ import android.content.res.AssetManager;
 import android.graphics.PointF;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import org.doubango.ultimateAlpr.Sdk.UltAlprSdkResult;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,6 +23,7 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Utility class
@@ -55,6 +58,60 @@ public class AlprUtils {
         public int getHeight() { return mHeight; }
     }
 
+    static class Car {
+        static class Color {
+            private int mKlass;
+            private String mName;
+            private float mConfidence;
+
+            public int getKlass() { return mKlass; }
+            public String getName() { return mName; }
+            public float getConfidence() { return mConfidence; }
+        }
+        static class MakeModelYear {
+            private int mKlass;
+            private String mMake;
+            private String mModel;
+            private String mYear; // Not integer on purpose, could be interval or...
+            private float mConfidence;
+
+            public int getKlass() { return mKlass; }
+            public String getMake() { return mMake; }
+            public String getModel() { return mModel; }
+            public String getYear() { return mYear; }
+            public float getConfidence() { return mConfidence; }
+        }
+
+        private float mConfidence;
+        private float mWarpedBox[];
+        private List<Car.Color> mColors;
+        private List<Car.MakeModelYear> mMakesModelsYears;
+
+        public float[] getWarpedBox() { return mWarpedBox; }
+        public float getConfidence() { return mConfidence; }
+        public List<Car.Color> getColors() { return mColors; }
+        public List<Car.MakeModelYear> getMakesModelsYears() { return mMakesModelsYears; }
+    }
+
+    /**
+     *
+     */
+    static class Country {
+        private int mKlass;
+        private String mCode;
+        private String mName;
+        private String mState;
+        private String mOther;
+        private float mConfidence;
+
+        public int getKlass() { return mKlass; }
+        public String getCode() { return mCode; }
+        public String getName() { return mName; }
+        public String getState() { return mState; }
+        public String getOther() { return mOther; }
+        public float getConfidence() { return mConfidence; }
+    }
+
     /**
      *
      */
@@ -63,11 +120,16 @@ public class AlprUtils {
         private float mDetectionConfidence;
         private float mRecognitionConfidence;
         private float mWarpedBox[];
+        private List<Country> mCountries;
+        private Car mCar;
 
         public String getNumber() { return mNumber; }
         public float getDetectionConfidence() { return mDetectionConfidence; }
         public float getRecognitionConfidence() { return mRecognitionConfidence; }
         public float[] getWarpedBox() { return mWarpedBox; }
+
+        public List<Country> getCountries() { return mCountries; }
+        public Car getCar() { return mCar; }
     }
 
     static public final long extractFrameId(final UltAlprSdkResult result) {
@@ -88,6 +150,7 @@ public class AlprUtils {
             return plates;
         }
         final String jsonString = result.json();
+        //final String jsonString = "{\"frame_id\":178,\"lantency\":0,\"plates\":[{\"car\":{\"color\":[{\"confidence\":59.76562,\"klass\":11,\"name\":\"white\"},{\"confidence\":27.73438,\"klass\":0,\"name\":\"black\"},{\"confidence\":11.32812,\"klass\":9,\"name\":\"silver\"},{\"confidence\":0.390625,\"klass\":4,\"name\":\"gray\"},{\"confidence\":0.390625,\"klass\":5,\"name\":\"green\"}],\"confidence\":89.45312,\"makeModelYear\":[{\"confidence\":5.46875,\"klass\":8072,\"make\":\"nissan\",\"model\":\"nv\",\"year\":2012},{\"confidence\":3.90625,\"klass\":4885,\"make\":\"gmc\",\"model\":\"yukon 1500\",\"year\":2007},{\"confidence\":1.953125,\"klass\":3950,\"make\":\"ford\",\"model\":\"f150\",\"year\":2001},{\"confidence\":1.953125,\"klass\":4401,\"make\":\"ford\",\"model\":\"ranger\",\"year\":2008},{\"confidence\":1.953125,\"klass\":3954,\"make\":\"ford\",\"model\":\"f150\",\"year\":2005}],\"warpedBox\":[37.26704,655.171,253.8487,655.171,253.8487,897.6935,37.26704,897.6935]},\"confidences\":[86.99596,99.60938],\"country\":[{\"code\":\"RUS\",\"confidence\":99.60938,\"klass\":65,\"name\":\"Russian Federation\",\"other\":\"Private vehicle\",\"state\":\"Republic of Karelia\"},{\"code\":\"USA\",\"confidence\":0.0,\"klass\":88,\"name\":\"United States of America\",\"state\":\"Iowa\"},{\"code\":\"USA\",\"confidence\":0.0,\"klass\":80,\"name\":\"United States of America\",\"state\":\"Connecticut\"},{\"code\":\"USA\",\"confidence\":0.0,\"klass\":81,\"name\":\"United States of America\",\"state\":\"Delaware\"},{\"code\":\"USA\",\"confidence\":0.0,\"klass\":82,\"name\":\"United States of America\",\"state\":\"Florida\"}],\"text\":\"K643ET10\",\"warpedBox\":[61.73531,819.796,145.57,819.796,145.57,881.916,61.73531,881.916]}]}";
         if (jsonString == null) { // No plate
             return plates;
         }
@@ -98,6 +161,8 @@ public class AlprUtils {
                 final JSONArray jPlates = jObject.getJSONArray("plates");
                 for (int i = 0; i < jPlates.length(); ++i) {
                     final JSONObject jPlate = jPlates.getJSONObject(i);
+
+                    // The plate itself (backward-compatible with 2.0.0)
                     final JSONArray jConfidences = jPlate.getJSONArray("confidences");
                     final JSONArray jWarpedBox = jPlate.getJSONArray("warpedBox");
                     final Plate plate = new Plate();
@@ -108,6 +173,73 @@ public class AlprUtils {
                     }
                     plate.mRecognitionConfidence = (float) jConfidences.getDouble(0);
                     plate.mDetectionConfidence = (float) jConfidences.getDouble(1);
+
+                    // Country (Added in 3.0.0)
+                    if (jPlate.has("country")) {
+                        plate.mCountries = new LinkedList<>();
+                        final JSONArray jCountries = jPlate.getJSONArray("country");
+                        for (int k = 0; k < jCountries.length(); ++k) {
+                            final JSONObject jCountry = jCountries.getJSONObject(k);
+                            final Country country = new Country();
+                            country.mKlass = jCountry.getInt("klass");
+                            country.mConfidence = (float) jCountry.getDouble("confidence");
+                            country.mCode = jCountry.getString("code"); // ISO-code: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3
+                            country.mName = jCountry.getString("name"); // Name in English
+                            if (jCountry.has("state")) { // optional
+                                country.mState = jCountry.getString("state");
+                            }
+                            if (jCountry.has("other")) { // optional
+                                country.mOther = jCountry.getString("other");
+                            }
+
+                            plate.mCountries.add(country);
+                        }
+                    }
+
+                    // Car (Added in 3.0.0)
+                    if (jPlate.has("car")) {
+                        final JSONObject jCar = jPlate.getJSONObject("car");
+                        final JSONArray jCarWarpedBox = jCar.getJSONArray("warpedBox");
+                        plate.mCar = new Car();
+                        plate.mCar.mConfidence = (float) jCar.getDouble("confidence");
+                        plate.mCar.mWarpedBox = new float[8];
+                        for (int j = 0; j < 8; ++j) {
+                            plate.mCar.mWarpedBox[j] = (float) jCarWarpedBox.getDouble(j);
+                        }
+
+                        // Color
+                        if (jCar.has("color")) {
+                            plate.mCar.mColors = new LinkedList<>();
+                            final JSONArray jColors = jCar.getJSONArray("color");
+                            for (int k = 0; k < jColors.length(); ++k) {
+                                final JSONObject jColor = jColors.getJSONObject(k);
+                                final Car.Color color = new Car.Color();
+                                color.mKlass = jColor.getInt("klass");
+                                color.mConfidence = (float) jColor.getDouble("confidence");
+                                color.mName = jColor.getString("name"); // Name in English
+
+                                plate.mCar.mColors.add(color);
+                            }
+                        }
+
+                        // Make Model Year
+                        if (jCar.has("makeModelYear")) {
+                            plate.mCar.mMakesModelsYears = new LinkedList<>();
+                            final JSONArray jMMYs = jCar.getJSONArray("makeModelYear");
+                            for (int k = 0; k < jMMYs.length(); ++k) {
+                                final JSONObject jMMY = jMMYs.getJSONObject(k);
+                                final Car.MakeModelYear mmy = new Car.MakeModelYear();
+                                mmy.mKlass = jMMY.getInt("klass");
+                                mmy.mConfidence = (float) jMMY.getDouble("confidence");
+                                mmy.mMake = jMMY.getString("make");
+                                mmy.mModel = jMMY.getString("model");
+                                mmy.mYear = jMMY.get("year").toString(); // Maybe Integer or String or whatever
+
+                                plate.mCar.mMakesModelsYears.add(mmy);
+                            }
+                        }
+                    }
+
                     plates.add(plate);
                 }
             }
@@ -117,6 +249,13 @@ public class AlprUtils {
             Log.e(TAG, e.toString());
         }
         return plates;
+    }
+
+    public static <K, V> V getOrDefault(@NonNull Map<K, V> map, K key, V defaultValue) {
+        V v;
+        return (((v = map.get(key)) != null) || map.containsKey(key))
+                ? v
+                : defaultValue;
     }
 
     /**

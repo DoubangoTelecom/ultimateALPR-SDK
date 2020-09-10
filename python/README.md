@@ -22,6 +22,7 @@ cd ultimateALPR-SDK/binaries/<<os>>/<<arch>>
 For example:
  - On Windows x86_64: [binaries/windows/x86_64](../binaries/windows/x86_64)
  - On Linux x86_64: [binaries/linux/x86_64](../binaries/linux/x86_64)
+ - On Linux aarch64: [binaries/linux/aarch64](../binaries/linux/aarch64)
  - On Raspbian arm32 : [binaries/raspbian/armv7l](../binaries/raspbian/armv7l)
  - ... you got the idea
  
@@ -31,7 +32,7 @@ For example:
  ```
  If you have multiple python versions installed, then you may use a virtual env, a full path to the executable... Also, you may use `python3` instead of `python` to make sure you're using version 3. The python version used to build the extension should be the same as the one running the samples.
  
- This will build and install the extension in the current folder. The extension is named **_ultimateMrzAlpr.pyd** on Windows and **_ultimateMrzAlpr.so** on Linux.
+ This will build and install the extension in the current folder. The extension is named **_ultimateAlpr.pyd** on Windows and **_ultimateAlpr.so** on Linux.
  
  Now you're ready to run Python scripts using the extension. We highly recommend checking the recognizer sample: [ultimateALPR-SDK/samples/python/recognizer](../samples/python/recognizer)
  

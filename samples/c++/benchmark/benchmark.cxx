@@ -14,6 +14,11 @@
 			--negative <path-to-image-without-a-plate> \
 			[--assets <path-to-assets-folder>] \
 			[--charset <recognition-charset:latin/korean/chinese>] \
+			[--openvino_enabled <whether-to-enable-OpenVINO:true/false>] \
+			[--openvino_device <openvino_device-to-use>] \
+			[--klass_lpci_enabled <whether-to-enable-LPCI:true/false>] \
+			[--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \
+			[--klass_vmmr_enabled <whether-to-enable-VMMR:true/false>] \
 			[--loops <number-of-times-to-run-the-loop:[1, inf]>] \
 			[--rate <positive-rate:[0.0, 1.0]>] \
 			[--parallel <whether-to-enable-parallel-mode:true/false>] \
@@ -32,7 +37,6 @@
 			--assets C:/Projects/GitHub/ultimate/ultimateALPR/SDK_dist/assets \
 			--charset latin \
 			--tokenfile C:/Projects/GitHub/ultimate/ultimateALPR/SDK_dev/tokens/windows-iMac.lic
-		
 */
 
 #include <ultimateALPR-SDK-API-PUBLIC.h>
@@ -41,6 +45,8 @@
 #include <vector>
 #include <algorithm>
 #include <random>
+#include <mutex>
+#include <condition_variable>
 #if defined(_WIN32)
 #include <algorithm> // std::replace
 #endif
@@ -56,6 +62,9 @@ static const char* __jsonConfig =
 ""
 "\"num_threads\": -1,"
 "\"gpgpu_enabled\": true,"
+"\"max_latency\": -1,"
+""
+"\"klass_vcr_gamma\": 1.5,"
 ""
 "\"detect_roi\": [0, 0, 0, 0],"
 "\"detect_minscore\": 0.1,"
@@ -83,17 +92,20 @@ static const char* __jsonConfig =
 * Parallel callback function used for notification. Not mandatory.
 * More info about parallel delivery: https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html
 */
+static size_t parallelNotifCount = 0;
+static std::condition_variable parallelNotifCondVar;
 class MyUltAlprSdkParallelDeliveryCallback : public UltAlprSdkParallelDeliveryCallback {
 	virtual void onNewResult(const UltAlprSdkResult* result) const override {
-		static size_t numParallelDeliveryResults = 0;
 		ULTALPR_SDK_ASSERT(result != nullptr);
 		const std::string& json = result->json();
+		// Printing to the console could be very slow and delayed -> stop displaying the result as soon as all plates are processed
 		ULTALPR_SDK_PRINT_INFO("MyUltAlprSdkParallelDeliveryCallback::onNewResult(%d, %s, %zu): %s",
 			result->code(),
 			result->phrase(),
-			++numParallelDeliveryResults,
+			++parallelNotifCount,
 			!json.empty() ? json.c_str() : "{}"
 		);
+		parallelNotifCondVar.notify_one();
 	}
 };
 
@@ -110,7 +122,12 @@ int main(int argc, char *argv[])
 	std::string assetsFolder, licenseTokenData, licenseTokenFile;
 	bool isParallelDeliveryEnabled = true;
 	bool isRectificationEnabled = false;
+	bool isOpenVinoEnabled = true;
+	bool isKlassLPCI_Enabled = false;
+	bool isKlassVCR_Enabled = false;
+	bool isKlassVMMR_Enabled = false;
 	std::string charset = "latin";
+	std::string openvinoDevice = "CPU";
 	size_t loopCount = 100;
 	double percentPositives = .2; // 20%
 	std::string pathFilePositive;
@@ -163,6 +180,21 @@ int main(int argc, char *argv[])
 	if (args.find("--rectify") != args.end()) {
 		isRectificationEnabled = (args["--rectify"].compare("true") == 0);
 	}
+	if (args.find("--openvino_enabled") != args.end()) {
+		isOpenVinoEnabled = (args["--openvino_enabled"].compare("true") == 0);
+	}
+	if (args.find("--openvino_device") != args.end()) {
+		openvinoDevice = args["--openvino_device"];
+	}
+	if (args.find("--klass_lpci_enabled") != args.end()) {
+		isKlassLPCI_Enabled = (args["--klass_lpci_enabled"].compare("true") == 0);
+	}
+	if (args.find("--klass_vcr_enabled") != args.end()) {
+		isKlassVCR_Enabled = (args["--klass_vcr_enabled"].compare("true") == 0);
+	}
+	if (args.find("--klass_vmmr_enabled") != args.end()) {
+		isKlassVMMR_Enabled = (args["--klass_vmmr_enabled"].compare("true") == 0);
+	}
 	if (args.find("--tokenfile") != args.end()) {
 		licenseTokenFile = args["--tokenfile"];
 #if defined(_WIN32)
@@ -183,6 +215,13 @@ int main(int argc, char *argv[])
 		jsonConfig += std::string(",\"charset\": \"") + charset + std::string("\"");
 	}
 	jsonConfig += std::string(",\"recogn_rectify_enabled\": ") + (isRectificationEnabled ? "true" : "false");
+	jsonConfig += std::string(",\"openvino_enabled\": ") + (isOpenVinoEnabled ? "true" : "false");
+	if (!openvinoDevice.empty()) {
+		jsonConfig += std::string(",\"openvino_device\": \"") + openvinoDevice + std::string("\"");
+	}
+	jsonConfig += std::string(",\"klass_lpci_enabled\": ") + (isKlassLPCI_Enabled ? "true" : "false");
+	jsonConfig += std::string(",\"klass_vcr_enabled\": ") + (isKlassVCR_Enabled ? "true" : "false");
+	jsonConfig += std::string(",\"klass_vmmr_enabled\": ") + (isKlassVMMR_Enabled ? "true" : "false");
 	if (!licenseTokenFile.empty()) {
 		jsonConfig += std::string(",\"license_token_file\": \"") + licenseTokenFile + std::string("\"");
 	}
@@ -209,7 +248,7 @@ int main(int argc, char *argv[])
 	// Create image indices
 	std::vector<size_t> indices(loopCount, 0);
 
-	const int numPositives = static_cast<int>(ULTAPR_MAX(loopCount * percentPositives, 1.));
+	const int numPositives = static_cast<int>(loopCount * percentPositives);
 	for (int i = 0; i < numPositives; ++i) {
 		indices[i] = 1; // positive index
 	}
@@ -245,9 +284,24 @@ int main(int argc, char *argv[])
 			file->height
 		)).isOK());
 	}
+	// Compute the estimated frame rate.
+	// At this step all frames are already processed but the result could be still on the delivery
+	// queue due to the console display latency. You can move here the code used to wait until all
+	// messages are displayed to include the delivery latency.
 	const std::chrono::high_resolution_clock::time_point timeEnd = std::chrono::high_resolution_clock::now();
 	const double elapsedTimeInMillis = std::chrono::duration_cast<std::chrono::duration<double >>(timeEnd - timeStart).count() * 1000.0;
 	ULTALPR_SDK_PRINT_INFO("Elapsed time (ALPR) = [[[ %lf millis ]]]", elapsedTimeInMillis);
+
+	// Printing to the console is very slow and use a low priority thread.
+	// Wait until all results are displayed.
+	if (isParallelDeliveryEnabled) {
+		static std::mutex parallelNotifMutex;
+		std::unique_lock<std::mutex > lk(parallelNotifMutex);
+		parallelNotifCondVar.wait_for(lk, 
+			std::chrono::milliseconds(1500), // maximum number of millis to wait for before giving up, must never wait this long unless your positive image doesn't contain a plate at all
+			[&numPositives] { return (parallelNotifCount == numPositives); }
+		);
+	}
 
 	// Print latest result
 	const std::string& json_ = result.json();
@@ -284,6 +338,12 @@ static void printUsage(const std::string& message /*= ""*/)
 		"\t--positive <path-to-image-with-a-plate> \n"
 		"\t--negative <path-to-image-without-a-plate> \n"
 		"\t[--assets <path-to-assets-folder>] \n"
+		"\t[--charset <recognition-charset:latin/korean/chinese>] \n"
+		"\t[--openvino_enabled <whether-to-enable-OpenVINO:true/false>] \n"
+		"\t[--openvino_device <openvino_device-to-use>] \n"
+		"\t[--klass_lpci_enabled <whether-to-enable-LPCI:true/false>] \n"
+		"\t[--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \n"
+		"\t[--klass_vmmr_enabled <whether-to-enable-VMMR:true/false>] \n"
 		"\t[--loops <number-of-times-to-run-the-loop:[1, inf]>] \n"
 		"\t[--rate <positive-rate:[0.0, 1.0]>] \n"
 		"\t[--parallel <whether-to-enable-parallel-mode:true / false>] \n"
@@ -293,14 +353,19 @@ static void printUsage(const std::string& message /*= ""*/)
 		"\n"
 		"Options surrounded with [] are optional.\n"
 		"\n"
-		"--positive: Path to an image(JPEG/PNG/BMP) with a license plate.This image will be used to evaluate the recognizer. You can use default image at ../../../assets/images/lic_us_1280x720.jpg.\n\n"
-		"--negative: Path to an image(JPEG/PNG/BMP) without a license plate.This image will be used to evaluate the decoder. You can use default image at ../../../assets/images/london_traffic.jpg.\n\n"
-		"--assets: Path to the assets folder containing the configuration files and models.Default value is the current folder.\n\n"
+		"--positive: Path to an image(JPEG/PNG/BMP) with a license plate. This image will be used to evaluate the recognizer. You can use default image at ../../../assets/images/lic_us_1280x720.jpg.\n\n"
+		"--negative: Path to an image(JPEG/PNG/BMP) without a license plate. This image will be used to evaluate the detector. You can use default image at ../../../assets/images/london_traffic.jpg.\n\n"
+		"--assets: Path to the assets folder containing the configuration files and models. Default value is the current folder.\n\n"
 		"--charset: Defines the recognition charset value (latin, korean, chinese...). Default: latin.\n\n"
+		"--openvino_enabled: Whether to enable OpenVINO. Tensorflow will be used when OpenVINO is disabled. Default: true.\n\n"
+		"--openvino_device: Defines the OpenVINO device to use (CPU, GPU, FPGA...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino_device. Default: CPU.\n\n"
+		"--klass_lpci_enabled: Whether to enable License Plate Country Identification (LPCI). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci. Default: false.\n\n"
+		"--klass_vcr_enabled: Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr. Default: false.\n\n"
+		"--klass_vmmr_enabled: Whether to enable Vehicle Make Model Recognition (VMMR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr. Default: false.\n\n"
 		"--loops: Number of times to run the processing pipeline.\n\n"
 		"--rate: Percentage value within[0.0, 1.0] defining the positive rate. The positive rate defines the percentage of images with a plate.\n\n"
 		"--parallel: Whether to enabled the parallel mode. More info about the parallel mode at https ://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html. Default: true.\n\n"
-		"--rectify: Whether to enable the rectification layer.More info about the rectification layer at https://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html. Default: false.\n\n"
+		"--rectify: Whether to enable the rectification layer. More info about the rectification layer at https://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html. Default: false.\n\n"
 		"--tokenfile: Path to the file containing the base64 license token if you have one. If not provided then, the application will act like a trial version. Default: null.\n\n"
 		"--tokendata: Base64 license token if you have one. If not provided then, the application will act like a trial version. Default: null.\n\n"
 		"********************************************************************************\n"
