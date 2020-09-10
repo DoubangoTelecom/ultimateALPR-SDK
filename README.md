@@ -45,7 +45,7 @@ Please check [Device-based versus Cloud-based solution](https://www.doubango.org
 <hr />
 
 The next [video](https://youtu.be/xQO7ABHTg1w) ([https://youtu.be/xQO7ABHTg1w](https://youtu.be/xQO7ABHTg1w)) shows the [Recognizer sample](#sample-application-recognizer-others) running on Windows: <br />
-[![Recognizer Running on Windows](https://www.doubango.org/SDKs/anpr/docs/_images/Screenshot-Youtube-6Highway-3.0.0-rc1.jpg)](https://www.youtube.com/watch?v=xQO7ABHTg1w)
+[![Recognizer Running on Windows](https://www.doubango.org/SDKs/anpr/docs/_images/vlcsnap-2020-09-10-03h27m56s176.jpg)](https://www.youtube.com/watch?v=xQO7ABHTg1w)
 <hr />
 
 The code is accelerated on **CPU**, **GPU**, **VPU** and **FPGA**, thanks to [CUDA](https://developer.nvidia.com/cuda-toolkit) and [OpenVINO](https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/hardware.html).
