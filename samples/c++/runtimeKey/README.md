@@ -9,6 +9,7 @@
 - [Testing](#testing)
   - [Usage](#testing-usage)
   - [Examples](#testing-examples)
+  - [Amazon Web Services (AWS)](#testing-aws)
 
 
 This application is used as reference code for developers to show how to use the [C++ API](https://www.doubango.org/SDKs/anpr/docs/cpp-api.html) to
@@ -94,6 +95,7 @@ runtimeKey \
 Options surrounded with **[]** are optional.
 - `--json` Whether to output the runtime license key as JSON string intead of raw string. Default: *true*.
 - `--assets` Path to the [assets](../../../assets) folder containing the configuration files and models. Default value is the current folder.
+- `--type` Defines how the license is attached to the machine/host. Possible values are *aws-instance* or *aws-byol*. Default: null. More info [here](../../../AWS.md).
 
 <a name="testing-examples"></a>
 ## Examples ##
@@ -125,4 +127,7 @@ runtimeKey.exe ^
 
 Please note that if you're cross compiling the application then you've to make sure to copy the application and both the [assets](../../../assets) and [binaries](../../../binaries) folders to the target device.
 
+<a name="testing-aws"></a>
+## Amazon Web Services (AWS) ##
+Please read [this](../../../AWS.md) if you're planning to run the SDK on [AWS](https://aws.amazon.com/). 
 
