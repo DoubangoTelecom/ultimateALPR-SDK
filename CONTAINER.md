@@ -6,7 +6,7 @@
 
 <hr />
 
-This document explains how to run a licensed version of the SDK on a container. You can ignore it if you're using the trial version.
+This document explains how to run a licensed version of the SDK inside a container. You can ignore it if you're using the trial version.
 
 As explained at [https://www.doubango.org/pricing.html](https://www.doubango.org/pricing.html) our licensing model is per device/machine. 
 Each machine is uniquely identified using the hardware information (CPU model, motherboard, architecture, hard drive serial number...). The hardware information doesn't change even if the OS is (up/down)-graded or reinstalled. We don't use network information like the MAC address to make sure the SDK can work without [NIC](https://en.wikipedia.org/wiki/Network_interface_controller).
@@ -47,7 +47,7 @@ docker run -v /run/udev:/run/udev:ro -v /dev:/dev:ro -it ubuntu
 - `-v /run/udev:/run/udev:ro`: The format is "name of the volume to mount:the destination:the access rights". In this case we need `ro` (read-only) access rights. More info at https://docs.docker.com/storage/volumes/
 - `-v /dev:/dev:ro`: See above
 
-In short, we want to allow the [udev](https://en.wikipedia.org/wiki/Udev) tool running instead a container to get access to the hardware information on the host. [udev](https://en.wikipedia.org/wiki/Udev) runs on userspace and doesn't require root access. The SDK will run `udevadm info --query=property --name=...` to retrieve hardware information. You can run the same command inside the container to check if the SDK will succeed.
+In short, we want to allow the [udev](https://en.wikipedia.org/wiki/Udev) tool running inside a container to get access to the hardware information on the host. [udev](https://en.wikipedia.org/wiki/Udev) runs on userspace and doesn't require root access. The SDK will run `udevadm info --query=property --name=...` to retrieve hardware information. You can run the same command inside the container to check if the SDK will succeed.
 
 <a name="container-solution-setup"></a>
 ## Setup (inside the container) ##
