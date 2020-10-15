@@ -264,9 +264,22 @@ public class AlprPlateView extends View {
                         // Vehicle Color Recognition (VCR): https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr
                         String color = null;
                         if (car.getColors() != null) {
-                            final AlprUtils.Car.Color colorObj = car.getColors().get(0); // sorted, most higher confidence first
-                            if (colorObj.getConfidence() >= VCR_MIN_CONFIDENCE) {
-                                color = colorObj.getName();
+                            final AlprUtils.Car.Color colorObj0 = car.getColors().get(0); // sorted, most higher confidence first
+                            if (colorObj0.getConfidence() >= VCR_MIN_CONFIDENCE) {
+                                color = colorObj0.getName();
+                            }
+                            else if (car.getColors().size() >= 2) {
+                                // Color fusion: https://www.doubango.org/SDKs/anpr/docs/Improving_the_accuracy.html#fuse
+                                final AlprUtils.Car.Color colorObj1 = car.getColors().get(1);
+                                final String colorMix = colorObj0.getName() + "/" + colorObj1.getName();
+                                float confidence = colorObj0.getConfidence();
+                                if ("white/silver,silver/white,gray/silver,silver/gray".indexOf(colorMix) != -1) {
+                                    confidence += colorObj1.getConfidence();
+                                }
+                                if (confidence >= VCR_MIN_CONFIDENCE) {
+                                    color = (colorMix.indexOf("white") == -1) ? "DarkSilver" : "LightSilver";
+									confidence = Math.max(colorObj0.getConfidence(), colorObj1.getConfidence());
+                                }
                             }
                         }
 
