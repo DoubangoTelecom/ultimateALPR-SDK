@@ -8,7 +8,7 @@
 	- [Trying the samples](#trying-the-samples-android)
 	- [Adding the SDK to your project](#adding-the-sdk-to-your-project-android)
 	- [Using the Java API](#using-the-java-api-android)
- - [Raspberry Pi (Raspbian OS), Linux, Windows and others](#others)
+ - [Raspberry Pi (Raspbian OS), Linux, NVIDIA Jetson, Windows and others](#others)
  	- [Sample applications](#sample-applications-others)
 		- [Benchmark](#sample-application-benchmark-others)
 		- [Recognizer](#sample-application-recognizer-others)
@@ -239,16 +239,16 @@ The C++ API is defined [here](https://www.doubango.org/SDKs/anpr/docs/cpp-api.ht
 Again, please check the sample applications for [Android](#sample-applications-android), [Raspberry Pi, Linux and Windows](#sample-applications-others) and [full documentation](https://www.doubango.org/SDKs/anpr/docs/) for more information.
 
 <a name="others"></a>
-# Raspberry Pi (Raspbian OS), Linux, Windows and others #
+# Raspberry Pi (Raspbian OS), Linux, NVIDIA Jetson, Windows and others #
 
 <a name="sample-applications-others"></a>
 ## Sample applications (Raspberry Pi) ##
 The source code comes with #2 [C++ sample applications](samples/c++): [Benchmark](#sample-application-benchmark-others) and [Recognizer](#sample-application-recognizer-others). These sample applications can be used on all supported platforms: **Android**, **Windows**, **Raspberry Pi**, **iOS**, **OSX**, **Linux**...
 
 <a name="sample-application-benchmark-others"></a>
-### Benchmark (Raspberry Pi, Linux, Windows and others) ###
+### Benchmark (Raspberry Pi, Linux, NVIDIA Jetson, Windows and others) ###
 This application is used to check everything is ok and running as fast as expected. 
-The information about the maximum frame rate (**237fps** on Intel Xeon, **47fps** on Snapdragon 855 and **12fps** on Raspberry Pi 4) could be checked using this application. 
+The information about the maximum frame rate (**237fps** on Intel Xeon, **47fps** on Snapdragon 855, **70fps** on Jetson TX2, **30fps** on Jetson nano and **12fps** on Raspberry Pi 4) could be checked using this application. 
 It's open source and doesn't require registration or license key.
 
 For more information on how to build and run this sample please check [samples/c++/benchmark](samples/c++/benchmark/README.md).

@@ -33,7 +33,9 @@ To check if all dependencies are present:
 
 <a name="gpu-acceleration"></a>
 # GPGPU acceleration #
-By default GPGPU acceleration is disabled. Check [here](../README.md#gpu-acceleration) for more information on how to enable it.
+- On x86-64, GPGPU acceleration is disabled by default. Check [here](../README.md#gpu-acceleration) for more information on how to enable it.
+- On NVIDIA Jetson (AArch64), GPGPU acceleration is always enabled. Check [here](../../../Jetson.md) for more information.
+
 
 <a name="peformance-numbers"></a>
 # Peformance numbers #
@@ -53,11 +55,16 @@ Some performance numbers on mid-range GPU (**GTX 1070**), high-range ARM CPU (**
 | **Galaxy S10+<br/> (Android)** | 21344 millis <br/> **46.85 fps** | 25815 millis <br/> 38.73 fps | 29712 millis <br/> 33.65 fps | 33352 millis <br/> 29.98 fps | 37825 millis <br/> 26.43 fps |
 | **RockPi 4B <br/> (Ubuntu Server 18.04)** | 7588 millis <br />**13.17 fps** | 8008 millis <br/> 12.48 fps | 8606 millis <br/> 11.61 fps | 9213 millis <br/> 10.85fps | 9798 millis <br/> 10.20 fps |
 | **Raspberry Pi 4<br/> (Raspbian Buster)** | 81890 millis <br />**12.21 fps** | 89770 millis <br/> 11.13 fps | 115190 millis <br/> 8.68 fps | 122950 millis <br/> 8.13fps | 141460 millis <br/> 7.06 fps |
+| **[binaries/jetson_tftrt](../../../binaries/jetson_tftrt)<br/> (TX2, JetPack 4.4.1)** | 1420 millis <br />**70.38 fps** | 1653 millis <br/> 60.47 fps | 1998 millis <br/> 50.02 fps | 2273 millis <br/> 43.97 fps | 2681 millis <br/> 37.29 fps |
+| **[binaries/jetson](../../../binaries/jetson)<br/> (TX2, JetPack 4.4.1)** | 1428 millis <br />**70.01 fps** | 1712 millis <br/> 58.40 fps | 2165 millis <br/> 46.17 fps | 2692 millis <br/> 37.13 fps | 3673 millis <br/> 27.22 fps |
+| **[binaries/jetson_tftrt](../../../binaries/jetson_tftrt)<br/> (Nano, JetPack 4.4.1)** | 3106 millis <br />**32.19 fps** | 3292 millis <br/> 30.37 fps | 3754 millis <br/> 26.63 fps | 3967 millis <br/> 25.20 fps | 4621 millis <br/> 21.63 fps |
+| **[binaries/jetson](../../../binaries/jetson)<br/> (nano, JetPack 4.4.1)** | 2920 millis <br />**34.24 fps** | 3083 millis <br/> 32.42 fps | 3340 millis <br/> 29.93 fps | 3882 millis <br/> 25.75 fps | 5102 millis <br/> 19.59 fps |
 
 Some notes:
 - **The above numbers show that the best case is 'Intel® Xeon® E3 1230v5 + GTX 1070 + OpenVINO enabled'. In such case the GPU (TensorRT, CUDA) and the CPU(OpenVINO) are used in parallel. The CPU is used for detection and the GPU for recognition/OCR.**
 - **Please note that even if Raspberry Pi 4 has a 64-bit CPU [Raspbian OS](https://en.wikipedia.org/wiki/Raspbian>) uses a 32-bit kernel which means we're loosing many SIMD optimizations.**
 - **On RockPi 4B the code is 5 times faster when [parallel processing](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html) is enabled.**
+- **On NVIDIA Jetson the code is 3 times faster when [parallel processing](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html) is enabled.**
 - **On Android devices we have noticed that [parallel processing](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html) can speedup the pipeline by up to 120% on some devices while on Raspberry Pi the gain is marginal.**
 - **Both i7 CPUs are 6yr+ old (2014) to make sure everyone can easily find them at the cheapest price possible.**
 
@@ -70,6 +77,7 @@ If you don't want to build this sample by yourself then, use the pre-built versi
  - Linux aarch64: [benchmark](../../../binaries/linux/aarch64/benchmark) under [binaries/linux/aarch64](../../../binaries/linux/aarch64).
  - Raspberry Pi: [benchmark](../../../binaries/raspbian/armv7l/benchmark) under [binaries/raspbian/armv7l](../../../binaries/raspbian/armv7l)
  - Android: check [android](../../android) folder
+ - NVIDIA Jetson: [binaries/jetson/aarch64/benchmark](../../../binaries/jetson/aarch64/benchmark) or [binaries/jetson_tftrt/aarch64/benchmark](../../../binaries/jetson_tftrt/aarch64/benchmark). **You'll need to generate the optimized models as explained [here](../../../Jetson.md#getting-started_before-trying-to-use-the-sdk-on-jetson)**.
  
 On **Windows**, the easiest way to try this sample is to navigate to [binaries/windows/x86_64](../../../binaries/windows/x86_64/) and run [binaries/windows/x86_64/benchmark.bat](../../../binaries/windows/x86_64/benchmark.bat). You can edit these files to use your own images and configuration options.
 
@@ -161,7 +169,7 @@ The information about the maximum frame rate (**105fps** on GTX 1070, **47fps** 
 <a name="testing-examples"></a>
 ## Examples ##
 
-For example, on **Raspberry Pi** you may call the benchmark application using the following command:
+- For example, on **Raspberry Pi** you may call the benchmark application using the following command:
 ```
 LD_LIBRARY_PATH=../../../binaries/raspbian/armv7l:$LD_LIBRARY_PATH ./benchmark \
     --positive ../../../assets/images/lic_us_1280x720.jpg \
@@ -173,7 +181,34 @@ LD_LIBRARY_PATH=../../../binaries/raspbian/armv7l:$LD_LIBRARY_PATH ./benchmark \
     --parallel true \
     --rectify false
 ```
-On **Linux x86_64**, you may use the next command:
+
+- On **NVIDIA Jetson**, you'll need to generate the models as explained [here](../../../Jetson.md#building-optimized-models), put the device on maximum performance mode (`sudo nvpmodel -m 0 && sudo jetson_clocks`), then run:
+```   
+LD_LIBRARY_PATH=../../../binaries/jetson/aarch64:$LD_LIBRARY_PATH ./benchmark \
+    --positive ../../../assets/images/lic_us_1280x720.jpg \
+    --negative ../../../assets/images/london_traffic.jpg \
+    --assets ../../../assets \
+    --charset latin \
+    --loops 100 \
+    --rate 0.2 \
+    --parallel true \
+    --rectify false
+```
+or 
+```    
+LD_LIBRARY_PATH=../../../binaries/jetson_tftrt/aarch64:$LD_LIBRARY_PATH ./benchmark \
+    --positive ../../../assets/images/lic_us_1280x720.jpg \
+    --negative ../../../assets/images/london_traffic.jpg \
+    --assets ../../../assets \
+    --charset latin \
+    --loops 100 \
+    --rate 0.2 \
+    --parallel true \
+    --rectify false
+```
+The difference between [jetson_tftrt](../../../binaries/jetson_tftrt) and [jetson](../../../binaries/jetson) binaries is explained [here](../../../Jetson.md#getting-started_jetson-versus-jetsontftrt).
+
+- On **Linux x86_64**, you may use the next command:
 ```
 LD_LIBRARY_PATH=../../../binaries/linux/x86_64:$LD_LIBRARY_PATH ./benchmark \
     --positive ../../../assets/images/lic_us_1280x720.jpg \
@@ -184,7 +219,8 @@ LD_LIBRARY_PATH=../../../binaries/linux/x86_64:$LD_LIBRARY_PATH ./benchmark \
     --rate 0.2 \
     --parallel true
 ```
-On **Linux aarch64**, you may use the next command:
+
+- On **Linux aarch64**, you may use the next command:
 ```
 LD_LIBRARY_PATH=../../../binaries/linux/aarch64:$LD_LIBRARY_PATH ./benchmark \
     --positive ../../../assets/images/lic_us_1280x720.jpg \
@@ -195,7 +231,8 @@ LD_LIBRARY_PATH=../../../binaries/linux/aarch64:$LD_LIBRARY_PATH ./benchmark \
     --rate 0.2 \
     --parallel true
 ```
-On **Windows x86_64**, you may use the next command:
+
+- On **Windows x86_64**, you may use the next command:
 ```
 benchmark.exe ^
     --positive ../../../assets/images/lic_us_1280x720.jpg ^

@@ -3,6 +3,7 @@
   - [Tensorflow libraries](#gpu-acceleration-tensorflow)
     - [Windows](#gpu-acceleration-tensorflow-windows)
     - [Linux](#gpu-acceleration-tensorflow-linux)
+    - [NVIDIA Jetson](#gpu-acceleration-tensorflow-jetson)
 - [Cross compilation](#cross-compilation)
   - [Raspberry Pi](#cross-compilation-rpi)
     - [Installing the toolchain](#cross-compilation-rpi-install)
@@ -32,6 +33,7 @@ The Tensorflow libraries are hosted at:
  - [2] Windows_x86_64_CPU: https://doubango.org/deep_learning/libtensorflow_r1.15_cpu_windows_x86-64.zip
  - [3] Linux_x86_64_CPU+GPU: https://doubango.org/deep_learning/libtensorflow_r1.14_cpu+gpu_linux_x86-64.tar.gz
  - [4] Linux_x86_64_CPU: https://doubango.org/deep_learning/libtensorflow_r1.14_cpu_linux_x86-64.tar.gz
+ - [5] Jetson_aarch64_GPU: https://doubango.org/deep_learning/libtensorflow-1.15.4-jetson-gpu.tar.xz
 
 <a name="gpu-acceleration-tensorflow-window"></a>
 ### Windows ###
@@ -40,6 +42,12 @@ To use the Tensorflow version with GPU funtions you'll need to download [[1]](ht
 <a name="gpu-acceleration-tensorflow-linux"></a>
 ### Linux ###
 On Linux x86_64, [libtensorflow.so](../../binaries/linux/x86_64/libtensorflow.so) is missing in the [binaries folder](../../binaries/linux/x86_64). You'll need to download your preferred Tensorflow version ([[3]](https://doubango.org/deep_learning/libtensorflow_r1.14_cpu+gpu_linux_x86-64.tar.gz) or [[4]](https://doubango.org/deep_learning/libtensorflow_r1.14_cpu_linux_x86-64.tar.gz)) and copy the content to [binaries/linux/x86_64](../../binaries/linux/x86_64).
+
+<a name="gpu-acceleration-tensorflow-jetson"></a>
+### NVIDIA Jetson ###
+On NVIDIA Jetson TX1/TX2/Nano and Xavier AGX/NX [libtensorflow_cc.so](../../binaries/jetson_tftrt/aarch64/libtensorflow_cc.so) is only needed if you're using binaries in [jetson_tftrt](../../binaries/jetson_tftrt). You don't need Tensorflow to use the binaries under [jetson](../../binaries/jetson). The difference between [jetson_tftrt](../../binaries/jetson_tftrt) and [jetson](../../binaries/jetson) binaries is explained [here](../../Jetson.md#getting-started_jetson-versus-jetsontftrt).
+
+If you're using [jetson_tftrt](../../binaries/jetson_tftrt) instead of [jetson](../../binaries/jetson) then, you'll need to run the [./prepare.sh](../../binaries/jetson_tftrt/aarch64/prepare.sh) script as explained [here](../../Jetson.md#getting-started_before-trying-to-use-the-sdk-on-jetson_building-optimized-models) to download Tensorflow C++ libraries.
 
 <a name="cross-compilation"></a>
 # Cross compilation #

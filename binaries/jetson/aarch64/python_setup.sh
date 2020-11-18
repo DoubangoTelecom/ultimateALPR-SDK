@@ -1,0 +1,1 @@
+../../linux/aarch64/python_setup.sh

@@ -37,7 +37,7 @@ public class AlprPlateView extends View {
 
     static final float LPCI_MIN_CONFIDENCE = 80.f;
     static final float VCR_MIN_CONFIDENCE = 80.f;
-    static final float VMMR_MIN_CONFIDENCE = 70.f;
+    static final float VMMR_MIN_CONFIDENCE = 60.f;
     static final float VMMR_FUSE_DEFUSE_MIN_CONFIDENCE = 40.f;
     static final int VMMR_FUSE_DEFUSE_MIN_OCCURRENCES = 3;
 

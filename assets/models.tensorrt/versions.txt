@@ -1,0 +1,5 @@
+ultimateALPR-SDK_detect_main.desktop.model.tensorrt.doubango,3.1
+ultimateALPR-SDK_detect_pysearch.desktop.model.tensorrt.doubango,3.1
+ultimateALPR-SDK_klass_lpci.desktop.model.tensorrt.doubango,3.1
+ultimateALPR-SDK_klass_vcr.desktop.model.tensorrt.doubango,3.1
+ultimateALPR-SDK_klass_vmmr.desktop.model.tensorrt.doubango,3.1

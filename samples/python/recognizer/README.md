@@ -43,6 +43,7 @@ By default GPGPU acceleration is disabled. Check [here](../README.md#gpu-acceler
 recognizer.py \
       --image <path-to-image-with-plate-to-process> \
       [--assets <path-to-assets-folder>] \
+      [--parallel <whether-to-enable-parallel-mode:true/false>] \
       [--charset <recognition-charset:latin/korean/chinese>] \
       [--openvino_enabled <whether-to-enable-OpenVINO:true/false>] \
       [--openvino_device <openvino-device-to-use>] \
@@ -55,6 +56,7 @@ recognizer.py \
 Options surrounded with **[]** are optional.
 - `--image` Path to the image(JPEG/PNG/BMP) to process. You can use default image at [../../../assets/images/lic_us_1280x720.jpg](../../../assets/images/lic_us_1280x720.jpg).
 - `--assets` Path to the [assets](../../../assets) folder containing the configuration files and models. Default value is the current folder.
+- `--parallel` Whether to enabled the parallel mode. More info about the parallel mode at [https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html). Default: *false*.
 - `--charset` Defines the recognition charset (a.k.a alphabet) value (latin, korean, chinese...). Default: *latin*.
 - `--openvino_enabled` Whether to enable OpenVINO. Tensorflow will be used when OpenVINO is disabled. Default: *true*.
 - `--openvino_device` Defines the OpenVINO device to use (CPU, GPU, FPGA...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino-device. Default: *CPU*."

@@ -34,7 +34,7 @@ ultimateAlprSdk_module = Extension('_ultimateAlprSdk',
                            )
 
 setup (name = 'ultimateAlprSdk',
-       version = '2.11.0',
+       version = '3.0.0',
        author      = "Doubango AI",
        description = """ultimateAlprSdk for python""",
        ext_modules = [ultimateAlprSdk_module],

@@ -1,4 +1,6 @@
-Not all files in this folder are required. It depends on your CPU type.
+- Not all files in this folder are required. It depends on your CPU type.
+
+- All models listed here (**.model.doubango**) are useless on NVIDIA Jetson (ARM). The models for the NVIDIA Jetson devices are under [models.tensorrt](../models.tensorrt).
 
 # All charsets #
 

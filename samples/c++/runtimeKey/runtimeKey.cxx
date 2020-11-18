@@ -74,6 +74,9 @@ int main(int argc, char *argv[])
 	ULTALPR_SDK_PRINT_INFO("Press any key to terminate !!");
 	getchar();
 
+	// DeInitialize the engine
+	ULTALPR_SDK_ASSERT(UltAlprSdkEngine::deInit().isOK());
+
 	return 0;
 }
 

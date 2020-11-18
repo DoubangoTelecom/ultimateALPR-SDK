@@ -14,7 +14,7 @@ ultimateALPR SDK public header
 #include <string>
 
 #define ULTALPR_SDK_VERSION_MAJOR		3
-#define ULTALPR_SDK_VERSION_MINOR		0
+#define ULTALPR_SDK_VERSION_MINOR		1
 #define ULTALPR_SDK_VERSION_MICRO		0
 
 // Windows's symbols export
@@ -276,6 +276,21 @@ namespace ultimateAlprSdk
 		);
 
 		/*! Performs ANPR detection and recognition operations.
+			<br />
+			If you're using FFmpeg, the function could be used like this:
+			\code{.cpp}
+			ULTALPR_SDK_ASSERT((result = UltAlprSdkEngine::process(
+				ULTALPR_SDK_IMAGE_TYPE_YUV420P,
+				frame->data[0], // Y
+				frame->data[1], // U
+				frame->data[2], // V
+				frame->width, // Width
+				frame->height, // Height
+				frame->linesize[0], // Y-stride
+				frame->linesize[1], // U-stride
+				frame->linesize[2] // V-stride
+			)).isOK());
+			\endcode
 			\param imageType The image type.
 			\param yPtr Pointer to the start of the Y (luma) samples.
 			\param uPtr Pointer to the start of the U (chroma) samples.
@@ -314,6 +329,9 @@ namespace ultimateAlprSdk
 		static UltAlprSdkResult requestRuntimeLicenseKey(const bool& rawInsteadOfJSON = false);
 
 		static UltAlprSdkResult warmUp(const ULTALPR_SDK_IMAGE_TYPE imageType);
+#if !defined(SWIG)
+		static UltAlprSdkResult optimizeTRT(const char* models_folder);
+#endif /* !defined(SWIG) */
 
 #if ULTALPR_SDK_OS_ANDROID && !defined(SWIG)
 		static void setAssetManager(AAssetManager* assetManager);

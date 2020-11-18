@@ -33,7 +33,8 @@ To check if all dependencies are present:
 
 <a name="gpu-acceleration"></a>
 # GPGPU acceleration #
-By default GPGPU acceleration is disabled. Check [here](../README.md#gpu-acceleration) for more information on how to enable it.
+- On x86-64, GPGPU acceleration is disabled by default. Check [here](../README.md#gpu-acceleration) for more information on how to enable it.
+- On NVIDIA Jetson (AArch64), GPGPU acceleration is always enabled. Check [here](../../../Jetson.md) for more information.
 
 <a name="prebuilt"></a>
 # Pre-built binaries #
@@ -44,6 +45,7 @@ If you don't want to build this sample by yourself then, use the pre-built C++ v
  - Linux aarch64: [recognizer](../../../binaries/linux/aarch64/recognizer) under [binaries/linux/aarch64](../../../binaries/linux/aarch64).
  - Raspberry Pi: [recognizer](../../../binaries/raspbian/armv7l/recognizer) under [binaries/raspbian/armv7l](../../../binaries/raspbian/armv7l)
  - Android: check [android](../../android) folder
+ - NVIDIA Jetson: [binaries/jetson/aarch64/recognizer](../../../binaries/jetson/aarch64/recognizer) or [binaries/jetson_tftrt/aarch64/recognizer](../../../binaries/jetson_tftrt/aarch64/recognizer). **You'll need to generate the optimized models as explained [here](../../../Jetson.md#getting-started_before-trying-to-use-the-sdk-on-jetson)**.
  
 On **Windows**, the easiest way to try this sample is to navigate to [binaries/windows/x86_64](../../../binaries/windows/x86_64/) and run [binaries/windows/x86_64/recognizer.bat](../../../binaries/windows/x86_64/recognizer.bat). You can edit these files to use your own images and configuration options.
 
@@ -127,7 +129,7 @@ Options surrounded with **[]** are optional.
 <a name="testing-examples"></a>
 ## Examples ##
 
-For example, on **Raspberry Pi** you may call the recognizer application using the following command:
+- For example, on **Raspberry Pi** you may call the recognizer application using the following command:
 ```
 LD_LIBRARY_PATH=../../../binaries/raspbian/armv7l:$LD_LIBRARY_PATH ./recognizer \
     --image ../../../assets/images/lic_us_1280x720.jpg \
@@ -136,7 +138,26 @@ LD_LIBRARY_PATH=../../../binaries/raspbian/armv7l:$LD_LIBRARY_PATH ./recognizer 
     --parallel false \
     --rectify false
 ```
-On **Linux x86_64**, you may use the next command:
+
+- On **NVIDIA Jetson**, you'll need to generate the models as explained [here](../../../Jetson.md#building-optimized-models). Then, run:
+```
+LD_LIBRARY_PATH=../../../binaries/jetson/aarch64:$LD_LIBRARY_PATH ./recognizer \
+    --image ../../../assets/images/lic_us_1280x720.jpg \
+    --assets ../../../assets \
+    --charset latin \
+    --parallel false
+```
+or 
+```
+LD_LIBRARY_PATH=../../../binaries/jetson_tftrt/aarch64:$LD_LIBRARY_PATH ./recognizer \
+    --image ../../../assets/images/lic_us_1280x720.jpg \
+    --assets ../../../assets \
+    --charset latin \
+    --parallel false
+```
+The difference between [jetson_tftrt](../../../binaries/jetson_tftrt) and [jetson](../../../binaries/jetson) binaries is explained [here](../../../Jetson.md#getting-started_jetson-versus-jetsontftrt).
+
+- On **Linux x86_64**, you may use the next command:
 ```
 LD_LIBRARY_PATH=../../../binaries/linux/x86_64:$LD_LIBRARY_PATH ./recognizer \
     --image ../../../assets/images/lic_us_1280x720.jpg \
@@ -144,7 +165,8 @@ LD_LIBRARY_PATH=../../../binaries/linux/x86_64:$LD_LIBRARY_PATH ./recognizer \
     --charset latin \
     --parallel false
 ```
-On **Linux aarch64**, you may use the next command:
+
+- On **Linux aarch64**, you may use the next command:
 ```
 LD_LIBRARY_PATH=../../../binaries/linux/aarch64:$LD_LIBRARY_PATH ./recognizer \
     --image ../../../assets/images/lic_us_1280x720.jpg \
@@ -152,7 +174,8 @@ LD_LIBRARY_PATH=../../../binaries/linux/aarch64:$LD_LIBRARY_PATH ./recognizer \
     --charset latin \
     --parallel false
 ```
-On **Windows x86_64**, you may use the next command:
+
+- On **Windows x86_64**, you may use the next command:
 ```
 recognizer.exe ^
     --image ../../../assets/images/lic_us_1280x720.jpg ^

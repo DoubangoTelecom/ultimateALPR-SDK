@@ -27,7 +27,8 @@ To check if all dependencies are present:
 
 <a name="gpu-acceleration"></a>
 # GPGPU acceleration #
-By default GPGPU acceleration is disabled. Check [here](../README.md#gpu-acceleration) for more information on how to enable.
+- On x86-64, GPGPU acceleration is disabled by default. Check [here](../README.md#gpu-acceleration) for more information on how to enable it.
+- On NVIDIA Jetson (AArch64), GPGPU acceleration is always enabled. Check [here](../../../Jetson.md) for more information.
 
 <a name="prebuilt"></a>
 # Pre-built binaries #
@@ -38,6 +39,7 @@ If you don't want to build this sample by yourself then, use the pre-built versi
  - Linux aarch64: [runtimeKey](../../../binaries/linux/aarch64/runtimeKey) under [binaries/linux/aarch64](../../../binaries/linux/aarch64).
  - Raspberry Pi: [runtimeKey](../../../binaries/raspbian/armv7l/runtimeKey) under [binaries/raspbian/armv7l](../../../binaries/raspbian/armv7l)
  - Android: check [android](../../android) folder
+ - NVIDIA Jetson: [runtimeKey](../../../binaries/jetson/aarch64/runtimeKey) under [binaries/jetson/aarch64](../../../binaries/jetson/aarch64).
 
 <a name="building"></a>
 # Building #
@@ -100,25 +102,31 @@ Options surrounded with **[]** are optional.
 <a name="testing-examples"></a>
 ## Examples ##
 
-For example, on **Raspberry Pi** you may call the runtimeKey application using the following command:
+- For example, on **Raspberry Pi** you may call the runtimeKey application using the following command:
 ```
 LD_LIBRARY_PATH=../../../binaries/raspbian/armv7l:$LD_LIBRARY_PATH ./runtimeKey \
     --json true \
     --assets ../../../assets
 ```
-On **Linux x86_64** you may use the next command:
+- On **NVIDIA Jetson** you may use the next command:
+```
+LD_LIBRARY_PATH=../../../binaries/jetson/aarch64:$LD_LIBRARY_PATH ./runtimeKey \
+    --json true \
+    --assets ../../../assets
+```
+- On **Linux x86_64** you may use the next command:
 ```
 LD_LIBRARY_PATH=../../../binaries/linux/x86_64:$LD_LIBRARY_PATH ./runtimeKey \
     --json true \
     --assets ../../../assets
 ```
-On **Linux aarch64** you may use the next command:
+- On **Linux aarch64** you may use the next command:
 ```
 LD_LIBRARY_PATH=../../../binaries/linux/aarch64:$LD_LIBRARY_PATH ./runtimeKey \
     --json true \
     --assets ../../../assets
 ```
-On **Windows x86_64**, you may use the next command:
+- On **Windows x86_64**, you may use the next command:
 ```
 runtimeKey.exe ^
     --json true ^
