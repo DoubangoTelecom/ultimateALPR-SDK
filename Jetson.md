@@ -6,7 +6,7 @@
     - [Pros and Cons](#getting-started_jetson-versus-jetsontftrt_pros-and-cons)
     - [Recommendations](#getting-started_jetson-versus-jetsontftrt_recommendations)
 - [Benchmark](#benchmark)
-- [Post-processing operations](#post-processing-operations)
+- [Pre-processing operations](#pre-processing-operations)
 - [Coming next](#coming-next)
 - [Known issues and possible fixes](#known-issues-and-possible-fixes)
   - [Slow load and initialization](#known-issues-and-possible-fixes_slow-load-and-initialization)
@@ -149,9 +149,9 @@ You can notice that [binaries/jetson](binaries/jetson) and [binaries/jetson_tftr
 # Jetson nano versus Raspberry Pi 4 #
 **On average the SDK is 3 times faster on Jetson nano compared to Raspberry Pi 4** and this may not seem impressive but there is a good reason: [binaries/raspbian/armv7l](binaries/raspbian/armv7l) uses INT8 inference while the Jetson-based binaries ([binaries/jetson](binaries/jetson) and [binaries/jetson_tftrt](binaries/jetson_tftrt)) use a mix of FP32 and FP16 **which means more accurate**. Providing INT8 models for Jetson devices is on our roadmap with no ETA.
 
-<a name="post-processing-operations"></a>
-# Post-processing operations #
-Please note that even when your're using [binaries/jetson_tftrt](binaries/jetson_tftrt) some post-processing operations are performed on CPU and this why the CPU usage is at 1/5th. You don't need to worry about these operations, they are massively multi-threaded and entirely written in assembler with **SIMD NEON** acceleration. These functions are open source and you can find them at:
+<a name="pre-processing-operations"></a>
+# Pre-processing operations #
+Please note that even when your're using [binaries/jetson_tftrt](binaries/jetson_tftrt) some pre-processing operations are performed on CPU and this why the CPU usage is at 1/5th. You don't need to worry about these operations, they are massively multi-threaded and entirely written in assembler with **SIMD NEON** acceleration. These functions are open source and you can find them at:
   - Normalization: [compv_math_op_sub_arm64_neon.S](https://github.com/DoubangoTelecom/compv/blob/e09cdf22801574d322e023872eb0b0a4ceef01b6/base/math/asm/arm/compv_math_op_sub_arm64_neon.S#L141)
   - Chroma Conversion (YUV -> RGB): [compv_image_conv_to_rgbx_arm64_neon.S](https://github.com/DoubangoTelecom/compv/blob/e09cdf22801574d322e023872eb0b0a4ceef01b6/base/image/asm/arm/compv_image_conv_to_rgbx_arm64_neon.S#L34)
   - Type conversion (UINT8 -> FLOAT32): [compv_math_cast_arm64_neon.S](https://github.com/DoubangoTelecom/compv/blob/e09cdf22801574d322e023872eb0b0a4ceef01b6/base/math/asm/arm/compv_math_cast_arm64_neon.S#L23)
