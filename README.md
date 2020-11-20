@@ -1,21 +1,22 @@
   - [Getting started](#getting-started)
   - [Android](#android)
   	- [Sample applications](#sample-applications-android)
-		- [Benchmark](#sample-application-benchmark-android)
-		- [VideoParallel](#sample-application-videoparallel-android)
-		- [VideoSequential](#sample-application-videosequential-android)
-		- [ImageSnap](#sample-application-imagesnap-android)
+		- [Benchmark](#sample-application-benchmark-android) (**Java**)
+		- [VideoParallel](#sample-application-videoparallel-android) (**Java**)
+		- [VideoSequential](#sample-application-videosequential-android) (**Java**)
+		- [ImageSnap](#sample-application-imagesnap-android) (**Java**)
 	- [Trying the samples](#trying-the-samples-android)
 	- [Adding the SDK to your project](#adding-the-sdk-to-your-project-android)
 	- [Using the Java API](#using-the-java-api-android)
  - [Raspberry Pi (Raspbian OS), Linux, NVIDIA Jetson, Windows and others](#others)
  	- [Sample applications](#sample-applications-others)
-		- [Benchmark](#sample-application-benchmark-others)
-		- [Recognizer](#sample-application-recognizer-others)
+		- [Benchmark](#sample-application-benchmark-others) (**C++**)
+		- [Recognizer](#sample-application-recognizer-others) (**C++**, **C#**, **Java** and **Python**)
 	- [Using the C++ API](#using-the-cpp-api-others)
  - [Getting help](#technical-questions)
   
  - Full documentation at https://www.doubango.org/SDKs/anpr/docs/
+ - Supported languages (API): **C++**, **C#**, **Java** and **Python**
  - Online demo at https://www.doubango.org/webapps/alpr/
  - Open source Computer Vision Library: https://github.com/DoubangoTelecom/compv
   
@@ -48,15 +49,12 @@ The next [video](https://youtu.be/xQO7ABHTg1w) ([https://youtu.be/xQO7ABHTg1w](h
 [![Recognizer Running on Windows](https://www.doubango.org/SDKs/anpr/docs/_images/vlcsnap-2020-09-10-03h27m56s176.jpg)](https://www.youtube.com/watch?v=xQO7ABHTg1w)
 <hr />
 
-The code is accelerated on **CPU**, **GPU**, **VPU** and **FPGA**, thanks to [CUDA](https://developer.nvidia.com/cuda-toolkit) and [OpenVINO](https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/hardware.html).
+The code is accelerated on **CPU**, **GPU**, **VPU** and **FPGA**, thanks to [CUDA](https://developer.nvidia.com/cuda-toolkit), [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) and [Intel OpenVINO](https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/hardware.html).
 
 In addition to [License Plate Recognition (LPR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-licenseplaterecognition) we support [License Plate Country Identification (LPCI)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-licenseplatecountryidentification), [Vehicle Color Recognition (VCR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehiclecolorrecognition), [Vehicle Make Model Recognition (VMMR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehiclemakemodelrecognition), [Vehicle Direction Tracking (VDT)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehicledirectiontracking) and [Vehicle Speed Estimation (VSE)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehiclespeedestimation).
 
 
 On high-end NVIDIA GPUs like the **Tesla V100 the frame rate is 315 fps which means 3.17 millisecond inference time**. On high-end CPUs like **Intel Xeon the maximum frame rate could be up to 237fps**, thanks to [OpenVINO](https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/hardware.html). On low-end CPUs like the **Raspberry Pi 4 the average frame rate is 12fps**.
-
-On high-end NVIDIA GPUs like the **Tesla V100 the frame rate is 315 fps which means 3.17 millisecond inference time**.
-On low-end CPUs like the **Raspberry Pi 4 the average [frame rate is 12fps](samples/c++/benchmark/README.md#peformance-numbers)**.
 
 Don't take our word for it, come check our implementation. **No registration, license key or internet connection is required**, just clone the code and start coding/testing. Everything runs on the device, no data is leaving your computer. 
 The code released here comes with many ready-to-use samples for [Android](#sample-applications-android), [Raspberry Pi](#sample-applications-others), [Linux](#sample-applications-others) and [Windows](#sample-applications-others) to help you get started easily. 
@@ -242,7 +240,7 @@ Again, please check the sample applications for [Android](#sample-applications-a
 # Raspberry Pi (Raspbian OS), Linux, NVIDIA Jetson, Windows and others #
 
 <a name="sample-applications-others"></a>
-## Sample applications (Raspberry Pi) ##
+## Sample applications (Raspberry Pi, Linux, NVIDIA Jetson, Windows and others) ##
 The source code comes with #2 [C++ sample applications](samples/c++): [Benchmark](#sample-application-benchmark-others) and [Recognizer](#sample-application-recognizer-others). These sample applications can be used on all supported platforms: **Android**, **Windows**, **Raspberry Pi**, **iOS**, **OSX**, **Linux**...
 
 <a name="sample-application-benchmark-others"></a>
@@ -254,10 +252,14 @@ It's open source and doesn't require registration or license key.
 For more information on how to build and run this sample please check [samples/c++/benchmark](samples/c++/benchmark/README.md).
 
 <a name="sample-application-recognizer-others"></a>
-### Recognizer (Raspberry Pi, Linux, Windows and others) ###
+### Recognizer (Raspberry Pi, Linux, NVIDIA Jetson, Windows and others) ###
 This is a command line application used to detect and recognize a license plate from any JPEG/PNG/BMP image.
 
-For more information on how to build and run this sample please check [samples/c++/recognizer](samples/c++/recognizer/README.md).
+For more information on how to build and run this sample please check:
+ - C++: [samples/c++/recognizer](samples/c++/recognizer/README.md).
+ - C#: [samples/csharp/recognizer](samples/csharp/recognizer/README.md).
+ - Java: [samples/java/recognizer](samples/java/recognizer/README.md).
+ - Python: [samples/python/recognizer](samples/python/recognizer/README.md).
 
 <a name="using-the-cpp-api-others"></a>
 ## Using the C++ API ##
