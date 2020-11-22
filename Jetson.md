@@ -6,6 +6,8 @@
     - [Pros and Cons](#getting-started_jetson-versus-jetsontftrt_pros-and-cons)
     - [Recommendations](#getting-started_jetson-versus-jetsontftrt_recommendations)
 - [Benchmark](#benchmark)
+- [Jetson nano versus Raspberry Pi 4](#jetson-nano-versus-Raspberry-Pi-4)
+- [Jetson Xavier NX versus Jetson TX2](#jetson-nx-versus-jetso-tx2)
 - [Pre-processing operations](#pre-processing-operations)
 - [Coming next](#coming-next)
 - [Known issues and possible fixes](#known-issues-and-possible-fixes)
@@ -148,6 +150,12 @@ You can notice that [binaries/jetson](binaries/jetson) and [binaries/jetson_tftr
 <a name="jetson-nano-versus-Raspberry-Pi-4"></a>
 # Jetson nano versus Raspberry Pi 4 #
 **On average the SDK is 3 times faster on Jetson nano compared to Raspberry Pi 4** and this may not seem impressive but there is a good reason: [binaries/raspbian/armv7l](binaries/raspbian/armv7l) uses INT8 inference while the Jetson-based binaries ([binaries/jetson](binaries/jetson) and [binaries/jetson_tftrt](binaries/jetson_tftrt)) use a mix of FP32 and FP16 **which means more accurate**. Providing INT8 models for Jetson devices is on our roadmap with no ETA.
+
+<a name="jetson-nx-versus-jetso-tx2"></a>
+# Jetson Xavier NX versus Jetson TX2 #
+Jetson Xavier NX and Jetson TX2 are proposed at the same price ($399) but **NX has 4.6 times more compute power than TX2 for FP16**: *6 TFLOPS versus 1.3 TFLOPS*.
+
+**We highly recommend using Xavier NX instead of TX2.**
 
 <a name="pre-processing-operations"></a>
 # Pre-processing operations #
