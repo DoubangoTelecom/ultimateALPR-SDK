@@ -136,6 +136,9 @@ LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH ./benchmark \
 
 |  | 0.0 rate | 0.2 rate | 0.5 rate | 0.7 rate | 1.0 rate |
 |-------- | --- | --- | --- | --- | --- |
+| **[binaries/jetson_tftrt](binaries/jetson_tftrt)<br/> (Xavier NX, JetPack 4.4.1)** | 657 millis <br />**152.06 fps** | 967 millis <br/> 103.39 fps | 1280 millis <br/> 78.06 fps | 1539 millis <br/> 64.95 fps | 1849 millis <br/> 54.07 fps |
+| **[binaries/jetson](binaries/jetson)<br/> (Xavier NX, JetPack 4.4.1)** | 657 millis <br />**152.02 fps** | 1169 millis <br/> 85.47 fps | 2112 millis <br/> 47.34 fps | 2703 millis <br/> 36.98 fps | 3628 millis <br/> 27.56 fps |
+| **[binaries/linux/aarch64](binaries/linux/aarch64)<br/> (Xavier NX, JetPack 4.4.1)** | 7498 millis <br />**13.33 fps** | 8281 millis <br/> 12.07 fps | 9421 millis <br/> 10.61 fps | 10161 millis <br/> 9.84 fps | 11006 millis <br/> 9.08 fps |
 | **[binaries/jetson_tftrt](binaries/jetson_tftrt)<br/> (TX2, JetPack 4.4.1)** | 1420 millis <br />**70.38 fps** | 1653 millis <br/> 60.47 fps | 1998 millis <br/> 50.02 fps | 2273 millis <br/> 43.97 fps | 2681 millis <br/> 37.29 fps |
 | **[binaries/jetson](binaries/jetson)<br/> (TX2, JetPack 4.4.1)** | 1428 millis <br />**70.01 fps** | 1712 millis <br/> 58.40 fps | 2165 millis <br/> 46.17 fps | 2692 millis <br/> 37.13 fps | 3673 millis <br/> 27.22 fps |
 | **[binaries/linux/aarch64](binaries/linux/aarch64)<br/> (TX2, JetPack 4.4.1)** | 4591 millis <br />**21.77 fps** | 4722 millis <br/> 21.17 fps | 5290 millis <br/> 18.90 fps | 7154 millis <br/> 13.97 fps | 10032 millis <br/> 9.96 fps |
@@ -156,6 +159,9 @@ You can notice that [binaries/jetson](binaries/jetson) and [binaries/jetson_tftr
 Jetson Xavier NX and Jetson TX2 are proposed at the same price ($399) but **NX has 4.6 times more compute power than TX2 for FP16**: *6 TFLOPS versus 1.3 TFLOPS*.
 
 **We highly recommend using Xavier NX instead of TX2.**
+
+- NX (€342): https://www.amazon.com/NVIDIA-Jetson-Xavier-Developer-812674024318/dp/B086874Q5R
+- TX2: (€343): https://www.amazon.com/NVIDIA-945-82771-0000-000-Jetson-TX2-Development/dp/B06XPFH939
 
 <a name="pre-processing-operations"></a>
 # Pre-processing operations #
