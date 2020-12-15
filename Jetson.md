@@ -11,6 +11,7 @@
 - [Pre-processing operations](#pre-processing-operations)
 - [Coming next](#coming-next)
 - [Known issues and possible fixes](#known-issues-and-possible-fixes)
+  - [Failed to open file](#known-issues-and-possible-fixes_failed-to-open-file)
   - [Slow load and initialization](#known-issues-and-possible-fixes_slow-load-and-initialization)
   - [High memory usage](#known-issues-and-possible-fixes_high-memory-usage)
   - [High CPU usage](#known-issues-and-possible-fixes_high-cpu-usage)
@@ -53,6 +54,7 @@ Please note that this repo doesn't contain optimized TensorRT models and **you'l
 <a name="getting-started_before-trying-to-use-the-sdk-on-jetson_building-optimized-models"></a>
 <a name="building-optimized-models"></a>
 ### Building optimized models ###
+This process will write the optimized models (a.k.a plans) to the local disk which means we'll need write permission. We recommend running the next commands as root(#) instead of normal user($).
 To generate the optimized models:
  - Navigate to the jetson binaries folder: `cd ultimateALPR-SDK/binaries/jetson/aarch64` or `cd ultimateALPR-SDK/binaries/jetson_tftrt/aarch64`
  - Generate the optimized models: `sudo chmod +x ./prepare.sh && sudo ./prepare.sh`
@@ -179,6 +181,10 @@ Version 3.1.0 is the first release to support NVIDIA Jetson and there is room fo
 
 <a name="known-issues-and-possible-fixes"></a>
 # Known issues and possible fixes #
+
+<a name="known-issues-and-possible-fixes_failed-to-open-file"></a>
+## Failed to open file ##
+You may receive `[UltAlprSdkTRT] Failed to open file` error after running `./prepare.sh` script if we fail to write to the local disk. We recommend running the script as root(#) instead of normal user($). 
 
 <a name="known-issues-and-possible-fixes_slow-load-and-initialization"></a>
 ## Slow load and initialization ##
