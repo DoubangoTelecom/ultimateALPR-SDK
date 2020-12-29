@@ -15,14 +15,14 @@
 	- [Using the C++ API](#using-the-cpp-api-others)
  - [Getting help](#technical-questions)
   
- - Full documentation at https://www.doubango.org/SDKs/anpr/docs/
+ - Online web demo at https://www.doubango.org/webapps/alpr/
+ - Full documentation for the SDK at https://www.doubango.org/SDKs/anpr/docs/
  - Supported languages (API): **C++**, **C#**, **Java** and **Python**
- - Online demo at https://www.doubango.org/webapps/alpr/
  - Open source Computer Vision Library: https://github.com/DoubangoTelecom/compv
   
 <hr />
 
-**Keywords:** `License Plate Recognition (LPR)`, `License Plate Country Identification (LPCI)`, `Vehicle Color Recognition (VCR)`, `Vehicle Make Model Recognition (VMMR)`, `Vehicle Direction Tracking (VDT)` and `Vehicle Speed Estimation (VSE)`
+**Keywords:** `Image Enhancement for Night-Vision (IENV)`, `License Plate Recognition (LPR)`, `License Plate Country Identification (LPCI)`, `Vehicle Color Recognition (VCR)`, `Vehicle Make Model Recognition (VMMR)`, `Vehicle Body Style Recognition (VBSR)`, `Vehicle Direction Tracking (VDT)` and `Vehicle Speed Estimation (VSE)`
 
 <hr />
   
@@ -38,20 +38,17 @@ This opens the doors for the possibilities of running fully featured [ITS (Intel
 Being able to run all ITS applications on the device **will significantly lower the cost to acquire, deploy and maintain** such systems. 
 Please check [Device-based versus Cloud-based solution](https://www.doubango.org/SDKs/anpr/docs/Device-based_versus_Cloud-based_solution.html) section for more information about how this would reduce the cost.
 
-<p align="center" style="text-align: center">
-  <img src="https://www.doubango.org/SDKs/anpr/docs/_images/bmw_x5_white.jpg">
-  <br />
-  <em><u><a href="#sample-application-videoparallel-android">VideoParallel sample application</a> on Android</u></em>
-</p>
-<hr />
-
 The next [video](https://youtu.be/xQO7ABHTg1w) ([https://youtu.be/xQO7ABHTg1w](https://youtu.be/xQO7ABHTg1w)) shows the [Recognizer sample](#sample-application-recognizer-others) running on Windows: <br />
 [![Recognizer Running on Windows](https://www.doubango.org/SDKs/anpr/docs/_images/vlcsnap-2020-09-10-03h27m56s176.jpg)](https://www.youtube.com/watch?v=xQO7ABHTg1w)
 <hr />
 
+The next [video](https://youtu.be/QCkLPP1ix-c) ([https://youtu.be/QCkLPP1ix-c](https://youtu.be/QCkLPP1ix-c)) shows [Image Enhancement for Night-Vision (IENV)](https://www.doubango.org/SDKs/anpr/docs/Features.html#image-enhancement-for-night-vision-ienv) result on video stream captured at night: <br />
+[![Image Enhancement for Night-Vision (IENV)](https://www.doubango.org/SDKs/anpr/docs/_images/vlcsnap-2020-12-26-22h55m21s103.jpg)](https://www.youtube.com/watch?v=QCkLPP1ix-c)
+<hr />
+
 The code is accelerated on **CPU**, **GPU**, **VPU** and **FPGA**, thanks to [CUDA](https://developer.nvidia.com/cuda-toolkit), [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) and [Intel OpenVINO](https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/hardware.html).
 
-In addition to [License Plate Recognition (LPR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-licenseplaterecognition) we support [License Plate Country Identification (LPCI)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-licenseplatecountryidentification), [Vehicle Color Recognition (VCR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehiclecolorrecognition), [Vehicle Make Model Recognition (VMMR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehiclemakemodelrecognition), [Vehicle Direction Tracking (VDT)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehicledirectiontracking) and [Vehicle Speed Estimation (VSE)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehiclespeedestimation).
+In addition to [License Plate Recognition (LPR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-licenseplaterecognition) we support [Image Enhancement for Night-Vision (IENV)](https://www.doubango.org/SDKs/anpr/docs/Features.html#image-enhancement-for-night-vision-ienv), [License Plate Country Identification (LPCI)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-licenseplatecountryidentification), [Vehicle Color Recognition (VCR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehiclecolorrecognition), [Vehicle Make Model Recognition (VMMR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehiclemakemodelrecognition), [Vehicle Body Style Recognition (VBSR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-body-style-recognition-vbsr), [Vehicle Direction Tracking (VDT)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehicledirectiontracking) and [Vehicle Speed Estimation (VSE)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehiclespeedestimation).
 
 
 On high-end NVIDIA GPUs like the **Tesla V100 the frame rate is 315 fps which means 3.17 millisecond inference time**. On high-end CPUs like **Intel Xeon the maximum frame rate could be up to 237fps**, thanks to [OpenVINO](https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/hardware.html). On low-end CPUs like the **Raspberry Pi 4 the average frame rate is 12fps**.
@@ -246,7 +243,7 @@ The source code comes with #2 [C++ sample applications](samples/c++): [Benchmark
 <a name="sample-application-benchmark-others"></a>
 ### Benchmark (Raspberry Pi, Linux, NVIDIA Jetson, Windows and others) ###
 This application is used to check everything is ok and running as fast as expected. 
-The information about the maximum frame rate (**237fps** on Intel Xeon, **47fps** on Snapdragon 855, **70fps** on Jetson TX2, **30fps** on Jetson nano and **12fps** on Raspberry Pi 4) could be checked using this application. 
+The information about the maximum frame rate (**237fps** on Intel Xeon, **47fps** on Snapdragon 855, **152fps** on Jetson NX, **30fps** on Jetson nano and **12fps** on Raspberry Pi 4) could be checked using this application. 
 It's open source and doesn't require registration or license key.
 
 For more information on how to build and run this sample please check [samples/c++/benchmark](samples/c++/benchmark/README.md).

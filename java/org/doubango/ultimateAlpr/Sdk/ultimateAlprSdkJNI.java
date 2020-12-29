@@ -10,14 +10,16 @@ package org.doubango.ultimateAlpr.Sdk;
 
 public class ultimateAlprSdkJNI {
   public final static native long new_UltAlprSdkResult__SWIG_0();
-  public final static native long new_UltAlprSdkResult__SWIG_1(int jarg1, String jarg2, String jarg3, long jarg4);
-  public final static native long new_UltAlprSdkResult__SWIG_2(int jarg1, String jarg2, String jarg3);
-  public final static native long new_UltAlprSdkResult__SWIG_3(long jarg1, UltAlprSdkResult jarg1_);
+  public final static native long new_UltAlprSdkResult__SWIG_1(int jarg1, String jarg2, String jarg3, long jarg4, long jarg5);
+  public final static native long new_UltAlprSdkResult__SWIG_2(int jarg1, String jarg2, String jarg3, long jarg4);
+  public final static native long new_UltAlprSdkResult__SWIG_3(int jarg1, String jarg2, String jarg3);
+  public final static native long new_UltAlprSdkResult__SWIG_4(long jarg1, UltAlprSdkResult jarg1_);
   public final static native void delete_UltAlprSdkResult(long jarg1);
   public final static native int UltAlprSdkResult_code(long jarg1, UltAlprSdkResult jarg1_);
   public final static native String UltAlprSdkResult_phrase(long jarg1, UltAlprSdkResult jarg1_);
   public final static native String UltAlprSdkResult_json(long jarg1, UltAlprSdkResult jarg1_);
   public final static native long UltAlprSdkResult_numPlates(long jarg1, UltAlprSdkResult jarg1_);
+  public final static native long UltAlprSdkResult_numCars(long jarg1, UltAlprSdkResult jarg1_);
   public final static native boolean UltAlprSdkResult_isOK(long jarg1, UltAlprSdkResult jarg1_);
   public final static native long new_UltAlprSdkParallelDeliveryCallback();
   public final static native void delete_UltAlprSdkParallelDeliveryCallback(long jarg1);
@@ -39,8 +41,8 @@ public class ultimateAlprSdkJNI {
   public final static native long UltAlprSdkEngine_warmUp(int jarg1);
   public final static native void delete_UltAlprSdkEngine(long jarg1);
 
-  public static void SwigDirector_UltAlprSdkParallelDeliveryCallback_onNewResult(UltAlprSdkParallelDeliveryCallback self, long result) {
-    self.onNewResult((result == 0) ? null : new UltAlprSdkResult(result, false));
+  public static void SwigDirector_UltAlprSdkParallelDeliveryCallback_onNewResult(UltAlprSdkParallelDeliveryCallback self, long newResult) {
+    self.onNewResult((newResult == 0) ? null : new UltAlprSdkResult(newResult, false));
   }
 
   private final static native void swig_module_init();

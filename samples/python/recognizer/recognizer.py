@@ -26,6 +26,7 @@ import ultimateAlprSdk
 import sys
 import argparse
 import json
+import platform
 import os.path
 try:
     import Image
@@ -46,6 +47,8 @@ JSON_CONFIG = {
     
     "detect_roi": [0, 0, 0, 0],
     "detect_minscore": 0.1,
+
+    "car_noplate_detect_min_score": 0.8,
     
     "pyramidal_search_enabled": True,
     "pyramidal_search_sensitivity": 0.28,
@@ -75,11 +78,14 @@ if __name__ == "__main__":
     parser.add_argument("--image", required=True, help="Path to the image with ALPR data to recognize")
     parser.add_argument("--assets", required=False, default="../../../assets", help="Path to the assets folder")
     parser.add_argument("--charset", required=False, default="latin", help="Defines the recognition charset (a.k.a alphabet) value (latin, korean, chinese...)")
+    parser.add_argument("--car_noplate_detect_enabled", required=False, default=False, help="Whether to detect and return cars with no plate")
+    parser.add_argument("--ienv_enabled", required=False, default=platform.processor()=='i386', help="Whether to enable Image Enhancement for Night-Vision (IENV). More info about IENV at https://www.doubango.org/SDKs/anpr/docs/Features.html#image-enhancement-for-night-vision-ienv. Default: true for x86-64 and false for ARM.")
     parser.add_argument("--openvino_enabled", required=False, default=True, help="Whether to enable OpenVINO. Tensorflow will be used when OpenVINO is disabled")
     parser.add_argument("--openvino_device", required=False, default="CPU", help="Defines the OpenVINO device to use (CPU, GPU, FPGA...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino-device")
     parser.add_argument("--klass_lpci_enabled", required=False, default=False, help="Whether to enable License Plate Country Identification (LPCI). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci")
     parser.add_argument("--klass_vcr_enabled", required=False, default=False, help="Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr")
     parser.add_argument("--klass_vmmr_enabled", required=False, default=False, help="Whether to enable Vehicle Make Model Recognition (VMMR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr")
+    parser.add_argument("--klass_vbsr_enabled", required=False, default=False, help="Whether to enable Vehicle Body Style Recognition (VBSR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-body-style-recognition-vbsr")
     parser.add_argument("--tokenfile", required=False, default="", help="Path to license token file")
     parser.add_argument("--tokendata", required=False, default="", help="Base64 license token data")
 
@@ -106,11 +112,14 @@ if __name__ == "__main__":
     # Update JSON options using values from the command args
     JSON_CONFIG["assets_folder"] = args.assets
     JSON_CONFIG["charset"] = args.charset
+    JSON_CONFIG["car_noplate_detect_enabled"] = (args.car_noplate_detect_enabled == "True")
+    JSON_CONFIG["ienv_enabled"] = (args.ienv_enabled == "True")
     JSON_CONFIG["openvino_enabled"] = (args.openvino_enabled == "True")
     JSON_CONFIG["openvino_device"] = args.openvino_device
     JSON_CONFIG["klass_lpci_enabled"] = (args.klass_lpci_enabled == "True")
     JSON_CONFIG["klass_vcr_enabled"] = (args.klass_vcr_enabled == "True")
     JSON_CONFIG["klass_vmmr_enabled"] = (args.klass_vmmr_enabled == "True")
+    JSON_CONFIG["klass_vbsr_enabled"] = (args.klass_vbsr_enabled == "True")
     JSON_CONFIG["license_token_file"] = args.tokenfile
     JSON_CONFIG["license_token_data"] = args.tokendata
 

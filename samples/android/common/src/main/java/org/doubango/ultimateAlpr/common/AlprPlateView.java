@@ -38,6 +38,7 @@ public class AlprPlateView extends View {
     static final float LPCI_MIN_CONFIDENCE = 80.f;
     static final float VCR_MIN_CONFIDENCE = 80.f;
     static final float VMMR_MIN_CONFIDENCE = 60.f;
+    static final float VBSR_MIN_CONFIDENCE = 70.f;
     static final float VMMR_FUSE_DEFUSE_MIN_CONFIDENCE = 40.f;
     static final int VMMR_FUSE_DEFUSE_MIN_OCCURRENCES = 3;
 
@@ -241,36 +242,38 @@ public class AlprPlateView extends View {
 
                 // Draw text number
                 final String number = plate.getNumber();
-                Rect boundsTextNumber = new Rect();
-                mPaintTextNumber.getTextBounds(number, 0, number.length(), boundsTextNumber);
-                final RectF rectTextNumber = new RectF(
-                        plateCornerA.x,
-                        plateCornerA.y - boundsTextNumber.height(),
-                        plateCornerA.x + boundsTextNumber.width(),
-                        plateCornerA.y
-                );
-                final Path pathTextNumber = new Path();
-                pathTextNumber.moveTo(plateCornerA.x, plateCornerA.y);
-                pathTextNumber.lineTo(Math.max(plateCornerB.x, (plateCornerA.x + rectTextNumber.width())), plateCornerB.y);
-                pathTextNumber.addRect(rectTextNumber, Path.Direction.CCW);
-                pathTextNumber.close();
-                canvas.drawPath(pathTextNumber, mPaintTextNumberBackground);
-                canvas.drawTextOnPath(number, pathTextNumber, 0, 0, mPaintTextNumber);
+                if (number != null && !number.isEmpty()) {
+                    Rect boundsTextNumber = new Rect();
+                    mPaintTextNumber.getTextBounds(number, 0, number.length(), boundsTextNumber);
+                    final RectF rectTextNumber = new RectF(
+                            plateCornerA.x,
+                            plateCornerA.y - boundsTextNumber.height(),
+                            plateCornerA.x + boundsTextNumber.width(),
+                            plateCornerA.y
+                    );
+                    final Path pathTextNumber = new Path();
+                    pathTextNumber.moveTo(plateCornerA.x, plateCornerA.y);
+                    pathTextNumber.lineTo(Math.max(plateCornerB.x, (plateCornerA.x + rectTextNumber.width())), plateCornerB.y);
+                    pathTextNumber.addRect(rectTextNumber, Path.Direction.CCW);
+                    pathTextNumber.close();
+                    canvas.drawPath(pathTextNumber, mPaintTextNumberBackground);
+                    canvas.drawTextOnPath(number, pathTextNumber, 0, 0, mPaintTextNumber);
+                }
 
                 // Draw Car
                 if (plate.getCar() != null) {
                     final AlprUtils.Car car = plate.getCar();
                     if (car.getConfidence() >= 80.f) {
-                        // Vehicle Color Recognition (VCR): https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr
+                        // Vehicle Color Recognition [VCR] (added in 3.0.0) : https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr
                         String color = null;
                         if (car.getColors() != null) {
-                            final AlprUtils.Car.Color colorObj0 = car.getColors().get(0); // sorted, most higher confidence first
+                            final AlprUtils.Car.Attribute colorObj0 = car.getColors().get(0); // sorted, most higher confidence first
                             if (colorObj0.getConfidence() >= VCR_MIN_CONFIDENCE) {
                                 color = colorObj0.getName();
                             }
                             else if (car.getColors().size() >= 2) {
                                 // Color fusion: https://www.doubango.org/SDKs/anpr/docs/Improving_the_accuracy.html#fuse
-                                final AlprUtils.Car.Color colorObj1 = car.getColors().get(1);
+                                final AlprUtils.Car.Attribute colorObj1 = car.getColors().get(1);
                                 final String colorMix = colorObj0.getName() + "/" + colorObj1.getName();
                                 float confidence = colorObj0.getConfidence();
                                 if ("white/silver,silver/white,gray/silver,silver/gray".indexOf(colorMix) != -1) {
@@ -283,7 +286,7 @@ public class AlprPlateView extends View {
                             }
                         }
 
-                        // Vehicle Make Model Recognition (VMMR): https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr
+                        // Vehicle Make Model Recognition [VMMR] (added in 3.0.0): https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr
                         String make = null, model = null;
                         if (car.getMakesModelsYears() != null) {
                             final List<AlprUtils.Car.MakeModelYear> makesModelsYears = car.getMakesModelsYears();
@@ -335,6 +338,15 @@ public class AlprPlateView extends View {
                             }
                         }
 
+                        // Vehicle Body Style Recognition [VBSR] (added in 3.2.0): https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehiclebodystylerecognition
+                        String bodyStyle = null;
+                        if (car.getBodyStyles() != null) {
+                            final AlprUtils.Car.Attribute vbsr = car.getBodyStyles().get(0); // sorted, most higher confidence first
+                            if (vbsr.getConfidence() >= VBSR_MIN_CONFIDENCE) {
+                                bodyStyle = vbsr.getName();
+                            }
+                        }
+
                         // Transform corners
                         final float[] carWarpedBox = car.getWarpedBox();
                         final PointF carCornerA = new PointF(tInfo.transformX(carWarpedBox[0]), tInfo.transformY(carWarpedBox[1]));
@@ -354,10 +366,11 @@ public class AlprPlateView extends View {
 
                         // Draw car information
                         final String carText = String.format(
-                                "%s%s%s",
+                                "%s%s%s%s",
                                 make != null ? make : "Car",
                                 model != null ? ", " + model : "",
-                                color != null ? ", " + color : ""
+                                color != null ? ", " + color : "",
+                                bodyStyle != null ? ", " + bodyStyle : ""
                         );
                         Rect boundsTextCar = new Rect();
                         mPaintTextCar.getTextBounds(carText, 0, carText.length(), boundsTextCar);
@@ -377,7 +390,7 @@ public class AlprPlateView extends View {
                     }
                 }
 
-                // License Plate Country Identification (LPCI): https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci
+                // License Plate Country Identification [LPCI] (Added in 3.0.0): https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci
                 if (plate.getCountries() != null) {
                     final AlprUtils.Country country = plate.getCountries().get(0); // sorted, most higher confidence first
                     if (country.getConfidence() >= LPCI_MIN_CONFIDENCE) {

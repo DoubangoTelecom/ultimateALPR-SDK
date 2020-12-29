@@ -45,8 +45,8 @@ public class UltAlprSdkParallelDeliveryCallback : IDisposable {
     SwigDirectorConnect();
   }
 
-  public virtual void onNewResult(UltAlprSdkResult result) {
-    ultimateAlprSdkPINVOKE.UltAlprSdkParallelDeliveryCallback_onNewResult(swigCPtr, UltAlprSdkResult.getCPtr(result));
+  public virtual void onNewResult(UltAlprSdkResult newResult) {
+    ultimateAlprSdkPINVOKE.UltAlprSdkParallelDeliveryCallback_onNewResult(swigCPtr, UltAlprSdkResult.getCPtr(newResult));
   }
 
   private void SwigDirectorConnect() {
@@ -61,11 +61,11 @@ public class UltAlprSdkParallelDeliveryCallback : IDisposable {
     return hasDerivedMethod;
   }
 
-  private void SwigDirectoronNewResult(IntPtr result) {
-    onNewResult((result == IntPtr.Zero) ? null : new UltAlprSdkResult(result, false));
+  private void SwigDirectoronNewResult(IntPtr newResult) {
+    onNewResult((newResult == IntPtr.Zero) ? null : new UltAlprSdkResult(newResult, false));
   }
 
-  public delegate void SwigDelegateUltAlprSdkParallelDeliveryCallback_0(IntPtr result);
+  public delegate void SwigDelegateUltAlprSdkParallelDeliveryCallback_0(IntPtr newResult);
 
   private SwigDelegateUltAlprSdkParallelDeliveryCallback_0 swigDelegate0;
 

@@ -19,6 +19,9 @@
 | ultimateALPR-SDK_klass_labels_vmmr.txt.doubango | **Yes** | **Yes** | Only if you want [Vehicle Make Model Recognition (VMMR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr) |
 | ultimateALPR-SDK_klass_vmmr.desktop.model.doubango | No | **Yes** | Only if you want [Vehicle Make Model Recognition (VMMR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr) |
 | ultimateALPR-SDK_klassi_vmmr.mobile.model.doubango | **Yes** | No | Only if you want [Vehicle Make Model Recognition (VMMR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr) |
+| ultimateALPR-SDK_klass_labels_vbsr.txt.doubango | **Yes** | **Yes** | Only if you want [Vehicle Body Style Recognition (VBSR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-body-style-recognition-vbsr) |
+| ultimateALPR-SDK_klass_vbsr.desktop.model.doubango | No | **Yes** | Only if you want [Vehicle Body Style Recognition (VBSR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-body-style-recognition-vbsr) |
+| ultimateALPR-SDK_klassi_vbsr.mobile.model.doubango | **Yes** | No | Only if you want [Vehicle Body Style Recognition (VBSR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-body-style-recognition-vbsr) |
 
 
 # Latin ([A-Z0-9]) charsets #

@@ -14,7 +14,7 @@ ultimateALPR SDK public header
 #include <string>
 
 #define ULTALPR_SDK_VERSION_MAJOR		3
-#define ULTALPR_SDK_VERSION_MINOR		1
+#define ULTALPR_SDK_VERSION_MINOR		2
 #define ULTALPR_SDK_VERSION_MICRO		0
 
 // Windows's symbols export
@@ -170,7 +170,7 @@ namespace ultimateAlprSdk
 	class ULTIMATE_ALPR_SDK_PUBLIC_API UltAlprSdkResult {
 	public:
 		UltAlprSdkResult();
-		UltAlprSdkResult(const int code, const char* phrase, const char* json, const size_t numZones = 0);
+		UltAlprSdkResult(const int code, const char* phrase, const char* json, const size_t numPlates = 0, const size_t numCars = 0);
 		UltAlprSdkResult(const UltAlprSdkResult& other);
 		virtual ~UltAlprSdkResult();
 #if !defined(SWIG)
@@ -190,6 +190,12 @@ namespace ultimateAlprSdk
 			without parsing the \ref json string.
 		*/
 		inline const size_t numPlates()const { return numPlates_; }
+		/*! Number of cars in \ref json string. This is a helper function to quickly check whether the result contains cars
+		without parsing the \ref json string.
+		*
+		* Available since: 3.2.0
+		*/
+		inline const size_t numCars()const { return numCars_; }
 		/*! Whether the result is success. true if success, false otherwise.
 		*/
 		inline bool isOK()const { return (code_ == 0); }
@@ -199,7 +205,7 @@ namespace ultimateAlprSdk
 #endif /* SWIG */
 
 	private:
-		void ctor(const int code, const char* phrase, const char* json, const size_t numZones);
+		void ctor(const int code, const char* phrase, const char* json, const size_t numPlates, const size_t numCars);
 #if !defined(SWIG)
 		UltAlprSdkResult& operatorAssign(const UltAlprSdkResult& other);
 #endif /* SWIG */
@@ -209,6 +215,7 @@ namespace ultimateAlprSdk
 		char* phrase_;
 		char* json_;
 		size_t numPlates_;
+		size_t numCars_;
 	};
 
 	/*! Callback function to be used to get asynchronous notifications.
@@ -258,6 +265,27 @@ namespace ultimateAlprSdk
 		static UltAlprSdkResult deInit();
 
 		/*! Performs ANPR detection and recognition operations.
+			<br />
+			If you're using OpenCV to capture images from the camera or RTSP stream, the function could be used like this:
+			\code{.cpp}
+			VideoCapture cap(....);
+
+			while (1) {
+				Mat frame;
+				cap >> frame;
+
+				if (frame.empty()) {
+					break;
+				}
+
+				ULTALPR_SDK_ASSERT((result = UltAlprSdkEngine::process(
+					ULTALPR_SDK_IMAGE_TYPE_BGR24,
+					frame.ptr(),
+					frame.size().width,
+					frame.size().height
+				)).isOK());
+			}
+			\endcode
 			\param imageType The image type.
 			\param imageData Pointer to the image data.
 			\param imageWidthInSamples Image width in samples.

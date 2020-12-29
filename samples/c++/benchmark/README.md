@@ -13,7 +13,7 @@
 
 
 This application is used to check everything is ok and running as fast as expected. 
-The information about the maximum frame rate (**237fps** on Intel Xeon, **47fps** on Snapdragon 855 and **12fps** on Raspberry Pi 4) could be checked using this application. 
+The information about the maximum frame rate (**237fps** on Intel Xeon, **152fps** on Jetson NX, **47fps** on Snapdragon 855 and **12fps** on Raspberry Pi 4) could be checked using this application. 
 It's open source and doesn't require registration or license key.
 
 More information about the benchmark rules at [https://www.doubango.org/SDKs/anpr/docs/Benchmark.html](https://www.doubango.org/SDKs/anpr/docs/Benchmark.html).
@@ -137,11 +137,14 @@ benchmark \
       --negative <path-to-image-without-a-plate> \
       [--assets <path-to-assets-folder>] \
       [--charset <recognition-charset:latin/korean/chinese>] \
+      [--car_noplate_detect_enabled <whether-to-enable-detecting-cars-with-no-plate:true/false>] \
+      [--ienv_enabled <whether-to-enable-IENV:true/false>] \
       [--openvino_enabled <whether-to-enable-OpenVINO:true/false>] \
       [--openvino_device <openvino-device-to-use>] \
       [--klass_lpci_enabled <whether-to-enable-LPCI:true/false>] \
       [--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \
       [--klass_vmmr_enabled <whether-to-enable-VMMR:true/false>] \
+      [--klass_vbsr_enabled <whether-to-enable-VMMR:true/false>] \
       [--loops <number-of-times-to-run-the-loop:[1, inf]>] \
       [--rate <positive-rate:[0.0, 1.0]>] \
       [--parallel <whether-to-enable-parallel-mode:true/false>] \
@@ -154,11 +157,14 @@ Options surrounded with **[]** are optional.
 - `--negative` Path to an image (JPEG/PNG/BMP) without a license plate. This image will be used to evaluate the decoder. You can use default image at [../../../assets/images/london_traffic.jpg](../../../assets/images/london_traffic.jpg).
 - `--assets` Path to the [assets](../../../assets) folder containing the configuration files and models. Default value is the current folder.
 - `--charset` Defines the recognition charset (a.k.a alphabet) value (latin, korean, chinese...). Default: *latin*.
+- `--car_noplate_detect_enabled` Whether to detect and return cars with no plate. Default: *false*.
+- `--ienv_enabled` Whether to enable Image Enhancement for Night-Vision (IENV). More info about IENV at https://www.doubango.org/SDKs/anpr/docs/Features.html#image-enhancement-for-night-vision-ienv. Default: *false*.
 - `--openvino_enabled` Whether to enable OpenVINO. Tensorflow will be used when OpenVINO is disabled. Default: *true*.
 - `--openvino_device` Defines the OpenVINO device to use (CPU, GPU, FPGA...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino-device. Default: *CPU*."
 - `--klass_lpci_enabled` Whether to enable License Plate Country Identification (LPCI). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci. Default: *false*.
 - `--klass_vcr_enabled` Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr. Default: *false*.
 - `--klass_vmmr_enabled` Whether to enable Vehicle Make Model Recognition (VMMR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr. Default: *false*.
+- `--klass_vbsr_enabled` Whether to enable Vehicle Body Style Recognition (VBSR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-body-style-recognition-vbsr. Default: *false*.
 - `--loops` Number of times to run the processing pipeline.
 - `--rate` Percentage value within [0.0, 1.0] defining the positive rate. The positive rate defines the percentage of images with a plate.
 - `--parallel` Whether to enabled the parallel mode. More info about the parallel mode at [https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html). Default: *true*.

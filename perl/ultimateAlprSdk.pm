@@ -78,6 +78,7 @@ sub DESTROY {
 *phrase = *ultimateAlprSdkc::UltAlprSdkResult_phrase;
 *json = *ultimateAlprSdkc::UltAlprSdkResult_json;
 *numPlates = *ultimateAlprSdkc::UltAlprSdkResult_numPlates;
+*numCars = *ultimateAlprSdkc::UltAlprSdkResult_numCars;
 *isOK = *ultimateAlprSdkc::UltAlprSdkResult_isOK;
 sub DISOWN {
     my $self = shift;

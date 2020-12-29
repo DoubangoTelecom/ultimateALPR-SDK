@@ -119,6 +119,19 @@ public class AlprVideoSequentialActivity extends AlprActivity {
     static final String CONFIG_CHARSET = "latin";
 
     /**
+     * Whether to enable Image Enhancement for Night-Vision (IENV).
+     * IENV is explained at https://www.doubango.org/SDKs/anpr/docs/Features.html#features-imageenhancementfornightvision.
+     *
+     * JSON name: "ienv_enabled"
+     * Default: false
+     * type: bool
+     * pattern: true | false
+     * Available since: 3.2.0
+     * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#ienv-enabled
+     */
+    static final boolean CONFIG_IENV_ENABLED = false;
+
+    /**
      * Whether to use OpenVINO instead of Tensorflow as deep learning backend engine. OpenVINO is used for detection and classification but not for OCR.
      * OpenVINO is always faster than Tensorflow on Intel products (CPUs, VPUs, GPUs, FPGAs…) and we highly recommend using it.
      * We require a CPU with support for both AVX2 and FMA features before trying to load OpenVINO plugin (shared library).
@@ -154,6 +167,28 @@ public class AlprVideoSequentialActivity extends AlprActivity {
      * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#detect-minscore
      */
     static final double CONFIG_DETECT_MINSCORE = 0.1; // 10%
+
+    /**
+     * Whether to return cars with no plate. By default any car without plate will be silently ignored.
+     * JSON name: "car_noplate_detect_enabled"
+     * Default: false
+     * type: bool
+     * pattern: true | false
+     * Available since: 3.2.0
+     * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#car-noplate-detect-enabled
+     */
+    static final boolean CONFIG_CAR_NOPLATE_DETECT_ENABLED = false;
+
+    /**
+     * Defines a threshold for the detection score for cars with no plate. Any detection with a score below that threshold will be ignored. 0.f being poor confidence and 1.f excellent confidence.
+     * JSON name: "car_noplate_detect_min_score",
+     * Default: 0.8f
+     * type: float
+     * pattern: [0.f, 1.f]
+     * Available since: 3.2.0
+     * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#car-noplate-detect-min-score
+     */
+    static final double CONFIG_CAR_NOPLATE_DETECT_MINSCORE = 0.8; // 80%
 
     /**
      * Defines the Region Of Interest (ROI) for the detector. Any pixels outside region of interest will be ignored by the detector.
@@ -247,6 +282,18 @@ public class AlprVideoSequentialActivity extends AlprActivity {
     static final boolean CONFIG_KLASS_VMMR_ENABLED = true;
 
     /**
+     * Whether to enable Vehicle Body Style Recognition (VBSR) function (https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehiclebodystylerecognition).
+     * To avoid adding latency to the pipeline only enable this function if you really need it.
+     * JSON name: "klass_vbsr_enabled"
+     * Default: false
+     * type: bool
+     * pattern: true | false
+     * Available since: 3.2.0
+     * More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vbsr-enabled
+     */
+    static final boolean CONFIG_KLASS_VBSR_ENABLED = false;
+
+    /**
      * 1/G coefficient value to use for gamma correction operation in order to enhance the car color before applying VCR classification.
      * More information on gamma correction could be found at https://en.wikipedia.org/wiki/Gamma_correction.
      * Values higher than 1.0f mean lighter and lower than 1.0f mean darker. Value equal to 1.0f mean bypass gamma correction operation.
@@ -269,7 +316,7 @@ public class AlprVideoSequentialActivity extends AlprActivity {
      * pattern: ]0.f, 1.f]
      * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#recogn-minscore
      */
-    static final double CONFIG_RECOGN_MINSCORE = 0.3; // 30%
+    static final double CONFIG_RECOGN_MINSCORE = 0.4; // 40%
 
     /**
      * Defines the overall score type. The recognizer outputs a recognition score ([0.f, 1.f]) for every character in the license plate.
@@ -291,7 +338,7 @@ public class AlprVideoSequentialActivity extends AlprActivity {
 
     /**
      * Whether to add rectification layer between the detector's output and the recognizer's input. A rectification layer is used to suppress the distortion.
-     * A plate is distorted when it's skewed and/or slanted. The rectification layer will deslant and deskew the plate to make it straight which make the recognition more accurate.
+     * A plate is distorted when it's skewed and/or slanted. The rectification layer will deslant and deskew the plate to make it straight which makes the recognition more accurate.
      * Please note that you only need to enable this feature when the license plates are highly distorted. The implementation can handle moderate distortion without a rectification layer.
      * The rectification layer adds many CPU intensive operations to the pipeline which decrease the frame rate.
      * More info on the rectification layer could be found at https://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html#rectificationlayer
@@ -352,11 +399,15 @@ public class AlprVideoSequentialActivity extends AlprActivity {
             config.put("gpgpu_enabled", CONFIG_GPGPU_ENABLED);
             config.put("charset", CONFIG_CHARSET);
             config.put("max_latency", CONFIG_MAX_LATENCY);
+            config.put("ienv_enabled", CONFIG_IENV_ENABLED);
             config.put("openvino_enabled", CONFIG_OPENVINO_ENABLED);
             config.put("openvino_device", CONFIG_OPENVINO_DEVICE);
 
             config.put("detect_minscore", CONFIG_DETECT_MINSCORE);
             config.put("detect_roi", new JSONArray(getDetectROI()));
+
+            config.put("car_noplate_detect_enabled", CONFIG_CAR_NOPLATE_DETECT_ENABLED);
+            config.put("car_noplate_detect_min_score", CONFIG_CAR_NOPLATE_DETECT_MINSCORE);
 
             config.put("pyramidal_search_enabled", CONFIG_PYRAMIDAL_SEARCH_ENABLED);
             config.put("pyramidal_search_sensitivity", CONFIG_PYRAMIDAL_SEARCH_SENSITIVITY);
@@ -366,6 +417,7 @@ public class AlprVideoSequentialActivity extends AlprActivity {
             config.put("klass_lpci_enabled", CONFIG_KLASS_LPCI_ENABLED);
             config.put("klass_vcr_enabled", CONFIG_KLASS_VCR_ENABLED);
             config.put("klass_vmmr_enabled", CONFIG_KLASS_VMMR_ENABLED);
+            config.put("klass_vbsr_enabled", CONFIG_KLASS_VBSR_ENABLED);
             config.put("klass_vcr_gamma", CONFIG_KLASS_VCR_GAMMA);
 
             config.put("recogn_minscore", CONFIG_RECOGN_MINSCORE);

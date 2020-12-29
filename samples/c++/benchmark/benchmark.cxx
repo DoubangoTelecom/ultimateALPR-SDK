@@ -14,11 +14,13 @@
 			--negative <path-to-image-without-a-plate> \
 			[--assets <path-to-assets-folder>] \
 			[--charset <recognition-charset:latin/korean/chinese>] \
+			[--ienv_enabled <whether-to-enable-IENV:true/false>] \
 			[--openvino_enabled <whether-to-enable-OpenVINO:true/false>] \
 			[--openvino_device <openvino_device-to-use>] \
 			[--klass_lpci_enabled <whether-to-enable-LPCI:true/false>] \
 			[--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \
 			[--klass_vmmr_enabled <whether-to-enable-VMMR:true/false>] \
+			[--klass_vbsr_enabled <whether-to-enable-VBSR:true/false>] \
 			[--loops <number-of-times-to-run-the-loop:[1, inf]>] \
 			[--rate <positive-rate:[0.0, 1.0]>] \
 			[--parallel <whether-to-enable-parallel-mode:true/false>] \
@@ -122,10 +124,12 @@ int main(int argc, char *argv[])
 	std::string assetsFolder, licenseTokenData, licenseTokenFile;
 	bool isParallelDeliveryEnabled = true;
 	bool isRectificationEnabled = false;
+	bool isIENVEnabled = false;
 	bool isOpenVinoEnabled = true;
 	bool isKlassLPCI_Enabled = false;
 	bool isKlassVCR_Enabled = false;
 	bool isKlassVMMR_Enabled = false;
+	bool isKlassVBSR_Enabled = false;
 	std::string charset = "latin";
 	std::string openvinoDevice = "CPU";
 	size_t loopCount = 100;
@@ -180,6 +184,9 @@ int main(int argc, char *argv[])
 	if (args.find("--rectify") != args.end()) {
 		isRectificationEnabled = (args["--rectify"].compare("true") == 0);
 	}
+	if (args.find("--ienv_enabled") != args.end()) {
+		isIENVEnabled = (args["--ienv_enabled"].compare("true") == 0);
+	}
 	if (args.find("--openvino_enabled") != args.end()) {
 		isOpenVinoEnabled = (args["--openvino_enabled"].compare("true") == 0);
 	}
@@ -194,6 +201,9 @@ int main(int argc, char *argv[])
 	}
 	if (args.find("--klass_vmmr_enabled") != args.end()) {
 		isKlassVMMR_Enabled = (args["--klass_vmmr_enabled"].compare("true") == 0);
+	}
+	if (args.find("--klass_vbsr_enabled") != args.end()) {
+		isKlassVBSR_Enabled = (args["--klass_vbsr_enabled"].compare("true") == 0);
 	}
 	if (args.find("--tokenfile") != args.end()) {
 		licenseTokenFile = args["--tokenfile"];
@@ -214,7 +224,8 @@ int main(int argc, char *argv[])
 	if (!charset.empty()) {
 		jsonConfig += std::string(",\"charset\": \"") + charset + std::string("\"");
 	}
-	jsonConfig += std::string(",\"recogn_rectify_enabled\": ") + (isRectificationEnabled ? "true" : "false");
+	jsonConfig += std::string(",\"recogn_rectify_enabled\": ") + (isRectificationEnabled ? "true" : "false");	
+	jsonConfig += std::string(",\"ienv_enabled\": ") + (isIENVEnabled ? "true" : "false");
 	jsonConfig += std::string(",\"openvino_enabled\": ") + (isOpenVinoEnabled ? "true" : "false");
 	if (!openvinoDevice.empty()) {
 		jsonConfig += std::string(",\"openvino_device\": \"") + openvinoDevice + std::string("\"");
@@ -222,6 +233,7 @@ int main(int argc, char *argv[])
 	jsonConfig += std::string(",\"klass_lpci_enabled\": ") + (isKlassLPCI_Enabled ? "true" : "false");
 	jsonConfig += std::string(",\"klass_vcr_enabled\": ") + (isKlassVCR_Enabled ? "true" : "false");
 	jsonConfig += std::string(",\"klass_vmmr_enabled\": ") + (isKlassVMMR_Enabled ? "true" : "false");
+	jsonConfig += std::string(",\"klass_vbsr_enabled\": ") + (isKlassVBSR_Enabled ? "true" : "false");
 	if (!licenseTokenFile.empty()) {
 		jsonConfig += std::string(",\"license_token_file\": \"") + licenseTokenFile + std::string("\"");
 	}
@@ -339,11 +351,13 @@ static void printUsage(const std::string& message /*= ""*/)
 		"\t--negative <path-to-image-without-a-plate> \n"
 		"\t[--assets <path-to-assets-folder>] \n"
 		"\t[--charset <recognition-charset:latin/korean/chinese>] \n"
+		"\t[--ienv_enabled <whether-to-enable-IENV:true/false>] \n"
 		"\t[--openvino_enabled <whether-to-enable-OpenVINO:true/false>] \n"
 		"\t[--openvino_device <openvino_device-to-use>] \n"
 		"\t[--klass_lpci_enabled <whether-to-enable-LPCI:true/false>] \n"
 		"\t[--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \n"
 		"\t[--klass_vmmr_enabled <whether-to-enable-VMMR:true/false>] \n"
+		"\t[--klass_vbsr_enabled <whether-to-enable-VBSR:true/false>] \n"
 		"\t[--loops <number-of-times-to-run-the-loop:[1, inf]>] \n"
 		"\t[--rate <positive-rate:[0.0, 1.0]>] \n"
 		"\t[--parallel <whether-to-enable-parallel-mode:true / false>] \n"
@@ -357,11 +371,13 @@ static void printUsage(const std::string& message /*= ""*/)
 		"--negative: Path to an image(JPEG/PNG/BMP) without a license plate. This image will be used to evaluate the detector. You can use default image at ../../../assets/images/london_traffic.jpg.\n\n"
 		"--assets: Path to the assets folder containing the configuration files and models. Default value is the current folder.\n\n"
 		"--charset: Defines the recognition charset value (latin, korean, chinese...). Default: latin.\n\n"
+		"--ienv_enabled: Whether to enable Image Enhancement for Night-Vision (IENV). More info about IENV at https://www.doubango.org/SDKs/anpr/docs/Features.html#image-enhancement-for-night-vision-ienv. Default: false.\n\n"
 		"--openvino_enabled: Whether to enable OpenVINO. Tensorflow will be used when OpenVINO is disabled. Default: true.\n\n"
 		"--openvino_device: Defines the OpenVINO device to use (CPU, GPU, FPGA...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino_device. Default: CPU.\n\n"
 		"--klass_lpci_enabled: Whether to enable License Plate Country Identification (LPCI). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci. Default: false.\n\n"
 		"--klass_vcr_enabled: Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr. Default: false.\n\n"
 		"--klass_vmmr_enabled: Whether to enable Vehicle Make Model Recognition (VMMR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr. Default: false.\n\n"
+		"--klass_vbsr_enabled: Whether to enable Vehicle Body Style Recognition (VBSR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vbsr. Default: false.\n\n"
 		"--loops: Number of times to run the processing pipeline.\n\n"
 		"--rate: Percentage value within[0.0, 1.0] defining the positive rate. The positive rate defines the percentage of images with a plate.\n\n"
 		"--parallel: Whether to enabled the parallel mode. More info about the parallel mode at https ://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html. Default: true.\n\n"

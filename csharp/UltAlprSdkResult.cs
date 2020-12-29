@@ -44,13 +44,16 @@ public class UltAlprSdkResult : IDisposable {
   public UltAlprSdkResult() : this(ultimateAlprSdkPINVOKE.new_UltAlprSdkResult__SWIG_0(), true) {
   }
 
-  public UltAlprSdkResult(int code, string phrase, string json, uint numZones) : this(ultimateAlprSdkPINVOKE.new_UltAlprSdkResult__SWIG_1(code, phrase, json, numZones), true) {
+  public UltAlprSdkResult(int code, string phrase, string json, uint numPlates, uint numCars) : this(ultimateAlprSdkPINVOKE.new_UltAlprSdkResult__SWIG_1(code, phrase, json, numPlates, numCars), true) {
   }
 
-  public UltAlprSdkResult(int code, string phrase, string json) : this(ultimateAlprSdkPINVOKE.new_UltAlprSdkResult__SWIG_2(code, phrase, json), true) {
+  public UltAlprSdkResult(int code, string phrase, string json, uint numPlates) : this(ultimateAlprSdkPINVOKE.new_UltAlprSdkResult__SWIG_2(code, phrase, json, numPlates), true) {
   }
 
-  public UltAlprSdkResult(UltAlprSdkResult other) : this(ultimateAlprSdkPINVOKE.new_UltAlprSdkResult__SWIG_3(UltAlprSdkResult.getCPtr(other)), true) {
+  public UltAlprSdkResult(int code, string phrase, string json) : this(ultimateAlprSdkPINVOKE.new_UltAlprSdkResult__SWIG_3(code, phrase, json), true) {
+  }
+
+  public UltAlprSdkResult(UltAlprSdkResult other) : this(ultimateAlprSdkPINVOKE.new_UltAlprSdkResult__SWIG_4(UltAlprSdkResult.getCPtr(other)), true) {
     if (ultimateAlprSdkPINVOKE.SWIGPendingException.Pending) throw ultimateAlprSdkPINVOKE.SWIGPendingException.Retrieve();
   }
 
@@ -71,6 +74,11 @@ public class UltAlprSdkResult : IDisposable {
 
   public uint numPlates() {
     uint ret = ultimateAlprSdkPINVOKE.UltAlprSdkResult_numPlates(swigCPtr);
+    return ret;
+  }
+
+  public uint numCars() {
+    uint ret = ultimateAlprSdkPINVOKE.UltAlprSdkResult_numCars(swigCPtr);
     return ret;
   }
 

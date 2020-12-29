@@ -104,6 +104,29 @@ namespace recognizer
         const int CONFIG_MAX_LATENCY = -1;
 
         /**
+         * Defines a charset (Alphabet) to use for the recognizer.
+         * JSON name: "charset"
+         * Default: "latin"
+         * type: string
+         * pattern: "latin" | "koran"
+         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#charset
+         */
+        const String CONFIG_CHARSET = "latin";
+
+        /**
+         * Whether to enable Image Enhancement for Night-Vision (IENV).
+         * IENV is explained at https://www.doubango.org/SDKs/anpr/docs/Features.html#features-imageenhancementfornightvision.
+         *
+         * JSON name: "ienv_enabled"
+         * Default: false
+         * type: bool
+         * pattern: true | false
+         * Available since: 3.2.0
+         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#ienv-enabled
+         */
+        const bool CONFIG_IENV_ENABLED = true;
+
+        /**
          * Whether to use OpenVINO instead of Tensorflow as deep learning backend engine. OpenVINO is used for detection and classification but not for OCR. 
          * OpenVINO is always faster than Tensorflow on Intel products (CPUs, VPUs, GPUs, FPGAs…) and we highly recommend using it. 
          * We require a CPU with support for both AVX2 and FMA features before trying to load OpenVINO plugin (shared library). 
@@ -152,14 +175,27 @@ namespace recognizer
         static readonly IList<float> CONFIG_DETECT_ROI = new[] { 0f, 0f, 0f, 0f };
 
         /**
-         * Defines a charset (Alphabet) to use for the recognizer.
-         * JSON name: "charset"
-         * Default: "latin"
-         * type: string
-         * pattern: "latin" | "koran"
-         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#charset
+         * Whether to return cars with no plate. By default any car without plate will be silently ignored.
+         * To filter false-positives: https://www.doubango.org/SDKs/anpr/docs/Known_issues.html#false-positives-for-cars-with-no-plate
+         * JSON name: "car_noplate_detect_enabled"
+         * Default: false
+         * type: bool
+         * pattern: true | false
+         * Available since: 3.2.0
+         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#car-noplate-detect-enabled
          */
-        const String CONFIG_CHARSET = "latin";
+        const bool CONFIG_CAR_NOPLATE_DETECT_ENABLED = false;
+
+        /**
+        * Defines a threshold for the detection score for cars with no plate. Any detection with a score below that threshold will be ignored. 0.f being poor confidence and 1.f excellent confidence.
+        * JSON name: "car_noplate_detect_min_score",
+        * Default: 0.8f
+        * type: float
+        * pattern: [0.f, 1.f]
+        * Available since: 3.2.0
+        * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#car-noplate-detect-min-score
+        */
+        const double CONFIG_CAR_NOPLATE_DETECT_MINSCORE = 0.8; // 80%
 
         /**
          * Whether to enable pyramidal search. Pyramidal search is an advanced feature to accurately detect very small or far away license plates.
@@ -241,6 +277,18 @@ namespace recognizer
          * More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vmmr-enabled
          */
         const bool CONFIG_KLASS_VMMR_ENABLED = false;
+
+        /**
+         * Whether to enable Vehicle Body Style Recognition (VBSR) function (https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehiclebodystylerecognition).
+         * To avoid adding latency to the pipeline only enable this function if you really need it.
+         * JSON name: "klass_vbsr_enabled"
+         * Default: false
+         * type: bool
+         * pattern: true | false
+         * Available since: 3.2.0
+         * More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vbsr-enabled
+         */
+        const bool CONFIG_KLASS_VBSR_ENABLED = false;
 
         /**
          * 1/G coefficient value to use for gamma correction operation in order to enhance the car color before applying VCR classification. 
@@ -444,11 +492,15 @@ namespace recognizer
                 num_threads = CONFIG_NUM_THREADS,
                 gpgpu_enabled = CONFIG_GPGPU_ENABLED,
                 max_latency = CONFIG_MAX_LATENCY,
+                ienv_enabled = CONFIG_IENV_ENABLED,
                 openvino_enabled = CONFIG_OPENVINO_ENABLED,
                 openvino_device = CONFIG_OPENVINO_DEVICE,
 
                 detect_minscore = CONFIG_DETECT_MINSCORE,
                 detect_roi = CONFIG_DETECT_ROI,
+
+                car_noplate_detect_enabled = CONFIG_CAR_NOPLATE_DETECT_ENABLED,
+                car_noplate_detect_min_score = CONFIG_CAR_NOPLATE_DETECT_MINSCORE,
 
                 pyramidal_search_enabled = CONFIG_PYRAMIDAL_SEARCH_ENABLED,
                 pyramidal_search_sensitivity = CONFIG_PYRAMIDAL_SEARCH_SENSITIVITY,
@@ -458,6 +510,7 @@ namespace recognizer
                 klass_lpci_enabled = CONFIG_KLASS_LPCI_ENABLED,
                 klass_vcr_enabled = CONFIG_KLASS_VCR_ENABLED,
                 klass_vmmr_enabled = CONFIG_KLASS_VMMR_ENABLED,
+                klass_vbsr_enabled = CONFIG_KLASS_VBSR_ENABLED,
                 klass_vcr_gamma = CONFIG_KLASS_VCR_GAMMA,
 
                 recogn_minscore = CONFIG_RECOGN_MINSCORE,

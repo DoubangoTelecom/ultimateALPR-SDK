@@ -14,11 +14,14 @@
 			[--rectify <whether-to-enable-rectification-layer:true/false>] \
 			[--assets <path-to-assets-folder>] \
 			[--charset <recognition-charset:latin/korean/chinese>] \
+			[--car_noplate_detect_enabled <whether-to-enable-detecting-cars-with-no-plate:true/false>] \
+			[--ienv_enabled <whether-to-enable-IENV:true/false>] \
 			[--openvino_enabled <whether-to-enable-OpenVINO:true/false>] \
 			[--openvino_device <openvino_device-to-use>] \
 			[--klass_lpci_enabled <whether-to-enable-LPCI:true/false>] \
 			[--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \
 			[--klass_vmmr_enabled <whether-to-enable-VMMR:true/false>] \
+			[--klass_vbsr_enabled <whether-to-enable-VBSR:true/false>] \
 			[--tokenfile <path-to-license-token-file>] \
 			[--tokendata <base64-license-token-data>]
 
@@ -59,8 +62,10 @@ static const char* __jsonConfig =
 "\"detect_roi\": [0, 0, 0, 0],"
 "\"detect_minscore\": 0.1,"
 ""
+"\"car_noplate_detect_min_score\": 0.8,"
+""
 "\"pyramidal_search_enabled\": true,"
-"\"pyramidal_search_sensitivity\": 0.28,"
+"\"pyramidal_search_sensitivity\": 1.0,"
 "\"pyramidal_search_minscore\": 0.3,"
 "\"pyramidal_search_min_image_size_inpixels\": 800,"
 ""
@@ -115,10 +120,18 @@ int main(int argc, char *argv[])
 	std::string assetsFolder, licenseTokenData, licenseTokenFile;
 	bool isParallelDeliveryEnabled = false; // Single image -> no need for parallel processing
 	bool isRectificationEnabled = false;
+	bool isCarNoPlateDetectEnabled = false;
+	bool isIENVEnabled =
+#if defined(__arm__) || defined(__thumb__) || defined(__TARGET_ARCH_ARM) || defined(__TARGET_ARCH_THUMB) || defined(_ARM) || defined(_M_ARM) || defined(_M_ARMT) || defined(__arm) || defined(__aarch64__)
+		false;
+#else // x86-64
+		true;
+#endif
 	bool isOpenVinoEnabled = true;
 	bool isKlassLPCI_Enabled = false;
 	bool isKlassVCR_Enabled = false;
 	bool isKlassVMMR_Enabled = false;
+	bool isKlassVBSR_Enabled = false;
 	std::string charset = "latin";
 	std::string openvinoDevice = "CPU";
 	std::string pathFileImage;
@@ -150,6 +163,12 @@ int main(int argc, char *argv[])
 	if (args.find("--rectify") != args.end()) {
 		isRectificationEnabled = (args["--rectify"].compare("true") == 0);
 	}	
+	if (args.find("--car_noplate_detect_enabled") != args.end()) {
+		isCarNoPlateDetectEnabled = (args["--car_noplate_detect_enabled"].compare("true") == 0);
+	}
+	if (args.find("--ienv_enabled") != args.end()) {
+		isIENVEnabled = (args["--ienv_enabled"].compare("true") == 0);
+	}
 	if (args.find("--openvino_enabled") != args.end()) {
 		isOpenVinoEnabled = (args["--openvino_enabled"].compare("true") == 0);
 	}
@@ -164,6 +183,9 @@ int main(int argc, char *argv[])
 	}
 	if (args.find("--klass_vmmr_enabled") != args.end()) {
 		isKlassVMMR_Enabled = (args["--klass_vmmr_enabled"].compare("true") == 0);
+	}
+	if (args.find("--klass_vbsr_enabled") != args.end()) {
+		isKlassVBSR_Enabled = (args["--klass_vbsr_enabled"].compare("true") == 0);
 	}
 	if (args.find("--tokenfile") != args.end()) {
 		licenseTokenFile = args["--tokenfile"];
@@ -183,7 +205,9 @@ int main(int argc, char *argv[])
 	if (!charset.empty()) {
 		jsonConfig += std::string(",\"charset\": \"") + charset + std::string("\"");
 	}
-	jsonConfig += std::string(",\"recogn_rectify_enabled\": ") + (isRectificationEnabled ? "true" : "false");
+	jsonConfig += std::string(",\"recogn_rectify_enabled\": ") + (isRectificationEnabled ? "true" : "false");	
+	jsonConfig += std::string(",\"car_noplate_detect_enabled\": ") + (isCarNoPlateDetectEnabled ? "true" : "false");
+	jsonConfig += std::string(",\"ienv_enabled\": ") + (isIENVEnabled ? "true" : "false");
 	jsonConfig += std::string(",\"openvino_enabled\": ") + (isOpenVinoEnabled ? "true" : "false");
 	if (!openvinoDevice.empty()) {
 		jsonConfig += std::string(",\"openvino_device\": \"") + openvinoDevice + std::string("\"");
@@ -191,6 +215,7 @@ int main(int argc, char *argv[])
 	jsonConfig += std::string(",\"klass_lpci_enabled\": ") + (isKlassLPCI_Enabled ? "true" : "false");
 	jsonConfig += std::string(",\"klass_vcr_enabled\": ") + (isKlassVCR_Enabled ? "true" : "false");
 	jsonConfig += std::string(",\"klass_vmmr_enabled\": ") + (isKlassVMMR_Enabled ? "true" : "false");
+	jsonConfig += std::string(",\"klass_vbsr_enabled\": ") + (isKlassVBSR_Enabled ? "true" : "false");
 	if (!licenseTokenFile.empty()) {
 		jsonConfig += std::string(",\"license_token_file\": \"") + licenseTokenFile + std::string("\"");
 	}
@@ -260,11 +285,14 @@ static void printUsage(const std::string& message /*= ""*/)
 		"\t--image <path-to-image-with-to-recognize> \n"
 		"\t[--assets <path-to-assets-folder>] \n"
 		"\t[--charset <recognition-charset:latin/korean/chinese>] \n"
+		"\t[--car_noplate_detect_enabled <whether-to-enable-detecting-cars-with-no-plate:true/false>] \n"
+		"\t[--ienv_enabled <whether-to-enable-IENV:true/false>] \n"
 		"\t[--openvino_enabled <whether-to-enable-OpenVINO:true/false>] \n"
 		"\t[--openvino_device <openvino_device-to-use>] \n"
 		"\t[--klass_lpci_enabled <whether-to-enable-LPCI:true/false>] \n"
 		"\t[--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \n"
 		"\t[--klass_vmmr_enabled <whether-to-enable-VMMR:true/false>] \n"
+		"\t[--klass_vbsr_enabled <whether-to-enable-VBSR:true/false>] \n"
 		"\t[--parallel <whether-to-enable-parallel-mode:true / false>] \n"
 		"\t[--rectify <whether-to-enable-rectification-layer:true / false>] \n"
 		"\t[--tokenfile <path-to-license-token-file>] \n"
@@ -276,11 +304,14 @@ static void printUsage(const std::string& message /*= ""*/)
 		"--assets: Path to the assets folder containing the configuration files and models. Default value is the current folder.\n\n"
 		"--charset: Defines the recognition charset (a.k.a alphabet) value (latin, korean, chinese...). Default: latin.\n\n"
 		"--charset: Defines the recognition charset value (latin, korean, chinese...). Default: latin.\n\n"
+		"--car_noplate_detect_enabled: Whether to detect and return cars with no plate. Default: false.\n\n"
+		"--ienv_enabled: Whether to enable Image Enhancement for Night-Vision (IENV). More info about IENV at https://www.doubango.org/SDKs/anpr/docs/Features.html#image-enhancement-for-night-vision-ienv. Default: true for x86-64 and false for ARM.\n\n"
 		"--openvino_enabled: Whether to enable OpenVINO. Tensorflow will be used when OpenVINO is disabled. Default: true.\n\n"
 		"--openvino_device: Defines the OpenVINO device to use (CPU, GPU, FPGA...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino_device. Default: CPU.\n\n"
 		"--klass_lpci_enabled: Whether to enable License Plate Country Identification (LPCI). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci. Default: false.\n\n"
 		"--klass_vcr_enabled: Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr. Default: false.\n\n"
 		"--klass_vmmr_enabled: Whether to enable Vehicle Make Model Recognition (VMMR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr. Default: false.\n\n"
+		"--klass_vbsr_enabled: Whether to enable Vehicle Body Style Recognition (VBSR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vbsr. Default: false.\n\n"
 		"--parallel: Whether to enabled the parallel mode.More info about the parallel mode at https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html. Default: true.\n\n"
 		"--rectify: Whether to enable the rectification layer. More info about the rectification layer at https ://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html. Default: false.\n\n"
 		"--tokenfile: Path to the file containing the base64 license token if you have one. If not provided then, the application will act like a trial version. Default: null.\n\n"

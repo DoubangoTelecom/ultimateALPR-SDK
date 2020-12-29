@@ -202,13 +202,16 @@ class ultimateAlprSdkPINVOKE {
   public static extern IntPtr new_UltAlprSdkResult__SWIG_0();
 
   [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_new_UltAlprSdkResult__SWIG_1")]
-  public static extern IntPtr new_UltAlprSdkResult__SWIG_1(int jarg1, string jarg2, string jarg3, uint jarg4);
+  public static extern IntPtr new_UltAlprSdkResult__SWIG_1(int jarg1, string jarg2, string jarg3, uint jarg4, uint jarg5);
 
   [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_new_UltAlprSdkResult__SWIG_2")]
-  public static extern IntPtr new_UltAlprSdkResult__SWIG_2(int jarg1, string jarg2, string jarg3);
+  public static extern IntPtr new_UltAlprSdkResult__SWIG_2(int jarg1, string jarg2, string jarg3, uint jarg4);
 
   [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_new_UltAlprSdkResult__SWIG_3")]
-  public static extern IntPtr new_UltAlprSdkResult__SWIG_3(HandleRef jarg1);
+  public static extern IntPtr new_UltAlprSdkResult__SWIG_3(int jarg1, string jarg2, string jarg3);
+
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_new_UltAlprSdkResult__SWIG_4")]
+  public static extern IntPtr new_UltAlprSdkResult__SWIG_4(HandleRef jarg1);
 
   [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_delete_UltAlprSdkResult")]
   public static extern void delete_UltAlprSdkResult(HandleRef jarg1);
@@ -224,6 +227,9 @@ class ultimateAlprSdkPINVOKE {
 
   [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_UltAlprSdkResult_numPlates")]
   public static extern uint UltAlprSdkResult_numPlates(HandleRef jarg1);
+
+  [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_UltAlprSdkResult_numCars")]
+  public static extern uint UltAlprSdkResult_numCars(HandleRef jarg1);
 
   [DllImport("ultimateALPR-SDK", EntryPoint="CSharp_UltAlprSdkResult_isOK")]
   public static extern bool UltAlprSdkResult_isOK(HandleRef jarg1);

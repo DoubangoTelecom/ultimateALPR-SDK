@@ -258,7 +258,8 @@ public abstract class AlprActivity extends AppCompatActivity implements AlprCame
 
         // Display the result if sequential mode. Otherwise, let the parallel callback
         // display the result when provided.
-        if (mAlprPlateView != null && (mParallelDeliveryCallback == null || result.numPlates() == 0)) { // means sequential call or no plates to expect from the parallel delivery callback
+        // Starting version 3.2 the callback will be called even if the result is empty
+        if (mAlprPlateView != null && (mParallelDeliveryCallback == null || (result.numPlates() == 0 && result.numCars() == 0))) { // means sequential call or no plate/car to expect from the parallel delivery callback
             mAlprPlateView.setResult(result, (jpegOrientation % 180) == 0 ? imageSize : new Size(imageSize.getHeight(), imageSize.getWidth()), durationInMillis, jpegOrientation);
         }
     }

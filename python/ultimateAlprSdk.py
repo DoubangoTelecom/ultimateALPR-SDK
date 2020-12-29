@@ -104,6 +104,7 @@ class UltAlprSdkResult(_object):
     def phrase(self): return _ultimateAlprSdk.UltAlprSdkResult_phrase(self)
     def json(self): return _ultimateAlprSdk.UltAlprSdkResult_json(self)
     def numPlates(self): return _ultimateAlprSdk.UltAlprSdkResult_numPlates(self)
+    def numCars(self): return _ultimateAlprSdk.UltAlprSdkResult_numCars(self)
     def isOK(self): return _ultimateAlprSdk.UltAlprSdkResult_isOK(self)
 UltAlprSdkResult_swigregister = _ultimateAlprSdk.UltAlprSdkResult_swigregister
 UltAlprSdkResult_swigregister(UltAlprSdkResult)

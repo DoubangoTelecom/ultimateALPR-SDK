@@ -95,6 +95,28 @@ public class Recognizer {
 	*/
   static final int CONFIG_MAX_LATENCY = -1;
 
+   /**
+   * Defines a charset (Alphabet) to use for the recognizer.
+   * JSON name: "charset"
+   * Default: "latin"
+   * type: string
+   * pattern: "latin" | "koran"
+   * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#charset
+   */
+  static final String CONFIG_CHARSET = "latin";
+
+   /**
+   * Whether to enable Image Enhancement for Night-Vision (IENV).
+   * IENV is explained at https://www.doubango.org/SDKs/anpr/docs/Features.html#features-imageenhancementfornightvision.
+   *
+   * JSON name: "ienv_enabled"
+   * Default: false
+   * type: bool
+   * pattern: true | false
+   * Available since: 3.2.0
+   * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#ienv-enabled
+   */
+  static final boolean CONFIG_IENV_ENABLED = false;
 
   /**
    * Whether to use OpenVINO instead of Tensorflow as deep learning backend engine. OpenVINO is used for detection and classification but not for OCR. 
@@ -145,14 +167,27 @@ public class Recognizer {
    static final List<Float> CONFIG_DETECT_ROI = Arrays.asList(0.f, 0.f, 0.f, 0.f);
 
    /**
-   * Defines a charset (Alphabet) to use for the recognizer.
-   * JSON name: "charset"
-   * Default: "latin"
-   * type: string
-   * pattern: "latin" | "koran"
-   * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#charset
+   * Whether to return cars with no plate. By default any car without plate will be silently ignored.
+   * To filter false-positives: https://www.doubango.org/SDKs/anpr/docs/Known_issues.html#false-positives-for-cars-with-no-plate
+   * JSON name: "car_noplate_detect_enabled"
+   * Default: false
+   * type: bool
+   * pattern: true | false
+   * Available since: 3.2.0
+   * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#car-noplate-detect-enabled
    */
-  static final String CONFIG_CHARSET = "latin";
+  static final boolean CONFIG_CAR_NOPLATE_DETECT_ENABLED = false;
+
+   /**
+    * Defines a threshold for the detection score for cars with no plate. Any detection with a score below that threshold will be ignored. 0.f being poor confidence and 1.f excellent confidence.
+   * JSON name: "car_noplate_detect_min_score",
+   * Default: 0.8f
+   * type: float
+   * pattern: [0.f, 1.f]
+   * Available since: 3.2.0
+   * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#car-noplate-detect-min-score
+   */
+  static final double CONFIG_CAR_NOPLATE_DETECT_MINSCORE = 0.8; // 80%
 
    /**
    * Whether to enable pyramidal search. Pyramidal search is an advanced feature to accurately detect very small or far away license plates.
@@ -233,6 +268,18 @@ public class Recognizer {
    * More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vmmr-enabled
    */
   static final boolean CONFIG_KLASS_VMMR_ENABLED = false;
+
+   /**
+   * Whether to enable Vehicle Body Style Recognition (VBSR) function (https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehiclebodystylerecognition).
+   * To avoid adding latency to the pipeline only enable this function if you really need it.
+   * JSON name: "klass_vbsr_enabled"
+   * Default: false
+   * type: bool
+   * pattern: true | false
+   * Available since: 3.2.0
+   * More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vbsr-enabled
+   */
+  static final boolean CONFIG_KLASS_VBSR_ENABLED = false;
 
    /**
    * 1/G coefficient value to use for gamma correction operation in order to enhance the car color before applying VCR classification. 
@@ -429,12 +476,16 @@ public class Recognizer {
          "" +
          "\"num_threads\": %d," +
          "\"gpgpu_enabled\": %s," +
-		 "\"max_latency\": %d," +
+         "\"max_latency\": %d," +
+         "\"ienv_enabled\": %s," +
          "\"openvino_enabled\": %s," +
          "\"openvino_device\": \"%s\"," +
          "" +
          "\"detect_roi\": [%s]," +
          "\"detect_minscore\": %f," +
+         "" +
+         "\"car_noplate_detect_enabled\": %s," +
+         "\"car_noplate_detect_min_score\": %f," +
          "" +
          "\"pyramidal_search_enabled\": %s," +
          "\"pyramidal_search_sensitivity\": %f," +
@@ -444,6 +495,7 @@ public class Recognizer {
          "\"klass_lpci_enabled\": %s," +
          "\"klass_vcr_enabled\": %s," +
          "\"klass_vmmr_enabled\": %s," +
+         "\"klass_vbsr_enabled\": %s," +
          "\"klass_vcr_gamma\": %f," +
          "" +
          "\"recogn_minscore\": %f," +
@@ -461,12 +513,16 @@ public class Recognizer {
 
          CONFIG_NUM_THREADS,
          CONFIG_GPGPU_ENABLED ? "true" : "false",
-		 CONFIG_MAX_LATENCY,
+         CONFIG_MAX_LATENCY,
+         CONFIG_IENV_ENABLED ? "true" : "false",
          CONFIG_OPENVINO_ENABLED ? "true" : "false",
          CONFIG_OPENVINO_DEVICE,
 
          CONFIG_DETECT_ROI.stream().map(String::valueOf).collect(Collectors.joining(",")),
          CONFIG_DETECT_MINSCORE,
+
+         CONFIG_CAR_NOPLATE_DETECT_ENABLED ? "true" : "false",
+         CONFIG_CAR_NOPLATE_DETECT_MINSCORE,
 
          CONFIG_PYRAMIDAL_SEARCH_ENABLED ? "true" : "false",
          CONFIG_PYRAMIDAL_SEARCH_SENSITIVITY,
@@ -476,6 +532,7 @@ public class Recognizer {
          CONFIG_KLASS_LPCI_ENABLED ? "true" : "false",
          CONFIG_KLASS_VCR_ENABLED ? "true" : "false",
          CONFIG_KLASS_VMMR_ENABLED ? "true" : "false",
+         CONFIG_KLASS_VBSR_ENABLED ? "true" : "false",
          CONFIG_KLASS_VCR_GAMMA,
 
          CONFIG_RECOGN_MINSCORE,

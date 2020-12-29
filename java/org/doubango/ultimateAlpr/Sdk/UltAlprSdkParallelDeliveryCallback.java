@@ -55,8 +55,8 @@ public class UltAlprSdkParallelDeliveryCallback {
     ultimateAlprSdkJNI.UltAlprSdkParallelDeliveryCallback_director_connect(this, swigCPtr, swigCMemOwn, true);
   }
 
-  public void onNewResult(UltAlprSdkResult result) {
-    ultimateAlprSdkJNI.UltAlprSdkParallelDeliveryCallback_onNewResult(swigCPtr, this, UltAlprSdkResult.getCPtr(result), result);
+  public void onNewResult(UltAlprSdkResult newResult) {
+    ultimateAlprSdkJNI.UltAlprSdkParallelDeliveryCallback_onNewResult(swigCPtr, this, UltAlprSdkResult.getCPtr(newResult), newResult);
   }
 
 }

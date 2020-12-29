@@ -4001,6 +4001,70 @@ SWIGINTERN PyObject *_wrap_new_UltAlprSdkResult__SWIG_1(PyObject *SWIGUNUSEDPARM
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
   size_t arg4 ;
+  size_t arg5 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  size_t val4 ;
+  int ecode4 = 0 ;
+  size_t val5 ;
+  int ecode5 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  ultimateAlprSdk::UltAlprSdkResult *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOO:new_UltAlprSdkResult",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
+  ecode1 = SWIG_AsVal_int(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_UltAlprSdkResult" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = static_cast< int >(val1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_UltAlprSdkResult" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "new_UltAlprSdkResult" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = reinterpret_cast< char * >(buf3);
+  ecode4 = SWIG_AsVal_size_t(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "new_UltAlprSdkResult" "', argument " "4"" of type '" "size_t""'");
+  } 
+  arg4 = static_cast< size_t >(val4);
+  ecode5 = SWIG_AsVal_size_t(obj4, &val5);
+  if (!SWIG_IsOK(ecode5)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "new_UltAlprSdkResult" "', argument " "5"" of type '" "size_t""'");
+  } 
+  arg5 = static_cast< size_t >(val5);
+  result = (ultimateAlprSdk::UltAlprSdkResult *)new ultimateAlprSdk::UltAlprSdkResult(arg1,(char const *)arg2,(char const *)arg3,arg4,arg5);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ultimateAlprSdk__UltAlprSdkResult, SWIG_POINTER_NEW |  0 );
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_UltAlprSdkResult__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  int arg1 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  size_t arg4 ;
   int val1 ;
   int ecode1 = 0 ;
   int res2 ;
@@ -4050,7 +4114,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_new_UltAlprSdkResult__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_new_UltAlprSdkResult__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   int arg1 ;
   char *arg2 = (char *) 0 ;
@@ -4096,7 +4160,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_new_UltAlprSdkResult__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_new_UltAlprSdkResult__SWIG_4(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   ultimateAlprSdk::UltAlprSdkResult *arg1 = 0 ;
   void *argp1 = 0 ;
@@ -4123,12 +4187,12 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_UltAlprSdkResult(PyObject *self, PyObject *args) {
   int argc;
-  PyObject *argv[5];
+  PyObject *argv[6];
   int ii;
   
   if (!PyTuple_Check(args)) SWIG_fail;
   argc = args ? (int)PyObject_Length(args) : 0;
-  for (ii = 0; (ii < 4) && (ii < argc); ii++) {
+  for (ii = 0; (ii < 5) && (ii < argc); ii++) {
     argv[ii] = PyTuple_GET_ITEM(args,ii);
   }
   if (argc == 0) {
@@ -4139,7 +4203,7 @@ SWIGINTERN PyObject *_wrap_new_UltAlprSdkResult(PyObject *self, PyObject *args) 
     int res = SWIG_ConvertPtr(argv[0], 0, SWIGTYPE_p_ultimateAlprSdk__UltAlprSdkResult, 0);
     _v = SWIG_CheckState(res);
     if (_v) {
-      return _wrap_new_UltAlprSdkResult__SWIG_3(self, args);
+      return _wrap_new_UltAlprSdkResult__SWIG_4(self, args);
     }
   }
   if (argc == 3) {
@@ -4155,7 +4219,7 @@ SWIGINTERN PyObject *_wrap_new_UltAlprSdkResult(PyObject *self, PyObject *args) 
         int res = SWIG_AsCharPtrAndSize(argv[2], 0, NULL, 0);
         _v = SWIG_CheckState(res);
         if (_v) {
-          return _wrap_new_UltAlprSdkResult__SWIG_2(self, args);
+          return _wrap_new_UltAlprSdkResult__SWIG_3(self, args);
         }
       }
     }
@@ -4178,7 +4242,37 @@ SWIGINTERN PyObject *_wrap_new_UltAlprSdkResult(PyObject *self, PyObject *args) 
             _v = SWIG_CheckState(res);
           }
           if (_v) {
-            return _wrap_new_UltAlprSdkResult__SWIG_1(self, args);
+            return _wrap_new_UltAlprSdkResult__SWIG_2(self, args);
+          }
+        }
+      }
+    }
+  }
+  if (argc == 5) {
+    int _v;
+    {
+      int res = SWIG_AsVal_int(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      int res = SWIG_AsCharPtrAndSize(argv[1], 0, NULL, 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        int res = SWIG_AsCharPtrAndSize(argv[2], 0, NULL, 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          {
+            int res = SWIG_AsVal_size_t(argv[3], NULL);
+            _v = SWIG_CheckState(res);
+          }
+          if (_v) {
+            {
+              int res = SWIG_AsVal_size_t(argv[4], NULL);
+              _v = SWIG_CheckState(res);
+            }
+            if (_v) {
+              return _wrap_new_UltAlprSdkResult__SWIG_1(self, args);
+            }
           }
         }
       }
@@ -4189,6 +4283,7 @@ fail:
   SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_UltAlprSdkResult'.\n"
     "  Possible C/C++ prototypes are:\n"
     "    ultimateAlprSdk::UltAlprSdkResult::UltAlprSdkResult()\n"
+    "    ultimateAlprSdk::UltAlprSdkResult::UltAlprSdkResult(int const,char const *,char const *,size_t const,size_t const)\n"
     "    ultimateAlprSdk::UltAlprSdkResult::UltAlprSdkResult(int const,char const *,char const *,size_t const)\n"
     "    ultimateAlprSdk::UltAlprSdkResult::UltAlprSdkResult(int const,char const *,char const *)\n"
     "    ultimateAlprSdk::UltAlprSdkResult::UltAlprSdkResult(ultimateAlprSdk::UltAlprSdkResult const &)\n");
@@ -4298,6 +4393,28 @@ SWIGINTERN PyObject *_wrap_UltAlprSdkResult_numPlates(PyObject *SWIGUNUSEDPARM(s
   }
   arg1 = reinterpret_cast< ultimateAlprSdk::UltAlprSdkResult * >(argp1);
   result = ((ultimateAlprSdk::UltAlprSdkResult const *)arg1)->numPlates();
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_UltAlprSdkResult_numCars(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  ultimateAlprSdk::UltAlprSdkResult *arg1 = (ultimateAlprSdk::UltAlprSdkResult *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  size_t result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:UltAlprSdkResult_numCars",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ultimateAlprSdk__UltAlprSdkResult, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "UltAlprSdkResult_numCars" "', argument " "1"" of type '" "ultimateAlprSdk::UltAlprSdkResult const *""'"); 
+  }
+  arg1 = reinterpret_cast< ultimateAlprSdk::UltAlprSdkResult * >(argp1);
+  result = ((ultimateAlprSdk::UltAlprSdkResult const *)arg1)->numCars();
   resultobj = SWIG_From_size_t(static_cast< size_t >(result));
   return resultobj;
 fail:
@@ -5559,6 +5676,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"UltAlprSdkResult_phrase", _wrap_UltAlprSdkResult_phrase, METH_VARARGS, NULL},
 	 { (char *)"UltAlprSdkResult_json", _wrap_UltAlprSdkResult_json, METH_VARARGS, NULL},
 	 { (char *)"UltAlprSdkResult_numPlates", _wrap_UltAlprSdkResult_numPlates, METH_VARARGS, NULL},
+	 { (char *)"UltAlprSdkResult_numCars", _wrap_UltAlprSdkResult_numCars, METH_VARARGS, NULL},
 	 { (char *)"UltAlprSdkResult_isOK", _wrap_UltAlprSdkResult_isOK, METH_VARARGS, NULL},
 	 { (char *)"UltAlprSdkResult_swigregister", UltAlprSdkResult_swigregister, METH_VARARGS, NULL},
 	 { (char *)"new_UltAlprSdkParallelDeliveryCallback", _wrap_new_UltAlprSdkParallelDeliveryCallback, METH_VARARGS, NULL},
@@ -6317,8 +6435,8 @@ SWIG_init(void) {
   
   SWIG_InstallConstants(d,swig_const_table);
   
-  SWIG_Python_SetConstant(d, "ULTALPR_SDK_VERSION_MAJOR",SWIG_From_int(static_cast< int >(2)));
-  SWIG_Python_SetConstant(d, "ULTALPR_SDK_VERSION_MINOR",SWIG_From_int(static_cast< int >(11)));
+  SWIG_Python_SetConstant(d, "ULTALPR_SDK_VERSION_MAJOR",SWIG_From_int(static_cast< int >(3)));
+  SWIG_Python_SetConstant(d, "ULTALPR_SDK_VERSION_MINOR",SWIG_From_int(static_cast< int >(2)));
   SWIG_Python_SetConstant(d, "ULTALPR_SDK_VERSION_MICRO",SWIG_From_int(static_cast< int >(0)));
   SWIG_Python_SetConstant(d, "ULTALPR_SDK_IMAGE_TYPE_RGB24",SWIG_From_int(static_cast< int >(ultimateAlprSdk::ULTALPR_SDK_IMAGE_TYPE_RGB24)));
   SWIG_Python_SetConstant(d, "ULTALPR_SDK_IMAGE_TYPE_RGBA32",SWIG_From_int(static_cast< int >(ultimateAlprSdk::ULTALPR_SDK_IMAGE_TYPE_RGBA32)));

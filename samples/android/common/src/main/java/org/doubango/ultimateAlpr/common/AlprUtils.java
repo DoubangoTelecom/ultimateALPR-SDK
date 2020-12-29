@@ -59,7 +59,7 @@ public class AlprUtils {
     }
 
     static class Car {
-        static class Color {
+        static class Attribute {
             private int mKlass;
             private String mName;
             private float mConfidence;
@@ -84,12 +84,14 @@ public class AlprUtils {
 
         private float mConfidence;
         private float mWarpedBox[];
-        private List<Car.Color> mColors;
+        private List<Car.Attribute> mColors;
+        private List<Car.Attribute> mBodyStyles;
         private List<Car.MakeModelYear> mMakesModelsYears;
 
         public float[] getWarpedBox() { return mWarpedBox; }
         public float getConfidence() { return mConfidence; }
-        public List<Car.Color> getColors() { return mColors; }
+        public List<Car.Attribute> getColors() { return mColors; }
+        public List<Car.Attribute> getBodyStyles() { return mBodyStyles; }
         public List<Car.MakeModelYear> getMakesModelsYears() { return mMakesModelsYears; }
     }
 
@@ -146,7 +148,7 @@ public class AlprUtils {
 
     static public final List<Plate> extractPlates(final UltAlprSdkResult result) {
         final List<Plate> plates = new LinkedList<>();
-        if (!result.isOK() || result.numPlates() == 0) {
+        if (!result.isOK() || (result.numPlates() == 0 && result.numCars() == 0)) {
             return plates;
         }
         final String jsonString = result.json();
@@ -163,18 +165,25 @@ public class AlprUtils {
                     final JSONObject jPlate = jPlates.getJSONObject(i);
 
                     // The plate itself (backward-compatible with 2.0.0)
-                    final JSONArray jConfidences = jPlate.getJSONArray("confidences");
-                    final JSONArray jWarpedBox = jPlate.getJSONArray("warpedBox");
                     final Plate plate = new Plate();
-                    plate.mNumber = jPlate.getString("text");
                     plate.mWarpedBox = new float[8];
-                    for (int j = 0; j < 8; ++j) {
-                        plate.mWarpedBox[j] = (float) jWarpedBox.getDouble(j);
+                    if (jPlate.has("text")) { // Starting 3.2 it's possible to have cars without plates when enabled
+                        final JSONArray jConfidences = jPlate.getJSONArray("confidences");
+                        final JSONArray jWarpedBox = jPlate.getJSONArray("warpedBox");
+                        plate.mNumber = jPlate.getString("text");
+                        for (int j = 0; j < 8; ++j) {
+                            plate.mWarpedBox[j] = (float) jWarpedBox.getDouble(j);
+                        }
+                        plate.mRecognitionConfidence = (float) jConfidences.getDouble(0);
+                        plate.mDetectionConfidence = (float) jConfidences.getDouble(1);
                     }
-                    plate.mRecognitionConfidence = (float) jConfidences.getDouble(0);
-                    plate.mDetectionConfidence = (float) jConfidences.getDouble(1);
+                    else {
+                        plate.mNumber = "";
+                        plate.mRecognitionConfidence = 0.f;
+                        plate.mDetectionConfidence = 0.f;
+                    }
 
-                    // Country (Added in 3.0.0)
+                    // License Plate Country Identification [LPCI] (Added in 3.0.0): https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci
                     if (jPlate.has("country")) {
                         plate.mCountries = new LinkedList<>();
                         final JSONArray jCountries = jPlate.getJSONArray("country");
@@ -207,13 +216,13 @@ public class AlprUtils {
                             plate.mCar.mWarpedBox[j] = (float) jCarWarpedBox.getDouble(j);
                         }
 
-                        // Color
+                        // Vehicle Color Recognition [VCR] (added in 3.0.0) : https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr
                         if (jCar.has("color")) {
                             plate.mCar.mColors = new LinkedList<>();
                             final JSONArray jColors = jCar.getJSONArray("color");
                             for (int k = 0; k < jColors.length(); ++k) {
                                 final JSONObject jColor = jColors.getJSONObject(k);
-                                final Car.Color color = new Car.Color();
+                                final Car.Attribute color = new Car.Attribute();
                                 color.mKlass = jColor.getInt("klass");
                                 color.mConfidence = (float) jColor.getDouble("confidence");
                                 color.mName = jColor.getString("name"); // Name in English
@@ -222,7 +231,7 @@ public class AlprUtils {
                             }
                         }
 
-                        // Make Model Year
+                        // Vehicle Make Model Recognition [VMMR] (added in 3.0.0): https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr
                         if (jCar.has("makeModelYear")) {
                             plate.mCar.mMakesModelsYears = new LinkedList<>();
                             final JSONArray jMMYs = jCar.getJSONArray("makeModelYear");
@@ -236,6 +245,21 @@ public class AlprUtils {
                                 mmy.mYear = jMMY.get("year").toString(); // Maybe Integer or String or whatever
 
                                 plate.mCar.mMakesModelsYears.add(mmy);
+                            }
+                        }
+
+                        // Vehicle Body Style Recognition [VBSR] (added in 3.2.0): https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehiclebodystylerecognition
+                        if (jCar.has("bodyStyle")) {
+                            plate.mCar.mBodyStyles = new LinkedList<>();
+                            final JSONArray jBodyStyles = jCar.getJSONArray("bodyStyle");
+                            for (int k = 0; k < jBodyStyles.length(); ++k) {
+                                final JSONObject jBodyStyle = jBodyStyles.getJSONObject(k);
+                                final Car.Attribute bodyStyle = new Car.Attribute();
+                                bodyStyle.mKlass = jBodyStyle.getInt("klass");
+                                bodyStyle.mConfidence = (float) jBodyStyle.getDouble("confidence");
+                                bodyStyle.mName = jBodyStyle.getString("name"); // Name in English
+
+                                plate.mCar.mBodyStyles.add(bodyStyle);
                             }
                         }
                     }
