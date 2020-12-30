@@ -55,12 +55,12 @@ Some performance numbers on mid-range GPU (**GTX 1070**), high-range ARM CPU (**
 | **Galaxy S10+<br/> (Android)** | 21344 millis <br/> **46.85 fps** | 25815 millis <br/> 38.73 fps | 29712 millis <br/> 33.65 fps | 33352 millis <br/> 29.98 fps | 37825 millis <br/> 26.43 fps |
 | **RockPi 4B <br/> (Ubuntu Server 18.04)** | 7588 millis <br />**13.17 fps** | 8008 millis <br/> 12.48 fps | 8606 millis <br/> 11.61 fps | 9213 millis <br/> 10.85fps | 9798 millis <br/> 10.20 fps |
 | **Raspberry Pi 4<br/> (Raspbian Buster)** | 81890 millis <br />**12.21 fps** | 89770 millis <br/> 11.13 fps | 115190 millis <br/> 8.68 fps | 122950 millis <br/> 8.13fps | 141460 millis <br/> 7.06 fps |
-| **[binaries/jetson_tftrt](binaries/jetson_tftrt)<br/> (Xavier NX, JetPack 4.4.1)** | 657 millis <br />**152.06 fps** | 967 millis <br/> 103.39 fps | 1280 millis <br/> 78.06 fps | 1539 millis <br/> 64.95 fps | 1849 millis <br/> 54.07 fps |
-| **[binaries/jetson](binaries/jetson)<br/> (Xavier NX, JetPack 4.4.1)** | 657 millis <br />**152.02 fps** | 1169 millis <br/> 85.47 fps | 2112 millis <br/> 47.34 fps | 2703 millis <br/> 36.98 fps | 3628 millis <br/> 27.56 fps |
-| **[binaries/jetson_tftrt](../../../binaries/jetson_tftrt)<br/> (TX2, JetPack 4.4.1)** | 1420 millis <br />**70.38 fps** | 1653 millis <br/> 60.47 fps | 1998 millis <br/> 50.02 fps | 2273 millis <br/> 43.97 fps | 2681 millis <br/> 37.29 fps |
-| **[binaries/jetson](../../../binaries/jetson)<br/> (TX2, JetPack 4.4.1)** | 1428 millis <br />**70.01 fps** | 1712 millis <br/> 58.40 fps | 2165 millis <br/> 46.17 fps | 2692 millis <br/> 37.13 fps | 3673 millis <br/> 27.22 fps |
-| **[binaries/jetson_tftrt](../../../binaries/jetson_tftrt)<br/> (Nano, JetPack 4.4.1)** | 3106 millis <br />**32.19 fps** | 3292 millis <br/> 30.37 fps | 3754 millis <br/> 26.63 fps | 3967 millis <br/> 25.20 fps | 4621 millis <br/> 21.63 fps |
-| **[binaries/jetson](../../../binaries/jetson)<br/> (nano, JetPack 4.4.1)** | 2920 millis <br />**34.24 fps** | 3083 millis <br/> 32.42 fps | 3340 millis <br/> 29.93 fps | 3882 millis <br/> 25.75 fps | 5102 millis <br/> 19.59 fps |
+| **[binaries/jetson_tftrt](../../../binaries/jetson_tftrt/aarch64)<br/> (Xavier NX, JetPack 4.4.1)** | 657 millis <br />**152.06 fps** | 967 millis <br/> 103.39 fps | 1280 millis <br/> 78.06 fps | 1539 millis <br/> 64.95 fps | 1849 millis <br/> 54.07 fps |
+| **[binaries/jetson](../../../binaries/jetson/aarch64)<br/> (Xavier NX, JetPack 4.4.1)** | 657 millis <br />**152.02 fps** | 1169 millis <br/> 85.47 fps | 2112 millis <br/> 47.34 fps | 2703 millis <br/> 36.98 fps | 3628 millis <br/> 27.56 fps |
+| **[binaries/jetson_tftrt](../../../binaries/jetson_tftrt/aarch64)<br/> (TX2, JetPack 4.4.1)** | 1420 millis <br />**70.38 fps** | 1653 millis <br/> 60.47 fps | 1998 millis <br/> 50.02 fps | 2273 millis <br/> 43.97 fps | 2681 millis <br/> 37.29 fps |
+| **[binaries/jetson](../../../binaries/jetson/aarch64)<br/> (TX2, JetPack 4.4.1)** | 1428 millis <br />**70.01 fps** | 1712 millis <br/> 58.40 fps | 2165 millis <br/> 46.17 fps | 2692 millis <br/> 37.13 fps | 3673 millis <br/> 27.22 fps |
+| **[binaries/jetson_tftrt](../../../binaries/jetson_tftrt/aarch64)<br/> (Nano, JetPack 4.4.1)** | 3106 millis <br />**32.19 fps** | 3292 millis <br/> 30.37 fps | 3754 millis <br/> 26.63 fps | 3967 millis <br/> 25.20 fps | 4621 millis <br/> 21.63 fps |
+| **[binaries/jetson](../../../binaries/jetson/aarch64)<br/> (nano, JetPack 4.4.1)** | 2920 millis <br />**34.24 fps** | 3083 millis <br/> 32.42 fps | 3340 millis <br/> 29.93 fps | 3882 millis <br/> 25.75 fps | 5102 millis <br/> 19.59 fps |
 
 Some notes:
 - **The above numbers show that the best case is 'Intel® Xeon® E3 1230v5 + GTX 1070 + OpenVINO enabled'. In such case the GPU (TensorRT, CUDA) and the CPU(OpenVINO) are used in parallel. The CPU is used for detection and the GPU for recognition/OCR.**
@@ -172,7 +172,7 @@ Options surrounded with **[]** are optional.
 - `--tokenfile` Path to the file containing the base64 license token if you have one. If not provided then, the application will act like a trial version. Default: *null*.
 - `--tokendata` Base64 license token if you have one. If not provided then, the application will act like a trial version. Default: *null*.
 
-The information about the maximum frame rate (**105fps** on GTX 1070, **47fps** on Snapdragon 855 and **12fps** on Raspberry Pi 4) is obtained using `--rate 0.0` which means evaluating the negative (no license plate) image only. The minimum frame rate could be obtained using `--rate 1.0` which means evaluating the positive image only (all images on the video stream have a license plate). In real life, very few frames from a video stream will contain a license plate (`--rate` **< 0.01**).
+The information about the maximum frame rate (**140fps** on GTX 1070, **47fps** on Snapdragon 855 and **12fps** on Raspberry Pi 4) is obtained using `--rate 0.0` which means evaluating the negative (no license plate) image only. The minimum frame rate could be obtained using `--rate 1.0` which means evaluating the positive image only (all images on the video stream have a license plate). In real life, very few frames from a video stream will contain a license plate (`--rate` **< 0.01**).
 
 <a name="testing-examples"></a>
 ## Examples ##
