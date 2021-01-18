@@ -113,6 +113,8 @@ To check GPU and CPU usage: `/usr/bin/tegrastats`
 
 We recommend using [binaries/jetson](binaries/jetson) for your devs as it loads very fast and switch to [binaries/jetson_tftrt](binaries/jetson_tftrt) for production. [binaries/jetson_tftrt](binaries/jetson_tftrt) may be slow to load and initialize but once it's done the frame rate is higher.
 
+On Jetson Xavier AGX, [binaries/jetson](binaries/jetson) may be faster than [binaries/jetson_tftrt](binaries/jetson_tftrt). Check [issue #128](https://github.com/DoubangoTelecom/ultimateALPR-SDK/issues/128) on why.
+
 If [binaries/jetson](binaries/jetson) is still slow to load and initialize, then use [binaries/linux/aarch64]([binaries/linux/aarch64) which are a very light binaries using Tensorflow Lite (less than 13Mo total size).
 
 <a name="benchmark"></a>
