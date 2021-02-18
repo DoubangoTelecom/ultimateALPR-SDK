@@ -98,7 +98,7 @@ static void printUsage(const std::string& message /*= ""*/)
 		"\n"
 		"--json: Whether to output the runtime license key as JSON string intead of raw string. Default: true.\n"
 		"--assets: Path to the assets folder containing the configuration files and models. Default value is the current folder.\n"
-		"--type: Defines how the license is attached to the machine/host. Possible values are 'aws-instance' or 'aws-byol'. Default: null.\n"
+		"--type: Defines how the license is attached to the machine/host. Possible values are 'aws-instance', 'aws-byol', 'azure-instance' or 'azure-byol'. Default: null.\n"
 		"********************************************************************************\n"
 	);
 }

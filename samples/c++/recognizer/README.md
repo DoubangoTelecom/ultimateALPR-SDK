@@ -142,7 +142,7 @@ LD_LIBRARY_PATH=../../../binaries/raspbian/armv7l:$LD_LIBRARY_PATH ./recognizer 
     --assets ../../../assets \
     --charset latin \
     --parallel false \
-    --rectify false
+    --rectify true
 ```
 
 - On **NVIDIA Jetson**, you'll need to generate the models as explained [here](../../../Jetson.md#building-optimized-models). Then, run:
@@ -151,7 +151,8 @@ LD_LIBRARY_PATH=../../../binaries/jetson/aarch64:$LD_LIBRARY_PATH ./recognizer \
     --image ../../../assets/images/lic_us_1280x720.jpg \
     --assets ../../../assets \
     --charset latin \
-    --parallel false
+    --parallel false \
+    --rectify true
 ```
 or 
 ```
@@ -159,7 +160,8 @@ LD_LIBRARY_PATH=../../../binaries/jetson_tftrt/aarch64:$LD_LIBRARY_PATH ./recogn
     --image ../../../assets/images/lic_us_1280x720.jpg \
     --assets ../../../assets \
     --charset latin \
-    --parallel false
+    --parallel false \
+    --rectify true
 ```
 The difference between [jetson_tftrt](../../../binaries/jetson_tftrt) and [jetson](../../../binaries/jetson) binaries is explained [here](../../../Jetson.md#getting-started_jetson-versus-jetsontftrt).
 

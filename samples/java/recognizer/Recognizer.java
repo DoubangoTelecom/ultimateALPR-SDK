@@ -116,7 +116,7 @@ public class Recognizer {
    * Available since: 3.2.0
    * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#ienv-enabled
    */
-  static final boolean CONFIG_IENV_ENABLED = false;
+  static final boolean CONFIG_IENV_ENABLED = System.getProperty("os.arch").equals("amd64");
 
   /**
    * Whether to use OpenVINO instead of Tensorflow as deep learning backend engine. OpenVINO is used for detection and classification but not for OCR. 

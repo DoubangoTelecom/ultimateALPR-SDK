@@ -43,32 +43,32 @@ By default GPGPU acceleration is disabled. Check [here](../README.md#gpu-acceler
 recognizer.py \
       --image <path-to-image-with-plate-to-process> \
       [--assets <path-to-assets-folder>] \
-      [--parallel <whether-to-enable-parallel-mode:true/false>] \
+      [--parallel <whether-to-enable-parallel-mode:True/False>] \
       [--charset <recognition-charset:latin/korean/chinese>] \
-      [--car_noplate_detect_enabled <whether-to-enable-detecting-cars-with-no-plate:true/false>] \
-      [--ienv_enabled <whether-to-enable-IENV:true/false>] \
-      [--openvino_enabled <whether-to-enable-OpenVINO:true/false>] \
+      [--car_noplate_detect_enabled <whether-to-enable-detecting-cars-with-no-plate:True/False>] \
+      [--ienv_enabled <whether-to-enable-IENV:True/False>] \
+      [--openvino_enabled <whether-to-enable-OpenVINO:True/False>] \
       [--openvino_device <openvino-device-to-use>] \
-      [--klass_lpci_enabled <whether-to-enable-LPCI:true/false>] \
-      [--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \
-      [--klass_vmmr_enabled <whether-to-enable-VMMR:true/false>] \
-      [--klass_vbsr_enabled <whether-to-enable-VBSR:true/false>] \
+      [--klass_lpci_enabled <whether-to-enable-LPCI:True/False>] \
+      [--klass_vcr_enabled <whether-to-enable-VCR:True/False>] \
+      [--klass_vmmr_enabled <whether-to-enable-VMMR:True/False>] \
+      [--klass_vbsr_enabled <whether-to-enable-VBSR:True/False>] \
       [--tokenfile <path-to-license-token-file>] \
       [--tokendata <base64-license-token-data>]
 ```
 Options surrounded with **[]** are optional.
 - `--image` Path to the image(JPEG/PNG/BMP) to process. You can use default image at [../../../assets/images/lic_us_1280x720.jpg](../../../assets/images/lic_us_1280x720.jpg).
 - `--assets` Path to the [assets](../../../assets) folder containing the configuration files and models. Default value is the current folder.
-- `--parallel` Whether to enabled the parallel mode. More info about the parallel mode at [https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html). Default: *false*.
+- `--parallel` Whether to enabled the parallel mode. More info about the parallel mode at [https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html). Default: *False*.
 - `--charset` Defines the recognition charset (a.k.a alphabet) value (latin, korean, chinese...). Default: *latin*.
-- `--car_noplate_detect_enabled` Whether to detect and return cars with no plate. Default: *false*. 
-- `--ienv_enabled` Whether to enable Image Enhancement for Night-Vision (IENV). More info about IENV at https://www.doubango.org/SDKs/anpr/docs/Features.html#image-enhancement-for-night-vision-ienv. Default: *true* for x86-64 and *false* for ARM.
-- `--openvino_enabled` Whether to enable OpenVINO. Tensorflow will be used when OpenVINO is disabled. Default: *true*.
+- `--car_noplate_detect_enabled` Whether to detect and return cars with no plate. Default: *False*. 
+- `--ienv_enabled` Whether to enable Image Enhancement for Night-Vision (IENV). More info about IENV at https://www.doubango.org/SDKs/anpr/docs/Features.html#image-enhancement-for-night-vision-ienv. Default: *True* for x86-64 and *False* for ARM.
+- `--openvino_enabled` Whether to enable OpenVINO. Tensorflow will be used when OpenVINO is disabled. Default: *True*.
 - `--openvino_device` Defines the OpenVINO device to use (CPU, GPU, FPGA...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino-device. Default: *CPU*."
-- `--klass_lpci_enabled` Whether to enable License Plate Country Identification (LPCI). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci. Default: *false*.
-- `--klass_vcr_enabled` Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr. Default: *false*.
-- `--klass_vmmr_enabled` Whether to enable Vehicle Make Model Recognition (VMMR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr. Default: *false*.
-- `--klass_vbsr_enabled` Whether to enable Vehicle Body Style Recognition (VBSR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-body-style-recognition-vbsr. Default: *false*.
+- `--klass_lpci_enabled` Whether to enable License Plate Country Identification (LPCI). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci. Default: *False*.
+- `--klass_vcr_enabled` Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr. Default: *False*.
+- `--klass_vmmr_enabled` Whether to enable Vehicle Make Model Recognition (VMMR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr. Default: *False*.
+- `--klass_vbsr_enabled` Whether to enable Vehicle Body Style Recognition (VBSR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-body-style-recognition-vbsr. Default: *False*.
 - `--tokenfile` Path to the file containing the base64 license token if you have one. If not provided then, the application will act like a trial version. Default: *null*.
 - `--tokendata` Base64 license token if you have one. If not provided then, the application will act like a trial version. Default: *null*.
 

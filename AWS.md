@@ -1,10 +1,11 @@
 - [AWS issue](#aws-issue)
   - [Binding the license to the instance](#aws-solution-instance)
   - [Binding the license to the hardware](#aws-solution-byol)
+- [Note about Microsoft Azure](#azure)
 
 <hr />
 
-This document explains how to run a licensed version of the SDK on [AWS (Amazon Web Services)](https://aws.amazon.com/). You can ignore it if you're using the trial version.
+This document explains how to run a licensed version of the SDK on [AWS (Amazon Web Services)](https://aws.amazon.com/) or [Microsoft Azure](https://azure.microsoft.com/en-us/). You can ignore it if you're using the trial version.
 
 As explained at [https://www.doubango.org/pricing.html](https://www.doubango.org/pricing.html) our licensing model is per device/machine. 
 Each machine is uniquely identified using the hardware information (CPU model, motherboard, architecture, hard drive serial number...). The hardware information doesn't change even if the OS is (up/down)graded or reinstalled. We don't use network information like the MAC address to make sure the SDK can work without [NIC](https://en.wikipedia.org/wiki/Network_interface_controller).
@@ -49,3 +50,20 @@ To generate a [runtime key](https://www.doubango.org/SDKs/LicenseManager/docs/Ja
 ./runtimeKey --type aws-byol --assets ../../../assets
 ```
 
+<a name="azure"></a>
+# Note about Microsoft Azure #
+Everything explained above about Amazon AWS applies to Microsoft Azure. The only difference is how the runtime key is generated.
+
+To attach the license to the Azure VM instead of the hardware (recommended):
+
+```
+./runtimeKey --type azure-instance --assets ../../../assets
+```
+
+To attach the license to the hardware instead of the VM:
+
+```
+./runtimeKey --type azure-byol --assets ../../../assets
+```
+
+You'll need libcurl. See above on how to install it.
