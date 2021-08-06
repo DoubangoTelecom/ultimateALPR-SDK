@@ -1,5 +1,6 @@
 - [GPGPU acceleration](#gpu-acceleration)
   - [OpenVINO](#gpu-acceleration-openvino)
+    - [Myriad](#gpu-acceleration-openvino-myriad)
   - [Tensorflow libraries](#gpu-acceleration-tensorflow)
     - [Windows](#gpu-acceleration-tensorflow-windows)
     - [Linux](#gpu-acceleration-tensorflow-linux)
@@ -25,6 +26,12 @@ We use [Tensorflow](https://www.tensorflow.org/) and [OpenVINO](https://docs.ope
 <a name="gpu-acceleration-openvino"></a>
 ## OpenVINO ##
 By default we use the "CPU" device when OpenVINO is enabled. If you have an Intel GPU and want to use it, then change the device type to "GPU" (`--openvino_device="GNA"|"HETERO"|"CPU"|"MULTI"|"GPU"|"MYRIAD"|"HDDL"|"FPGA"` command). More information at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino-device.
+
+<a name="gpu-acceleration-openvino-myriad"></a>
+### Myriad ###
+To run UltimateALPR on Myriad VPU you'll need version **v3.3.5 or later**. **Windows 10+ is also required.**
+- If you get `Can not init Myriad device: NC_MVCMD_NOT_FOUND`, make sure the driver is correctly installed as explained [here](https://docs.openvinotoolkit.org/2018_R5/_docs_install_guides_installing_openvino_windows.html#usb-myriad). You can find these driver files in the [binaries](../../binaries/windows/x86_64) folder but we recommend using yours.
+- If you get `Can not init Myriad device: NC_ERROR`, make sure you're using **v3.3.5 or later**. Check [issue #133](https://github.com/DoubangoTelecom/ultimateALPR-SDK/issues/133) for more info.
 
 <a name="gpu-acceleration-tensorflow"></a>
 ## Tensorflow libraries ##
