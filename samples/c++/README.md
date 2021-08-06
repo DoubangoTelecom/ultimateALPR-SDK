@@ -30,6 +30,8 @@ By default we use the "CPU" device when OpenVINO is enabled. If you have an Inte
 <a name="gpu-acceleration-openvino-myriad"></a>
 ### Myriad ###
 To run UltimateALPR on Myriad VPU you'll need version **v3.3.5 or later**. **Windows 10+ is also required.**
+
+You have to run the sample applications with the following options: `--openvino_enabled true --openvino_device MYRIAD`. The device name is case-sensitive.
 - If you get `Can not init Myriad device: NC_MVCMD_NOT_FOUND`, make sure the driver is correctly installed as explained [here](https://docs.openvinotoolkit.org/2018_R5/_docs_install_guides_installing_openvino_windows.html#usb-myriad). You can find these driver files in the [binaries](../../binaries/windows/x86_64) folder but we recommend using yours.
 - If you get `Can not init Myriad device: NC_ERROR`, make sure you're using **v3.3.5 or later**. Check [issue #133](https://github.com/DoubangoTelecom/ultimateALPR-SDK/issues/133) for more info.
 
