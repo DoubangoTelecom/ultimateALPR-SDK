@@ -44,9 +44,10 @@ int main(int argc, char *argv[])
 	}
 
 	// Build JSON string
-	std::string jsonConfig;
+	std::string jsonConfig = std::string("\"openvino_enabled\": false");
 	if (args.find("--assets") != args.end()) {
-		jsonConfig += std::string("\"assets_folder\": \"") + args["--assets"] + std::string("\"");
+		jsonConfig += (jsonConfig.empty() ? "" : ",")
+			+ std::string("\"assets_folder\": \"") + args["--assets"] + std::string("\"");
 	}
 	if (args.find("--type") != args.end()) {
 		jsonConfig += (jsonConfig.empty() ? "" : ",")
