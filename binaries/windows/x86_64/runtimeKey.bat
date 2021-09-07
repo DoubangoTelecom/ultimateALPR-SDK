@@ -1,3 +1,4 @@
 runtimeKey.exe ^
     --json true ^
-    --assets ../../../assets
+    --assets ../../../assets ^
+    --openvino_enabled false
