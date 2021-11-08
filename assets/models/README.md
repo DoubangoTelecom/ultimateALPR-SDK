@@ -6,10 +6,10 @@
 
 |  | ARM | x86 |comment
 |-------- | --- | --- | ---|
-| ultimateALPR-SDK_detect_main.desktop.model.doubango | No | **Yes** | **Allows required** |
-| ultimateALPR-SDK_detect_pysearch.desktop.model.doubango | No | **Yes** | **Allows required** |
-| ultimateALPR-SDK_detecti_main.mobile.model.doubango | **Yes** | No | **Allows required** |
-| ultimateALPR-SDK_detecti_pysearch.mobile.model.doubango | **Yes** | No | **Allows required** |
+| ultimateALPR-SDK_detect_main.desktop.model.doubango | No | **Yes** | **Always required** |
+| ultimateALPR-SDK_detect_pysearch.desktop.model.doubango | No | **Yes** | **Always required** |
+| ultimateALPR-SDK_detecti_main.mobile.model.doubango | **Yes** | No | **Always required** |
+| ultimateALPR-SDK_detecti_pysearch.mobile.model.doubango | **Yes** | No | **Always required** |
 | ultimateALPR-SDK_klass_labels_lpci.txt.doubango | **Yes** | **Yes** | Only if you want [License Plate Country Identification (LPCI)](https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci) |
 | ultimateALPR-SDK_klass_lpci.desktop.model.doubango | No | **Yes** | Only if you want [License Plate Country Identification (LPCI)](https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci) |
 | ultimateALPR-SDK_klassi_lpci.mobile.model.doubango | **Yes** | No | Only if you want [License Plate Country Identification (LPCI)](https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci) |
