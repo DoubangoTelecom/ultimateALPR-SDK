@@ -6,7 +6,7 @@
 
 <hr />
 
-This document explains how to run a licensed version of the SDK inside a container. You can ignore it if you're using the trial version.
+**This document explains how to run a licensed version of the SDK inside a container. You can ignore it if you're using the trial version or running the SDK on AWS or Microsoft Azure. On AWS and Azure the SDK works out of the box inside containers if the license is [attached to the instance](AWS.md#aws-solution-instance) instead of the hardware.**
 
 As explained at [https://www.doubango.org/pricing.html](https://www.doubango.org/pricing.html) our licensing model is per device/machine. 
 Each machine is uniquely identified using the hardware information (CPU model, motherboard, architecture, hard drive serial number...). The hardware information doesn't change even if the OS is (up/down)-graded or reinstalled. We don't use network information like the MAC address to make sure the SDK can work without [NIC](https://en.wikipedia.org/wiki/Network_interface_controller).
