@@ -46,8 +46,10 @@ Some performance numbers on mid-range GPU (**GTX 1070**), high-range ARM CPU (**
 
 |  | 0.0 rate | 0.2 rate | 0.5 rate | 0.7 rate | 1.0 rate |
 |-------- | --- | --- | --- | --- | --- |
-| **Intel® Xeon® E3 1230v5 + GTX 1070<br/> (Ubuntu 18, OpenVINO disabled)** | 711 millis <br />**140.51 fps** | 828 millis <br/> 120.76 fps | 1004 millis <br/> 99.53 fps | 1127 millis <br/> 88.70 fps | 1292 millis <br/> 77.38 fps |
+| **AMD Ryzen 7 3700X 8-Core + RTX 3060<br/> (Ubuntu 20, OpenVINO enabled)** | 615 millis <br />**162.54 fps** | 679 millis <br/> 147.13 fps | 740 millis <br/> 135.01 fps | 773 millis <br/> 129.21 fps | 809.18 millis <br/> 123.58 fps |
+| **AMD Ryzen 7 3700X 8-Core + RTX 3060<br/> (Ubuntu 20, OpenVINO disabled)** | 961 millis <br />**103.97 fps** | 1047 millis <br/> 95.46 fps | 1206 millis <br/> 82.90 fps | 1325 millis <br/> 75.45 fps | 1434.16 millis <br/> 69.72 fps |
 | **Intel® Xeon® E3 1230v5 + GTX 1070<br/> (Ubuntu 18, OpenVINO enabled)** | 737 millis <br />**135.62 fps** | 809 millis <br/> 123.55 fps | 903 millis <br/> 110.72 fps | 968 millis <br/> 103.22 fps | 1063 millis <br/> 94.07 fps |
+| **Intel® Xeon® E3 1230v5 + GTX 1070<br/> (Ubuntu 18, OpenVINO disabled)** | 711 millis <br />**140.51 fps** | 828 millis <br/> 120.76 fps | 1004 millis <br/> 99.53 fps | 1127 millis <br/> 88.70 fps | 1292 millis <br/> 77.38 fps |
 | **i7-4790K<br/> (Windows 8, OpenVINO enabled)** | 758 millis <br />**131.78 fps** | 1110 millis <br/> 90.07 fps | 1597 millis <br/> 62.58 fps | 1907 millis <br/> 52.42 fps | 2399 millis <br/> 41.66 fps |
 | **i7-4790K<br/> (Windows 8, OpenVINO disabled)** | 2427 millis <br />**41.18 fps** | 2658 millis <br/> 37.60 fps | 2999 millis <br/> 33.34 fps | 3360 millis <br/> 29.75 fps | 3607 millis <br/> 27.72 fps |
 | **i7-4770HQ<br/> (Winows 10, OpenVINO enabled)** | 1094 millis <br />**91.35 fps** | 1674 millis <br/> 59.71 fps | 2456 millis <br/> 40.71 fps | 2923 millis <br/> 34.21 fps | 4255 millis <br/> 23.49 fps |
@@ -63,7 +65,7 @@ Some performance numbers on mid-range GPU (**GTX 1070**), high-range ARM CPU (**
 | **[binaries/jetson](../../../binaries/jetson/aarch64)<br/> (nano, JetPack 4.4.1)** | 2920 millis <br />**34.24 fps** | 3083 millis <br/> 32.42 fps | 3340 millis <br/> 29.93 fps | 3882 millis <br/> 25.75 fps | 5102 millis <br/> 19.59 fps |
 
 Some notes:
-- **The above numbers show that the best case is 'Intel® Xeon® E3 1230v5 + GTX 1070 + OpenVINO enabled'. In such case the GPU (TensorRT, CUDA) and the CPU(OpenVINO) are used in parallel. The CPU is used for detection and the GPU for recognition/OCR.**
+- **The above numbers show that the best case is 'AMD Ryzen 7 3700X 8-Core + RTX 3060 + OpenVINO enabled'. In such case the GPU (TensorRT, CUDA) and the CPU (OpenVINO) are used in parallel. The CPU is used for detection and the GPU for recognition/OCR.**
 - **Please note that even if Raspberry Pi 4 has a 64-bit CPU [Raspbian OS](https://en.wikipedia.org/wiki/Raspbian>) uses a 32-bit kernel which means we're loosing many SIMD optimizations.**
 - **On RockPi 4B the code is 5 times faster when [parallel processing](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html) is enabled.**
 - **On NVIDIA Jetson the code is 3 times faster when [parallel processing](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html) is enabled.**

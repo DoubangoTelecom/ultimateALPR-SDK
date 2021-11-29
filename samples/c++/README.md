@@ -5,6 +5,7 @@
     - [Windows](#gpu-acceleration-tensorflow-windows)
     - [Linux](#gpu-acceleration-tensorflow-linux)
     - [NVIDIA Jetson](#gpu-acceleration-tensorflow-jetson)
+- [Migration to Tensorflow 2.x and CUDA 11.x](#migration-tf2)
 - [Cross compilation](#cross-compilation)
   - [Raspberry Pi](#cross-compilation-rpi)
     - [Installing the toolchain](#cross-compilation-rpi-install)
@@ -57,6 +58,39 @@ On Linux x86_64, [libtensorflow.so](../../binaries/linux/x86_64/libtensorflow.so
 On NVIDIA Jetson TX1/TX2/Nano and Xavier AGX/NX [libtensorflow_cc.so](../../binaries/jetson_tftrt/aarch64/libtensorflow_cc.so) is only needed if you're using binaries in [jetson_tftrt](../../binaries/jetson_tftrt). You don't need Tensorflow to use the binaries under [jetson](../../binaries/jetson). The difference between [jetson_tftrt](../../binaries/jetson_tftrt) and [jetson](../../binaries/jetson) binaries is explained [here](../../Jetson.md#getting-started_jetson-versus-jetsontftrt).
 
 If you're using [jetson_tftrt](../../binaries/jetson_tftrt) instead of [jetson](../../binaries/jetson) then, you'll need to run the [./prepare.sh](../../binaries/jetson_tftrt/aarch64/prepare.sh) script as explained [here](../../Jetson.md#getting-started_before-trying-to-use-the-sdk-on-jetson_building-optimized-models) to download Tensorflow C++ libraries.
+
+<a name="migration-tf2"></a>
+# Migration to Tensorflow 2.x and CUDA 11.x #
+
+Our SDK is built and shipped with Tensorflow 1.x to make it work on oldest NVIDIA GPUs. If you want to use newest NVIDIA GPUs (e.g. RTX3060) which requires CUDA 11.x, then you'll need to upgrade the Tensorflow version. Check https://www.tensorflow.org/install/source#gpu to know which CUDA version is required for your Tensorflow version.
+
+***This section is about Tensorflow 2.6, Ubuntu 20.04.2 LTS, NVIDIA RTX3060 GPU and cuda_11.1.TC455_06.29190527_0***. Tensorflow 2.6 is the latest (**11/29/2021**) public version published at https://www.tensorflow.org/install/lang_c. Please note that we use CUDA 11.1 instead of 11.2 as suggested at https://www.tensorflow.org/install/source#gpu but both will work.
+
+- Links:
+  - Linux CPU only:	https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-linux-x86_64-2.6.0.tar.gz
+  - Linux GPU support:	https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-linux-x86_64-2.6.0.tar.gz
+  - Windows CPU only:	https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-windows-x86_64-2.6.0.zip
+  - Windows GPU only:	https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-windows-x86_64-2.6.0.zip
+
+- Download and uzip Tensorflow 2.6 inside the binaries folder
+```
+cd ultimateALPR-SDK/binaries/linux/x86_64
+wget https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-linux-x86_64-2.6.0.tar.gz
+tar -xf libtensorflow-gpu-linux-x86_64-2.6.0.tar.gz
+cp lib/* .
+```
+make sure you don't have older Tensorflow binaries in that directory.
+`ls` from the current folder will give you `libtensorflow_framework.so  libtensorflow_framework.so.2  libtensorflow_framework.so.2.6.0  libtensorflow.so  libtensorflow.so.2  libtensorflow.so.2.6.0` 
+
+- Checking dependencies and workaround
+
+Now when you run `ldd libultimate_alpr-sdk.so` you'll see `libtensorflow.so.1 => not found`. That's normal because the SDK is built for Tensorflow 1.x. Do not worry, we use the [C-API](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/c/c_api.h) which is the same for all Tensorflow versions.
+
+The litte trick is to rename the symbolic link: `mv libtensorflow.so.2 libtensorflow.so.1`
+
+**That's it, you're ready to use the SDK**
+
+Check the [benchmark numbers](benchmark/README.md#peformance-numbers) if you want to know how fast the SDK runs on RTX3060.
 
 <a name="cross-compilation"></a>
 # Cross compilation #
