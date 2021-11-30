@@ -70,7 +70,7 @@ Our SDK is built and shipped with Tensorflow 1.x to make it work on oldest NVIDI
   - Linux CPU only:	https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-linux-x86_64-2.6.0.tar.gz
   - Linux GPU support:	https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-linux-x86_64-2.6.0.tar.gz
   - Windows CPU only:	https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-windows-x86_64-2.6.0.zip
-  - Windows GPU only:	https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-windows-x86_64-2.6.0.zip
+  - Windows GPU support:	https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-windows-x86_64-2.6.0.zip
 
 - Download and uzip Tensorflow 2.6 inside the binaries folder
 ```
