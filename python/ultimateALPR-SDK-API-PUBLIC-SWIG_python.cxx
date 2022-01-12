@@ -5548,6 +5548,44 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_UltAlprSdkEngine_exifOrientation(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  void *arg1 = (void *) 0 ;
+  size_t arg2 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:UltAlprSdkEngine_exifOrientation",&obj0,&obj1)) SWIG_fail;
+  {
+    // https://docs.python.org/3/c-api/bytes.html#c.PyBytes_AsString
+    // char* PyBytes_AsString(PyObject *o)
+    // Return a pointer to the contents of o. The pointer refers to the internal buffer of o, which consists of len(o) + 1 bytes. 
+    // The last byte in the buffer is always null, regardless of whether there are any other null bytes. 
+    // The data must not be modified in any way, unless the object was just created using PyBytes_FromStringAndSize(NULL, size). 
+    // It must not be deallocated. If o is not a bytes object at all, PyBytes_AsString() returns NULL and raises TypeError.
+    if (PyBytes_Check(obj0)) {
+      arg1 = (void *) PyBytes_AsString(obj0);
+    }
+    else if (PyString_Check(obj0)) {
+      arg1 = (void *) PyString_AsString(obj0);
+    }
+  }
+  ecode2 = SWIG_AsVal_size_t(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "UltAlprSdkEngine_exifOrientation" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (int)ultimateAlprSdk::UltAlprSdkEngine::exifOrientation((void const *)arg1,arg2);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_UltAlprSdkEngine_requestRuntimeLicenseKey__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   bool *arg1 = 0 ;
@@ -5687,6 +5725,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"UltAlprSdkEngine_init", _wrap_UltAlprSdkEngine_init, METH_VARARGS, NULL},
 	 { (char *)"UltAlprSdkEngine_deInit", _wrap_UltAlprSdkEngine_deInit, METH_VARARGS, NULL},
 	 { (char *)"UltAlprSdkEngine_process", _wrap_UltAlprSdkEngine_process, METH_VARARGS, NULL},
+	 { (char *)"UltAlprSdkEngine_exifOrientation", _wrap_UltAlprSdkEngine_exifOrientation, METH_VARARGS, NULL},
 	 { (char *)"UltAlprSdkEngine_requestRuntimeLicenseKey", _wrap_UltAlprSdkEngine_requestRuntimeLicenseKey, METH_VARARGS, NULL},
 	 { (char *)"UltAlprSdkEngine_warmUp", _wrap_UltAlprSdkEngine_warmUp, METH_VARARGS, NULL},
 	 { (char *)"delete_UltAlprSdkEngine", _wrap_delete_UltAlprSdkEngine, METH_VARARGS, NULL},
@@ -6436,7 +6475,7 @@ SWIG_init(void) {
   SWIG_InstallConstants(d,swig_const_table);
   
   SWIG_Python_SetConstant(d, "ULTALPR_SDK_VERSION_MAJOR",SWIG_From_int(static_cast< int >(3)));
-  SWIG_Python_SetConstant(d, "ULTALPR_SDK_VERSION_MINOR",SWIG_From_int(static_cast< int >(2)));
+  SWIG_Python_SetConstant(d, "ULTALPR_SDK_VERSION_MINOR",SWIG_From_int(static_cast< int >(4)));
   SWIG_Python_SetConstant(d, "ULTALPR_SDK_VERSION_MICRO",SWIG_From_int(static_cast< int >(0)));
   SWIG_Python_SetConstant(d, "ULTALPR_SDK_IMAGE_TYPE_RGB24",SWIG_From_int(static_cast< int >(ultimateAlprSdk::ULTALPR_SDK_IMAGE_TYPE_RGB24)));
   SWIG_Python_SetConstant(d, "ULTALPR_SDK_IMAGE_TYPE_RGBA32",SWIG_From_int(static_cast< int >(ultimateAlprSdk::ULTALPR_SDK_IMAGE_TYPE_RGBA32)));

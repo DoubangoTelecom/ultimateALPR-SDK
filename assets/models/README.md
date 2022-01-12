@@ -40,3 +40,11 @@
 | ultimateALPR-SDK_recogn2x150_korean.desktop.model.doubango | No | **Yes** |
 | ultimateALPR-SDK_recogn1x100_korean.desktop.model.doubango | **Yes** | No |
 
+# Chinese charsets #
+
+|  | ARM | x86 |
+|-------- | --- | --- |
+| charset_anpr_chinese_size=73.txt | **Yes** | **Yes** |
+| ultimateALPR-SDK_recogn2x150_chinese.desktop.model.doubango | No | **Yes** |
+| ultimateALPR-SDK_recogn1x100_chinese.desktop.model.doubango | **Yes** | No |
+

@@ -108,7 +108,7 @@ namespace recognizer
          * JSON name: "charset"
          * Default: "latin"
          * type: string
-         * pattern: "latin" | "koran"
+         * pattern: "latin" | "korean" | "chinese"
          * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#charset
          */
         const String CONFIG_CHARSET = "latin";
@@ -124,7 +124,7 @@ namespace recognizer
          * Available since: 3.2.0
          * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#ienv-enabled
          */
-        const bool CONFIG_IENV_ENABLED = true;
+        const bool CONFIG_IENV_ENABLED = false;
 
         /**
          * Whether to use OpenVINO instead of Tensorflow as deep learning backend engine. OpenVINO is used for detection and classification but not for OCR. 
@@ -345,7 +345,7 @@ namespace recognizer
          * type: string
          * More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#recogn-rectify-enabled
          */
-        const bool CONFIG_RECOGN_RECTIFY_ENABLED = false;
+        const bool CONFIG_RECOGN_RECTIFY_ENABLED = true;
 
         static void Main(String[] args)
         {

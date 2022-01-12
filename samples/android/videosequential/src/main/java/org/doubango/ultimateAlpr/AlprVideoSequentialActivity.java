@@ -109,10 +109,10 @@ public class AlprVideoSequentialActivity extends AlprActivity {
 
     /**
      * Defines a charset (Alphabet) to use for the recognizer.
-     * JSON name: "gpgpu_enabled"
+     * JSON name: "charset"
      * Default: latin
      * type: string
-     * pattern: latin | korean
+     * pattern: latin | korean | chinese
      * Available since: 2.6.2
      * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#charset
      */
@@ -348,7 +348,7 @@ public class AlprVideoSequentialActivity extends AlprActivity {
      * type: string
      * More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#recogn-rectify-enabled
      */
-    static final boolean CONFIG_RECOGN_RECTIFY_ENABLED = false;
+    static final boolean CONFIG_RECOGN_RECTIFY_ENABLED = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

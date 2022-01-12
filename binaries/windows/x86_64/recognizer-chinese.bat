@@ -1,0 +1,13 @@
+recognizer.exe ^
+    --image ../../../assets/images/china.jpg ^
+    --assets ../../../assets ^
+    --charset chinese ^
+    --car_noplate_detect_enabled false ^
+    --ienv_enabled true ^
+    --openvino_enabled true ^
+    --openvino_device CPU ^
+    --klass_lpci_enabled true ^
+    --klass_vcr_enabled true ^
+    --klass_vmmr_enabled true ^
+    --klass_vbsr_enabled true ^
+    --parallel false

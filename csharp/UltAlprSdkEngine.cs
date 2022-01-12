@@ -91,6 +91,11 @@ public class UltAlprSdkEngine : IDisposable {
     return ret;
   }
 
+  public static int exifOrientation(IntPtr jpegMetaDataPtr, uint jpegMetaDataSize) {
+    int ret = ultimateAlprSdkPINVOKE.UltAlprSdkEngine_exifOrientation(jpegMetaDataPtr, jpegMetaDataSize);
+    return ret;
+  }
+
   public static UltAlprSdkResult requestRuntimeLicenseKey(bool rawInsteadOfJSON) {
     UltAlprSdkResult ret = new UltAlprSdkResult(ultimateAlprSdkPINVOKE.UltAlprSdkEngine_requestRuntimeLicenseKey__SWIG_0(rawInsteadOfJSON), true);
     return ret;

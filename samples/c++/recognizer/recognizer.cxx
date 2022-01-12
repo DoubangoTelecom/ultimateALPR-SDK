@@ -37,41 +37,21 @@
 */
 
 #include <ultimateALPR-SDK-API-PUBLIC.h>
-#include "../alpr_utils.h"
 
 #include <iostream> // std::cout
+#include <sys/stat.h>
+#include <map>
 #if defined(_WIN32)
 #	include <Windows.h> // SetConsoleOutputCP
 #	include <algorithm> // std::replace
 #endif
 
-using namespace ultimateAlprSdk;
+// Not part of the SDK, used to decode images -> https://github.com/nothings/stb
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_STATIC
+#include "../stb_image.h"
 
-// Configuration for ANPR deep learning engine
-static const char* __jsonConfig =
-"{"
-"\"debug_level\": \"info\","
-"\"debug_write_input_image_enabled\": false,"
-"\"debug_internal_data_path\": \".\","
-""
-"\"num_threads\": -1,"
-"\"gpgpu_enabled\": true,"
-""
-"\"klass_vcr_gamma\": 1.5,"
-""
-"\"detect_roi\": [0, 0, 0, 0],"
-"\"detect_minscore\": 0.1,"
-""
-"\"car_noplate_detect_min_score\": 0.8,"
-""
-"\"pyramidal_search_enabled\": true,"
-"\"pyramidal_search_sensitivity\": 1.0,"
-"\"pyramidal_search_minscore\": 0.3,"
-"\"pyramidal_search_min_image_size_inpixels\": 800,"
-""
-"\"recogn_minscore\": 0.3,"
-"\"recogn_score_type\": \"min\""
-"";
+using namespace ultimateAlprSdk;
 
 // Asset manager used on Android to files in "assets" folder
 #if ULTALPR_SDK_OS_ANDROID 
@@ -80,6 +60,24 @@ static const char* __jsonConfig =
 #	define ASSET_MGR_PARAM() 
 #endif /* ULTALPR_SDK_OS_ANDROID */
 
+struct AlprFile {
+	int width = 0, height = 0, channels = 0;
+	stbi_uc* uncompressedDataPtr = nullptr;
+	void* compressedDataPtr = nullptr;
+	size_t compressedDataSize = 0;
+	FILE* filePtr = nullptr;
+	virtual ~AlprFile() {
+		if (uncompressedDataPtr) free(uncompressedDataPtr), uncompressedDataPtr = nullptr;
+		if (compressedDataPtr) free(compressedDataPtr), compressedDataPtr = nullptr;
+		if (filePtr) fclose(filePtr), filePtr = nullptr;
+	}
+	bool isValid() const {
+		return width > 0 && height > 0 && (channels == 1 || channels == 3 || channels == 4) && uncompressedDataPtr && compressedDataPtr && compressedDataSize > 0;
+	}
+	ULTALPR_SDK_IMAGE_TYPE type() const {
+		return channels == 4 ? ULTALPR_SDK_IMAGE_TYPE_RGBA32 : (channels == 1 ? ULTALPR_SDK_IMAGE_TYPE_Y : ULTALPR_SDK_IMAGE_TYPE_RGB24);
+	}
+};
 
 /*
 * Parallel callback function used for notification. Not mandatory.
@@ -104,6 +102,35 @@ private:
 };
 
 static void printUsage(const std::string& message = "");
+static bool parseArgs(int argc, char *argv[], std::map<std::string, std::string >& values);
+static bool readFile(const std::string& path, AlprFile& file);
+
+// Configuration for ANPR deep learning engine
+static const char* __jsonConfig =
+"{"
+"\"debug_level\": \"info\","
+"\"debug_write_input_image_enabled\": false,"
+"\"debug_internal_data_path\": \".\","
+""
+"\"num_threads\": -1,"
+"\"max_jobs\": -1,"
+"\"gpgpu_enabled\": true,"
+""
+"\"klass_vcr_gamma\": 1.5,"
+""
+"\"detect_roi\": [0, 0, 0, 0],"
+"\"detect_minscore\": 0.1,"
+""
+"\"car_noplate_detect_min_score\": 0.8,"
+""
+"\"pyramidal_search_enabled\": true,"
+"\"pyramidal_search_sensitivity\": 1.0,"
+"\"pyramidal_search_minscore\": 0.3,"
+"\"pyramidal_search_min_image_size_inpixels\": 800,"
+""
+"\"recogn_minscore\": 0.3,"
+"\"recogn_score_type\": \"min\""
+"";
 
 /*
 * Entry point
@@ -119,15 +146,15 @@ int main(int argc, char *argv[])
 	UltAlprSdkResult result;
 	std::string assetsFolder, licenseTokenData, licenseTokenFile;
 	bool isParallelDeliveryEnabled = false; // Single image -> no need for parallel processing
-	bool isRectificationEnabled = false;
+	bool isRectificationEnabled = true;
 	bool isCarNoPlateDetectEnabled = false;
-	bool isIENVEnabled =
+	bool isIENVEnabled = false;
+	bool isOpenVinoEnabled = 
 #if defined(__arm__) || defined(__thumb__) || defined(__TARGET_ARCH_ARM) || defined(__TARGET_ARCH_THUMB) || defined(_ARM) || defined(_M_ARM) || defined(_M_ARMT) || defined(__arm) || defined(__aarch64__)
 		false;
 #else // x86-64
 		true;
 #endif
-	bool isOpenVinoEnabled = true;
 	bool isKlassLPCI_Enabled = false;
 	bool isKlassVCR_Enabled = false;
 	bool isKlassVMMR_Enabled = false;
@@ -138,7 +165,7 @@ int main(int argc, char *argv[])
 
 	// Parsing args
 	std::map<std::string, std::string > args;
-	if (!alprParseArgs(argc, argv, args)) {
+	if (!parseArgs(argc, argv, args)) {
 		printUsage();
 		return -1;
 	}
@@ -225,12 +252,13 @@ int main(int argc, char *argv[])
 	
 	jsonConfig += "}"; // end-of-config
 
-	// Decode image
-	AlprFile fileImage;
-	if (!alprDecodeFile(pathFileImage, fileImage)) {
-		ULTALPR_SDK_PRINT_INFO("Failed to read image file: %s", pathFileImage.c_str());
+	// Decode the file
+	AlprFile file;
+	if (!readFile(pathFileImage, file)) {
+		ULTALPR_SDK_PRINT_ERROR("Can't process %s", pathFileImage.c_str());
 		return -1;
 	}
+	ULTALPR_SDK_ASSERT(file.isValid());
 
 	// Init
 	ULTALPR_SDK_PRINT_INFO("Starting recognizer...");
@@ -245,10 +273,12 @@ int main(int argc, char *argv[])
 	// We load the models when this function is called for the first time. This make the first inference slow.
 	// Use benchmark application to compute the average inference time: https://github.com/DoubangoTelecom/ultimateALPR-SDK/tree/master/samples/c%2B%2B/benchmark
 	ULTALPR_SDK_ASSERT((result = UltAlprSdkEngine::process(
-		fileImage.type, // If you're using data from your camera then, the type would be YUV-family instead of RGB-family. https://www.doubango.org/SDKs/anpr/docs/cpp-api.html#_CPPv4N15ultimateAlprSdk22ULTALPR_SDK_IMAGE_TYPEE
-		fileImage.uncompressedData,
-		fileImage.width,
-		fileImage.height
+		file.type(), // If you're using data from your camera then, the type would be YUV-family instead of RGB-family. https://www.doubango.org/SDKs/anpr/docs/cpp-api.html#_CPPv4N15ultimateAlprSdk22ULTALPR_SDK_IMAGE_TYPEE
+		file.uncompressedDataPtr,
+		static_cast<size_t>(file.width),
+		static_cast<size_t>(file.height),
+		0, // stride
+		UltAlprSdkEngine::exifOrientation(file.compressedDataPtr, file.compressedDataSize)
 	)).isOK());
 	ULTALPR_SDK_PRINT_INFO("Processing done.");
 
@@ -313,9 +343,70 @@ static void printUsage(const std::string& message /*= ""*/)
 		"--klass_vmmr_enabled: Whether to enable Vehicle Make Model Recognition (VMMR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr. Default: false.\n\n"
 		"--klass_vbsr_enabled: Whether to enable Vehicle Body Style Recognition (VBSR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vbsr. Default: false.\n\n"
 		"--parallel: Whether to enabled the parallel mode.More info about the parallel mode at https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html. Default: true.\n\n"
-		"--rectify: Whether to enable the rectification layer. More info about the rectification layer at https ://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html. Default: false.\n\n"
+		"--rectify: Whether to enable the rectification layer. More info about the rectification layer at https ://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html. Default: true.\n\n"
 		"--tokenfile: Path to the file containing the base64 license token if you have one. If not provided then, the application will act like a trial version. Default: null.\n\n"
 		"--tokendata: Base64 license token if you have one. If not provided then, the application will act like a trial version. Default: null.\n\n"
 		"********************************************************************************\n"
 	);
+}
+
+static bool parseArgs(int argc, char *argv[], std::map<std::string, std::string >& values)
+{
+	ULTALPR_SDK_ASSERT(argc > 0 && argv != nullptr);
+
+	values.clear();
+
+	// Make sure the number of arguments is even
+	if ((argc - 1) & 1) {
+		ULTALPR_SDK_PRINT_ERROR("Number of args must be even");
+		return false;
+	}
+
+	// Parsing
+	for (int index = 1; index < argc; index += 2) {
+		std::string key = argv[index];
+		if (key.size() < 2 || key[0] != '-' || key[1] != '-') {
+			ULTALPR_SDK_PRINT_ERROR("Invalid key: %s", key.c_str());
+			return false;
+		}
+		values[key] = argv[index + 1];
+	}
+
+	return true;
+}
+
+static bool readFile(const std::string& path, AlprFile& file)
+{
+	// Open the file
+	if ((file.filePtr = fopen(path.c_str(), "rb")) == nullptr) {
+		ULTALPR_SDK_PRINT_ERROR("Can't open %s", path.c_str());
+		return false;
+	}
+
+	// Retrieve file size
+	struct stat st_;
+	if (stat(path.c_str(), &st_) != 0) {
+		ULTALPR_SDK_PRINT_ERROR("File is empty %s", path.c_str());
+	}
+	file.compressedDataSize = static_cast<size_t>(st_.st_size);
+
+	// Alloc memory and read data
+	file.compressedDataPtr = ::malloc(file.compressedDataSize);
+	if (!file.compressedDataPtr) {
+		ULTALPR_SDK_PRINT_ERROR("Failed to alloc mem with size = %zu", file.compressedDataSize);
+		return false;
+	}
+	size_t read_;
+	if (file.compressedDataSize != (read_ = fread(file.compressedDataPtr, 1, file.compressedDataSize, file.filePtr))) {
+		ULTALPR_SDK_PRINT_ERROR("fread(%s) returned %zu instead of %zu", path.c_str(), read_, file.compressedDataSize);
+		return false;
+	}
+
+	// Decode image
+	file.uncompressedDataPtr = stbi_load_from_memory(
+		reinterpret_cast<stbi_uc const *>(file.compressedDataPtr), static_cast<int>(file.compressedDataSize),
+		&file.width, &file.height, &file.channels, 0
+	);
+
+	return file.isValid();
 }

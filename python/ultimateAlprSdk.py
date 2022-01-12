@@ -146,6 +146,8 @@ class UltAlprSdkEngine(_object):
     if _newclass:deInit = staticmethod(_ultimateAlprSdk.UltAlprSdkEngine_deInit)
     __swig_getmethods__["process"] = lambda x: _ultimateAlprSdk.UltAlprSdkEngine_process
     if _newclass:process = staticmethod(_ultimateAlprSdk.UltAlprSdkEngine_process)
+    __swig_getmethods__["exifOrientation"] = lambda x: _ultimateAlprSdk.UltAlprSdkEngine_exifOrientation
+    if _newclass:exifOrientation = staticmethod(_ultimateAlprSdk.UltAlprSdkEngine_exifOrientation)
     __swig_getmethods__["requestRuntimeLicenseKey"] = lambda x: _ultimateAlprSdk.UltAlprSdkEngine_requestRuntimeLicenseKey
     if _newclass:requestRuntimeLicenseKey = staticmethod(_ultimateAlprSdk.UltAlprSdkEngine_requestRuntimeLicenseKey)
     __swig_getmethods__["warmUp"] = lambda x: _ultimateAlprSdk.UltAlprSdkEngine_warmUp
@@ -166,6 +168,10 @@ UltAlprSdkEngine_deInit = _ultimateAlprSdk.UltAlprSdkEngine_deInit
 def UltAlprSdkEngine_process(*args):
   return _ultimateAlprSdk.UltAlprSdkEngine_process(*args)
 UltAlprSdkEngine_process = _ultimateAlprSdk.UltAlprSdkEngine_process
+
+def UltAlprSdkEngine_exifOrientation(*args):
+  return _ultimateAlprSdk.UltAlprSdkEngine_exifOrientation(*args)
+UltAlprSdkEngine_exifOrientation = _ultimateAlprSdk.UltAlprSdkEngine_exifOrientation
 
 def UltAlprSdkEngine_requestRuntimeLicenseKey(rawInsteadOfJSON=False):
   return _ultimateAlprSdk.UltAlprSdkEngine_requestRuntimeLicenseKey(rawInsteadOfJSON)

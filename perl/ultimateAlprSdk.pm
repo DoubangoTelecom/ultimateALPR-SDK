@@ -135,6 +135,7 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *init = *ultimateAlprSdkc::UltAlprSdkEngine_init;
 *deInit = *ultimateAlprSdkc::UltAlprSdkEngine_deInit;
 *process = *ultimateAlprSdkc::UltAlprSdkEngine_process;
+*exifOrientation = *ultimateAlprSdkc::UltAlprSdkEngine_exifOrientation;
 *requestRuntimeLicenseKey = *ultimateAlprSdkc::UltAlprSdkEngine_requestRuntimeLicenseKey;
 *warmUp = *ultimateAlprSdkc::UltAlprSdkEngine_warmUp;
 sub DESTROY {

@@ -106,10 +106,10 @@ public class AlprBenchmarkActivity extends AppCompatActivity {
 
     /**
      * Defines a charset (Alphabet) to use for the recognizer.
-     * JSON name: "gpgpu_enabled"
+     * JSON name: "charset"
      * Default: latin
      * type: string
-     * pattern: latin | korean
+     * pattern: latin | korean | chinese
      * Available since: 2.6.2
      * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#charset
      */

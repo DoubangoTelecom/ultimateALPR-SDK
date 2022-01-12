@@ -75,6 +75,10 @@ public class UltAlprSdkEngine {
     return new UltAlprSdkResult(ultimateAlprSdkJNI.UltAlprSdkEngine_process__SWIG_5(imageType.swigValue(), yPtr, uPtr, vPtr, widthInSamples, heightInSamples, yStrideInBytes, uStrideInBytes, vStrideInBytes), true);
   }
 
+  public static int exifOrientation(java.nio.ByteBuffer jpegMetaDataPtr, long jpegMetaDataSize) {
+    return ultimateAlprSdkJNI.UltAlprSdkEngine_exifOrientation(jpegMetaDataPtr, jpegMetaDataSize);
+  }
+
   public static UltAlprSdkResult requestRuntimeLicenseKey(boolean rawInsteadOfJSON) {
     return new UltAlprSdkResult(ultimateAlprSdkJNI.UltAlprSdkEngine_requestRuntimeLicenseKey__SWIG_0(rawInsteadOfJSON), true);
   }

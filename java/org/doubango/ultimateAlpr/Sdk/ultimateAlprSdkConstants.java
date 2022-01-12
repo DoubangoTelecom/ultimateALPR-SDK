@@ -10,6 +10,6 @@ package org.doubango.ultimateAlpr.Sdk;
 
 public interface ultimateAlprSdkConstants {
   public final static int ULTALPR_SDK_VERSION_MAJOR = 3;
-  public final static int ULTALPR_SDK_VERSION_MINOR = 2;
+  public final static int ULTALPR_SDK_VERSION_MINOR = 4;
   public final static int ULTALPR_SDK_VERSION_MICRO = 0;
 }

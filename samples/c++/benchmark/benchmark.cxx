@@ -125,7 +125,12 @@ int main(int argc, char *argv[])
 	bool isParallelDeliveryEnabled = true;
 	bool isRectificationEnabled = false;
 	bool isIENVEnabled = false;
-	bool isOpenVinoEnabled = true;
+	bool isOpenVinoEnabled =
+#if defined(__arm__) || defined(__thumb__) || defined(__TARGET_ARCH_ARM) || defined(__TARGET_ARCH_THUMB) || defined(_ARM) || defined(_M_ARM) || defined(_M_ARMT) || defined(__arm) || defined(__aarch64__)
+		false;
+#else // x86-64
+		true;
+#endif
 	bool isKlassLPCI_Enabled = false;
 	bool isKlassVCR_Enabled = false;
 	bool isKlassVMMR_Enabled = false;

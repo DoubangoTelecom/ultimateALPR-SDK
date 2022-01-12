@@ -109,10 +109,10 @@ public class AlprVideoParallelActivity extends AlprActivity {
 
     /**
      * Defines a charset (Alphabet) to use for the recognizer.
-     * JSON name: "gpgpu_enabled"
+     * JSON name: "charset"
      * Default: latin
      * type: string
-     * pattern: latin | korean
+     * pattern: latin | korean | chinese
      * Available since: 2.6.2
      * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#charset
      */
@@ -143,7 +143,7 @@ public class AlprVideoParallelActivity extends AlprActivity {
      * Available since: 3.0.0
      * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino-enabled
      */
-    static final boolean CONFIG_OPENVINO_ENABLED = true;
+    static final boolean CONFIG_OPENVINO_ENABLED = false;
 
     /**
      * OpenVINO device to use for computations. We recommend using "CPU" which is always correct.
@@ -349,7 +349,7 @@ public class AlprVideoParallelActivity extends AlprActivity {
      * type: string
      * More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#recogn-rectify-enabled
      */
-    static final boolean CONFIG_RECOGN_RECTIFY_ENABLED = false;
+    static final boolean CONFIG_RECOGN_RECTIFY_ENABLED = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
