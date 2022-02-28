@@ -55,7 +55,7 @@ JSON_CONFIG = {
     "pyramidal_search_minscore": 0.3,
     "pyramidal_search_min_image_size_inpixels": 800,
     
-    "recogn_rectify_enabled": true,
+    "recogn_rectify_enabled": True,
     "recogn_minscore": 0.3,
     "recogn_score_type": "min"
 }
