@@ -86,7 +86,7 @@ make sure you don't have older Tensorflow binaries in that directory.
 
 Now when you run `ldd libultimate_alpr-sdk.so` you'll see `libtensorflow.so.1 => not found`. That's normal because the SDK is built for Tensorflow 1.x. Do not worry, we use the [C-API](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/c/c_api.h) which is the same for all Tensorflow versions.
 
-The litte trick is to rename the symbolic link: `mv libtensorflow.so.2 libtensorflow.so.1`
+The litte trick is to duplicate and rename the symbolic link: `cp libtensorflow.so.2 libtensorflow.so.1`
 
 **That's it, you're ready to use the SDK**
 
