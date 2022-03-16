@@ -14,8 +14,8 @@ ultimateALPR SDK public header
 #include <string>
 
 #define ULTALPR_SDK_VERSION_MAJOR		3
-#define ULTALPR_SDK_VERSION_MINOR		7
-#define ULTALPR_SDK_VERSION_MICRO		0
+#define ULTALPR_SDK_VERSION_MINOR		8
+#define ULTALPR_SDK_VERSION_MICRO		3
 
 // Windows's symbols export
 #if defined(SWIG)

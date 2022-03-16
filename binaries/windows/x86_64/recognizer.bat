@@ -2,8 +2,8 @@ recognizer.exe ^
     --image ../../../assets/images/lic_us_1280x720.jpg ^
     --assets ../../../assets ^
     --charset latin ^
-    --car_noplate_detect_enabled false ^
-    --ienv_enabled true ^
+    --car_noplate_detect_enabled true ^
+    --ienv_enabled false ^
     --openvino_enabled true ^
     --openvino_device CPU ^
     --klass_lpci_enabled true ^
