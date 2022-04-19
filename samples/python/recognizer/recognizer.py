@@ -23,15 +23,11 @@
 '''
 
 import ultimateAlprSdk
-import sys
 import argparse
 import json
-import platform
 import os.path
-from PIL import Image, ExifTags
 
-# EXIF orientation TAG
-ORIENTATION_TAG = [orient for orient in ExifTags.TAGS.keys() if ExifTags.TAGS[orient] == 'Orientation']
+TAG = "[PythonRecognizer] "
 
 # Defines the default JSON configuration. More information at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html
 JSON_CONFIG = {
@@ -60,7 +56,39 @@ JSON_CONFIG = {
     "recogn_score_type": "min"
 }
 
-TAG = "[PythonRecognizer] "
+IMAGE_TYPES_MAPPING = { 
+        'RGB': ultimateAlprSdk.ULTALPR_SDK_IMAGE_TYPE_RGB24,
+        'RGBA': ultimateAlprSdk.ULTALPR_SDK_IMAGE_TYPE_RGBA32,
+        'L': ultimateAlprSdk.ULTALPR_SDK_IMAGE_TYPE_Y
+}
+
+# Load image
+def load_pil_image(path):
+    from PIL import Image, ExifTags, ImageOps
+    import traceback
+    pil_image = Image.open(path)
+    img_exif = pil_image.getexif()
+    ret = {}
+    orientation  = 1
+    try:
+        if img_exif:
+            for tag, value in img_exif.items():
+                decoded = ExifTags.TAGS.get(tag, tag)
+                ret[decoded] = value
+            orientation  = ret["Orientation"]
+    except Exception as e:
+        print(TAG + "An exception occurred: {}".format(e))
+        traceback.print_exc()
+
+    if orientation > 1:
+        pil_image = ImageOps.exif_transpose(pil_image)
+
+    if pil_image.mode in IMAGE_TYPES_MAPPING:
+        imageType = IMAGE_TYPES_MAPPING[pil_image.mode]
+    else:
+        raise ValueError(TAG + "Invalid mode: %s" % pil_image.mode)
+
+    return pil_image, imageType
 
 # Check result
 def checkResult(operation, result):
@@ -94,25 +122,11 @@ if __name__ == "__main__":
 
     # Check if image exist
     if not os.path.isfile(args.image):
-        print(TAG + "File doesn't exist: %s" % args.image)
-        assert False
+        raise OSError(TAG + "File doesn't exist: %s" % args.image)
 
-    # Decode the image
-    image = Image.open(args.image)
+     # Decode the image and extract type
+    image, imageType = load_pil_image(args.image)
     width, height = image.size
-    if image.mode == "RGB":
-        format = ultimateAlprSdk.ULTALPR_SDK_IMAGE_TYPE_RGB24
-    elif image.mode == "RGBA":
-        format = ultimateAlprSdk.ULTALPR_SDK_IMAGE_TYPE_RGBA32
-    elif image.mode == "L":
-        format = ultimateAlprSdk.ULTALPR_SDK_IMAGE_TYPE_Y
-    else:
-        print(TAG + "Invalid mode: %s" % image.mode)
-        assert False
-
-    # Read the EXIF orientation value
-    exif = image._getexif()
-    exifOrientation = exif[ORIENTATION_TAG[0]] if len(ORIENTATION_TAG) == 1 and exif != None else 1
 
     # Update JSON options using values from the command args
     JSON_CONFIG["assets_folder"] = args.assets
@@ -139,13 +153,13 @@ if __name__ == "__main__":
     # once and do all the recognitions you need then, deinitialize it.
     checkResult("Process",
                 ultimateAlprSdk.UltAlprSdkEngine_process(
-                    format,
+                    imageType,
                     image.tobytes(), # type(x) == bytes
                     width,
                     height,
                     0, # stride
-                    exifOrientation
-                    )
+                    1 # exifOrientation (already rotated in load_image -> use default value: 1)
+                )
         )
 
     # Press any key to exit
