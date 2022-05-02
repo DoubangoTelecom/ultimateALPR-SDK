@@ -26,10 +26,10 @@
 
 <hr />
   
-Have you ever seen a deep learning based [ANPR/ALPR (Automatic Number/License Plate Recognition)](https://en.wikipedia.org/wiki/Automatic_number-plate_recognition) engine running at **47fps on ARM device** (Android, Snapdragon 855, 720p video resolution)? <br />
+Have you ever seen a deep learning based [ANPR/ALPR (Automatic Number/License Plate Recognition)](https://en.wikipedia.org/wiki/Automatic_number-plate_recognition)  engine running at **64fps on a $99 ARM device** ([Khadas VIM3](https://www.khadas.com/vim3), 720p video resolution)? <br />
 
-With an average frame rate as high as **47 fps on ARM** devices (Snapdragon 855) this is the fastest ANPR/ALPR implementation you'll find on the market. 
-Being fast is important but being accurate is crucial. 
+**UltimateALPR** is the fastest ANPR/ALPR implementation you'll find on the market. Being fast is important but being accurate is crucial. 
+
 We use state of the art deep learning techniques to offer unmatched accuracy and precision. As a comparison this is **#33 times faster than** [OpenALPR on Android](https://github.com/SandroMachado/openalpr-android).
 (see [benchmark section](https://www.doubango.org/SDKs/anpr/docs/Benchmark.html) for more information).
 
@@ -76,7 +76,7 @@ The source code comes with #4 Android sample applications: [Benchmark](#sample-a
 <a name="sample-application-benchmark-android"></a>
 ### Benchmark (Android) ###
 This application is used to check everything is ok and running as fast as expected. 
-The information about the maximum frame rate (**237fps** on Intel Xeon, **47fps** on Snapdragon 855 and **12fps** on Raspberry Pi 4) could be checked using this application. 
+The information about the maximum frame rate (**237fps** on Intel Xeon, **64fps** on Khadas VIM3 and **12fps** on Raspberry Pi 4) could be checked using this application. 
 It's open source and doesn't require registration or license key.
 
 <a name="sample-application-videoparallel-android"></a>
@@ -243,7 +243,7 @@ The source code comes with #2 [C++ sample applications](samples/c++): [Benchmark
 <a name="sample-application-benchmark-others"></a>
 ### Benchmark (Raspberry Pi, Linux, NVIDIA Jetson, Windows and others) ###
 This application is used to check everything is ok and running as fast as expected. 
-The information about the maximum frame rate (**237fps** on Intel Xeon, **47fps** on Snapdragon 855, **152fps** on Jetson NX, **30fps** on Jetson nano and **12fps** on Raspberry Pi 4) could be checked using this application. 
+The information about the maximum frame rate (**237fps** on Intel Xeon, **47fps** on Snapdragon 855, **152fps** on Jetson NX, **64fps** on Khadas VIM3, **30fps** on Jetson nano and **12fps** on Raspberry Pi 4) could be checked using this application. 
 It's open source and doesn't require registration or license key.
 
 For more information on how to build and run this sample please check [samples/c++/benchmark](samples/c++/benchmark/README.md).

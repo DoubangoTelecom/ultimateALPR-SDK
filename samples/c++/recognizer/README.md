@@ -9,7 +9,7 @@
 - [Testing](#testing)
   - [Usage](#testing-usage)
   - [Examples](#testing-examples)
-
+<hr />
 
 This application is used as reference code for developers to show how to use the [C++ API](https://www.doubango.org/SDKs/anpr/docs/cpp-api.html) and could
 be used to easily check the accuracy. The application accepts path to a JPEG/PNG/BMP file as input. This **is not the recommended** way to use the API. We recommend reading the data directly from the camera and feeding the SDK with the uncompressed **YUV data** without saving it to a file or converting it to RGB.
@@ -104,10 +104,12 @@ recognizer \
       [--parallel <whether-to-enable-parallel-mode:true/false>] \
       [--rectify <whether-to-enable-rectification-layer:true/false>] \
       [--charset <recognition-charset:latin/korean/chinese>] \
+      [--num_threads <number of threads:[1, inf]>] \
       [--car_noplate_detect_enabled <whether-to-enable-detecting-cars-with-no-plate:true/false>] \
       [--ienv_enabled <whether-to-enable-IENV:true/false>] \
       [--openvino_enabled <whether-to-enable-OpenVINO:true/false>] \
       [--openvino_device <openvino-device-to-use>] \
+      [--npu_enabled <whether-to-enable-NPU-acceleration:true/false>] \
       [--klass_lpci_enabled <whether-to-enable-LPCI:true/false>] \
       [--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \
       [--klass_vmmr_enabled <whether-to-enable-VMMR:true/false>] \
@@ -119,12 +121,14 @@ Options surrounded with **[]** are optional.
 - `--image` Path to the image(JPEG/PNG/BMP) to process. You can use default image at [../../../assets/images/lic_us_1280x720.jpg](../../../assets/images/lic_us_1280x720.jpg).
 - `--assets` Path to the [assets](../../../assets) folder containing the configuration files and models. Default value is the current folder.
 - `--charset` Defines the recognition charset (a.k.a alphabet) value (latin, korean, chinese...). Default: *latin*.
+- `--num_threads` Number of threads to use. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#num-threads. Default: *-1*.
 - `--parallel` Whether to enabled the parallel mode. More info about the parallel mode at [https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html). Default: *false*.
 - `--rectify` Whether to enable the rectification layer. More info about the rectification layer at [https://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html](https://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html). Always enabled on x86_64 CPUs. Default: *false*.
 - `--car_noplate_detect_enabled` Whether to detect and return cars with no plate. Default: *false*. 
 - `--ienv_enabled` Whether to enable Image Enhancement for Night-Vision (IENV). More info about IENV at https://www.doubango.org/SDKs/anpr/docs/Features.html#image-enhancement-for-night-vision-ienv. Default: *true* for x86-64 and *false* for ARM.
 - `--openvino_enabled` Whether to enable OpenVINO. Tensorflow will be used when OpenVINO is disabled. Default: *true*.
 - `--openvino_device` Defines the OpenVINO device to use (CPU, GPU, FPGA...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino-device. Default: *CPU*."
+- `--npu_enabled` Whether to enable NPU acceleration (Amlogic, NXP...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#npu-enabled. Default: *true*.
 - `--klass_lpci_enabled` Whether to enable License Plate Country Identification (LPCI). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci. Default: *false*.
 - `--klass_vcr_enabled` Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr. Default: *false*.
 - `--klass_vmmr_enabled` Whether to enable Vehicle Make Model Recognition (VMMR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr. Default: *false*.

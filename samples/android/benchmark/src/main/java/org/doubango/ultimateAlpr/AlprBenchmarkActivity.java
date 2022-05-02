@@ -352,7 +352,7 @@ public class AlprBenchmarkActivity extends AppCompatActivity {
      * Number of times to try.
      * This number must be high enough (> 300) to make sure the noise is relatively small.
      */
-    static final int NUM_LOOPS = 1000;
+    static final int NUM_LOOPS = 100;
 
     /**
      * The percentage of images with a plate. Within [0, 1] interval.
@@ -360,7 +360,7 @@ public class AlprBenchmarkActivity extends AppCompatActivity {
      * In fact, only 0.03% of the images will likely be positive. In this benchmark we consider
      * 20% of the images have a plate which is a very high guess.
      */
-    static final float PERCENT_POSITIVES = .2f; // 20%
+    static final float PERCENT_POSITIVES = 1.0f; // 20%
 
     MyUltAlprSdkParallelDeliveryCallback mCallback;
 

@@ -111,6 +111,7 @@ if __name__ == "__main__":
     parser.add_argument("--ienv_enabled", required=False, default=False, help="Whether to enable Image Enhancement for Night-Vision (IENV). More info about IENV at https://www.doubango.org/SDKs/anpr/docs/Features.html#image-enhancement-for-night-vision-ienv. Default: true for x86-64 and false for ARM.")
     parser.add_argument("--openvino_enabled", required=False, default=True, help="Whether to enable OpenVINO. Tensorflow will be used when OpenVINO is disabled")
     parser.add_argument("--openvino_device", required=False, default="CPU", help="Defines the OpenVINO device to use (CPU, GPU, FPGA...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino-device")
+    parser.add_argument("--npu_enabled", required=False, default=True, help="Whether to enable NPU (Neural Processing Unit) acceleration")
     parser.add_argument("--klass_lpci_enabled", required=False, default=False, help="Whether to enable License Plate Country Identification (LPCI). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci")
     parser.add_argument("--klass_vcr_enabled", required=False, default=False, help="Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr")
     parser.add_argument("--klass_vmmr_enabled", required=False, default=False, help="Whether to enable Vehicle Make Model Recognition (VMMR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr")
@@ -135,6 +136,7 @@ if __name__ == "__main__":
     JSON_CONFIG["ienv_enabled"] = (args.ienv_enabled == "True")
     JSON_CONFIG["openvino_enabled"] = (args.openvino_enabled == "True")
     JSON_CONFIG["openvino_device"] = args.openvino_device
+    JSON_CONFIG["npu_enabled"] = (args.npu_enabled == "True")
     JSON_CONFIG["klass_lpci_enabled"] = (args.klass_lpci_enabled == "True")
     JSON_CONFIG["klass_vcr_enabled"] = (args.klass_vcr_enabled == "True")
     JSON_CONFIG["klass_vmmr_enabled"] = (args.klass_vmmr_enabled == "True")

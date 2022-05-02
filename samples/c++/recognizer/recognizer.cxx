@@ -18,6 +18,7 @@
 			[--ienv_enabled <whether-to-enable-IENV:true/false>] \
 			[--openvino_enabled <whether-to-enable-OpenVINO:true/false>] \
 			[--openvino_device <openvino_device-to-use>] \
+			[--npu_enabled <whether-to-enable-NPU-acceleration:true/false>] \
 			[--klass_lpci_enabled <whether-to-enable-LPCI:true/false>] \
 			[--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \
 			[--klass_vmmr_enabled <whether-to-enable-VMMR:true/false>] \
@@ -115,6 +116,8 @@ static const char* __jsonConfig =
 "\"num_threads\": -1,"
 "\"max_jobs\": -1,"
 "\"gpgpu_enabled\": true,"
+"\"asm_enabled\": true,"
+"\"intrin_enabled\": true,"
 ""
 "\"klass_vcr_gamma\": 1.5,"
 ""
@@ -155,6 +158,7 @@ int main(int argc, char *argv[])
 #else // x86-64
 		true;
 #endif
+	bool isNpuEnabled = true; // Amlogic, NXP...
 	bool isKlassLPCI_Enabled = false;
 	bool isKlassVCR_Enabled = false;
 	bool isKlassVMMR_Enabled = false;
@@ -202,6 +206,9 @@ int main(int argc, char *argv[])
 	if (args.find("--openvino_device") != args.end()) {
 		openvinoDevice = args["--openvino_device"];
 	}
+	if (args.find("--npu_enabled") != args.end()) {
+		isNpuEnabled = (args["--npu_enabled"].compare("true") == 0);
+	}
 	if (args.find("--klass_lpci_enabled") != args.end()) {
 		isKlassLPCI_Enabled = (args["--klass_lpci_enabled"].compare("true") == 0);
 	}
@@ -239,6 +246,7 @@ int main(int argc, char *argv[])
 	if (!openvinoDevice.empty()) {
 		jsonConfig += std::string(",\"openvino_device\": \"") + openvinoDevice + std::string("\"");
 	}
+	jsonConfig += std::string(",\"npu_enabled\": ") + (isNpuEnabled ? "true" : "false");
 	jsonConfig += std::string(",\"klass_lpci_enabled\": ") + (isKlassLPCI_Enabled ? "true" : "false");
 	jsonConfig += std::string(",\"klass_vcr_enabled\": ") + (isKlassVCR_Enabled ? "true" : "false");
 	jsonConfig += std::string(",\"klass_vmmr_enabled\": ") + (isKlassVMMR_Enabled ? "true" : "false");
@@ -338,6 +346,7 @@ static void printUsage(const std::string& message /*= ""*/)
 		"--ienv_enabled: Whether to enable Image Enhancement for Night-Vision (IENV). More info about IENV at https://www.doubango.org/SDKs/anpr/docs/Features.html#image-enhancement-for-night-vision-ienv. Default: true for x86-64 and false for ARM.\n\n"
 		"--openvino_enabled: Whether to enable OpenVINO. Tensorflow will be used when OpenVINO is disabled. Default: true.\n\n"
 		"--openvino_device: Defines the OpenVINO device to use (CPU, GPU, FPGA...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino_device. Default: CPU.\n\n"
+		"--npu_enabled: Whether to enable NPU acceleration (Amlogic, NXP...). Default: true.\n\n"
 		"--klass_lpci_enabled: Whether to enable License Plate Country Identification (LPCI). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci. Default: false.\n\n"
 		"--klass_vcr_enabled: Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr. Default: false.\n\n"
 		"--klass_vmmr_enabled: Whether to enable Vehicle Make Model Recognition (VMMR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr. Default: false.\n\n"

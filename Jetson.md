@@ -17,7 +17,7 @@
   - [High CPU usage](#known-issues-and-possible-fixes_high-cpu-usage)
 - [Technical questions](#technical-questions)
 
-<br />
+<hr />
 
 This document is about [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) in general but will focus on [NVIDIA Jetson devices](https://developer.nvidia.com/buy-jetson) (TX1, TX2, Nano, Xavier AGX/NX...).
 
@@ -91,19 +91,19 @@ For now we have failed to convert the [License Plate Recognition (LPR)](https://
 ### Pros and Cons ###
  - [binaries/jetson](binaries/jetson)
     - Pros:
-       - Low memory usage (~20% on Jetson Nano)
+       - Low memory usage
        - Fast load and initialization
     - Cons:
-       - High CPU usage (> 300% out of 400% on Jetson Nano)
+       - High CPU usage
        - Lower frame rate when there are license plates on the image. [License Plate Recognition (LPR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-recognition-lpr) **NOT** GPGPU accelerated
        
        
  - [binaries/jetson_tftrt](binaries/jetson_tftrt)
      - Pros:
-       - Low CPU usage (< 100% out of 400% on Jetson Nano)
+       - Low CPU usage
        - Higher frame rate when there are license plates on the image. [License Plate Recognition (LPR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-recognition-lpr) **IS** GPGPU accelerated using [TF-TRT](https://docs.nvidia.com/deeplearning/frameworks/tf-trt-user-guide/index.html)
     - Cons:
-       - High memory usage (~50% on Jetson Nano). [TF-TRT](https://docs.nvidia.com/deeplearning/frameworks/tf-trt-user-guide/index.html) binaries are >500Mo and this doesn't help.
+       - High memory usage. [TF-TRT](https://docs.nvidia.com/deeplearning/frameworks/tf-trt-user-guide/index.html) binaries are >500Mo and this doesn't help.
        - Slow load and initialization. For now we cannot generated the optimized models for the OCR part using [TF-TRT](https://docs.nvidia.com/deeplearning/frameworks/tf-trt-user-guide/index.html), the models are built and optimized at runtime before inference.
 
 To check GPU and CPU usage: `/usr/bin/tegrastats`

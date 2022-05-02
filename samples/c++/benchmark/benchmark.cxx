@@ -14,9 +14,12 @@
 			--negative <path-to-image-without-a-plate> \
 			[--assets <path-to-assets-folder>] \
 			[--charset <recognition-charset:latin/korean/chinese>] \
+			[--num_threads <number of threads:[1, inf]>] \
 			[--ienv_enabled <whether-to-enable-IENV:true/false>] \
 			[--openvino_enabled <whether-to-enable-OpenVINO:true/false>] \
 			[--openvino_device <openvino_device-to-use>] \
+			[--npu_enabled <whether-to-enable-NPU-acceleration:true/false>] \
+			[--simd_enabled <whether-to-enable-SIMD-acceleration:true/false>] \
 			[--klass_lpci_enabled <whether-to-enable-LPCI:true/false>] \
 			[--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \
 			[--klass_vmmr_enabled <whether-to-enable-VMMR:true/false>] \
@@ -62,7 +65,6 @@ static const char* __jsonConfig =
 "\"debug_write_input_image_enabled\": false,"
 "\"debug_internal_data_path\": \".\","
 ""
-"\"num_threads\": -1,"
 "\"gpgpu_enabled\": true,"
 "\"max_latency\": -1,"
 ""
@@ -123,6 +125,7 @@ int main(int argc, char *argv[])
 	MyUltAlprSdkParallelDeliveryCallback parallelDeliveryCallbackCallback;
 	std::string assetsFolder, licenseTokenData, licenseTokenFile;
 	bool isParallelDeliveryEnabled = true;
+	std::string numThreads = "-1";
 	bool isRectificationEnabled = false;
 	bool isIENVEnabled = false;
 	bool isOpenVinoEnabled =
@@ -131,6 +134,8 @@ int main(int argc, char *argv[])
 #else // x86-64
 		true;
 #endif
+	bool isNpuEnabled = true; // Amlogic, NXP...
+	bool isSimdEnabled = true; // Assembler and Intrinsics (SSE, AVX, MMX, NEON...)
 	bool isKlassLPCI_Enabled = false;
 	bool isKlassVCR_Enabled = false;
 	bool isKlassVMMR_Enabled = false;
@@ -186,6 +191,9 @@ int main(int argc, char *argv[])
 	if (args.find("--charset") != args.end()) {
 		charset = args["--charset"];
 	}
+	if (args.find("--num_threads") != args.end()) {
+		numThreads = args["--num_threads"];
+	}
 	if (args.find("--rectify") != args.end()) {
 		isRectificationEnabled = (args["--rectify"].compare("true") == 0);
 	}
@@ -197,6 +205,12 @@ int main(int argc, char *argv[])
 	}
 	if (args.find("--openvino_device") != args.end()) {
 		openvinoDevice = args["--openvino_device"];
+	}
+	if (args.find("--npu_enabled") != args.end()) {
+		isNpuEnabled = (args["--npu_enabled"].compare("true") == 0);
+	}
+	if (args.find("--simd_enabled") != args.end()) {
+		isSimdEnabled = (args["--simd_enabled"].compare("true") == 0);
 	}
 	if (args.find("--klass_lpci_enabled") != args.end()) {
 		isKlassLPCI_Enabled = (args["--klass_lpci_enabled"].compare("true") == 0);
@@ -229,12 +243,16 @@ int main(int argc, char *argv[])
 	if (!charset.empty()) {
 		jsonConfig += std::string(",\"charset\": \"") + charset + std::string("\"");
 	}
+	jsonConfig += std::string(",\"num_threads\": ") + (numThreads);
 	jsonConfig += std::string(",\"recogn_rectify_enabled\": ") + (isRectificationEnabled ? "true" : "false");	
 	jsonConfig += std::string(",\"ienv_enabled\": ") + (isIENVEnabled ? "true" : "false");
 	jsonConfig += std::string(",\"openvino_enabled\": ") + (isOpenVinoEnabled ? "true" : "false");
 	if (!openvinoDevice.empty()) {
 		jsonConfig += std::string(",\"openvino_device\": \"") + openvinoDevice + std::string("\"");
 	}
+	jsonConfig += std::string(",\"npu_enabled\": ") + (isNpuEnabled ? "true" : "false");
+	jsonConfig += std::string(",\"asm_enabled\": ") + (isSimdEnabled ? "true" : "false");
+	jsonConfig += std::string(",\"intrin_enabled\": ") + (isSimdEnabled ? "true" : "false");
 	jsonConfig += std::string(",\"klass_lpci_enabled\": ") + (isKlassLPCI_Enabled ? "true" : "false");
 	jsonConfig += std::string(",\"klass_vcr_enabled\": ") + (isKlassVCR_Enabled ? "true" : "false");
 	jsonConfig += std::string(",\"klass_vmmr_enabled\": ") + (isKlassVMMR_Enabled ? "true" : "false");
@@ -356,9 +374,12 @@ static void printUsage(const std::string& message /*= ""*/)
 		"\t--negative <path-to-image-without-a-plate> \n"
 		"\t[--assets <path-to-assets-folder>] \n"
 		"\t[--charset <recognition-charset:latin/korean/chinese>] \n"
+		"\t[--num_threads <number of threads : [1, inf]>] \n"
 		"\t[--ienv_enabled <whether-to-enable-IENV:true/false>] \n"
 		"\t[--openvino_enabled <whether-to-enable-OpenVINO:true/false>] \n"
 		"\t[--openvino_device <openvino_device-to-use>] \n"
+		"\t[--npu_enabled <whether-to-enable-NPU-acceleration:true/false>] \n"
+		"\t[--simd_enabled <whether-to-enable-SIMD-acceleration:true/false>] \n"
 		"\t[--klass_lpci_enabled <whether-to-enable-LPCI:true/false>] \n"
 		"\t[--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \n"
 		"\t[--klass_vmmr_enabled <whether-to-enable-VMMR:true/false>] \n"
@@ -376,9 +397,12 @@ static void printUsage(const std::string& message /*= ""*/)
 		"--negative: Path to an image(JPEG/PNG/BMP) without a license plate. This image will be used to evaluate the detector. You can use default image at ../../../assets/images/london_traffic.jpg.\n\n"
 		"--assets: Path to the assets folder containing the configuration files and models. Default value is the current folder.\n\n"
 		"--charset: Defines the recognition charset value (latin, korean, chinese...). Default: latin.\n\n"
+		"--num_threads: Number of threads to use. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#num-threads. Default: -1.\n\n"
 		"--ienv_enabled: Whether to enable Image Enhancement for Night-Vision (IENV). More info about IENV at https://www.doubango.org/SDKs/anpr/docs/Features.html#image-enhancement-for-night-vision-ienv. Default: false.\n\n"
-		"--openvino_enabled: Whether to enable OpenVINO. Tensorflow will be used when OpenVINO is disabled. Default: true.\n\n"
+		"--openvino_enabled: Whether to enable OpenVINO. Tensorflow will be used when OpenVINO is disabled. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino-enabled. Default: true.\n\n"
 		"--openvino_device: Defines the OpenVINO device to use (CPU, GPU, FPGA...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino_device. Default: CPU.\n\n"
+		"--npu_enabled: Whether to enable NPU acceleration (Amlogic, NXP...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#npu-enabled. Default: true.\n\n"
+		"--simd_enabled: Whether to enable SIMD acceleration -Assembler and Intrinsics- (SSE, AVX, MMX, NEON...). More info at https://en.wikipedia.org/wiki/Single_instruction,_multiple_data. Default: true.\n\n"
 		"--klass_lpci_enabled: Whether to enable License Plate Country Identification (LPCI). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci. Default: false.\n\n"
 		"--klass_vcr_enabled: Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr. Default: false.\n\n"
 		"--klass_vmmr_enabled: Whether to enable Vehicle Make Model Recognition (VMMR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr. Default: false.\n\n"

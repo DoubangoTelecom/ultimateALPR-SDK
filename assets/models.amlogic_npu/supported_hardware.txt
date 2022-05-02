@@ -1,0 +1,2 @@
+Amlogic
+Khadas VIM3

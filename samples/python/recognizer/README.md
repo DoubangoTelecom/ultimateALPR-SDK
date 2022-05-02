@@ -5,6 +5,7 @@
 - [Usage](#testing-usage)
 - [Examples](#testing-examples)
 - [Know issues](#testing-know-issues)
+<hr />
 
 This application is used as reference code for developers to show how to use the Python bindings for the [C++ API](https://www.doubango.org/SDKs/anpr/docs/cpp-api.html) and could
 be used to easily check the accuracy. The application accepts path to a JPEG/PNG/BMP file as input. This **is not the recommended** way to use the API. We recommend reading the data directly from the camera and feeding the SDK with the uncompressed **YUV data** without saving it to a file or converting it to RGB.
@@ -49,6 +50,7 @@ recognizer.py \
       [--ienv_enabled <whether-to-enable-IENV:True/False>] \
       [--openvino_enabled <whether-to-enable-OpenVINO:True/False>] \
       [--openvino_device <openvino-device-to-use>] \
+      [--npu_enabled <whether-to-enable-NPU-acceleration:true/false>] \
       [--klass_lpci_enabled <whether-to-enable-LPCI:True/False>] \
       [--klass_vcr_enabled <whether-to-enable-VCR:True/False>] \
       [--klass_vmmr_enabled <whether-to-enable-VMMR:True/False>] \
@@ -65,6 +67,7 @@ Options surrounded with **[]** are optional.
 - `--ienv_enabled` Whether to enable Image Enhancement for Night-Vision (IENV). More info about IENV at https://www.doubango.org/SDKs/anpr/docs/Features.html#image-enhancement-for-night-vision-ienv. Default: *True* for x86-64 and *False* for ARM.
 - `--openvino_enabled` Whether to enable OpenVINO. Tensorflow will be used when OpenVINO is disabled. Default: *True*.
 - `--openvino_device` Defines the OpenVINO device to use (CPU, GPU, FPGA...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino-device. Default: *CPU*."
+- `--npu_enabled` Whether to enable NPU acceleration (Amlogic, NXP...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#npu-enabled. Default: *True*.
 - `--klass_lpci_enabled` Whether to enable License Plate Country Identification (LPCI). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci. Default: *False*.
 - `--klass_vcr_enabled` Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr. Default: *False*.
 - `--klass_vmmr_enabled` Whether to enable Vehicle Make Model Recognition (VMMR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr. Default: *False*.

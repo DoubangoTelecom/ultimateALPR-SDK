@@ -448,7 +448,12 @@ public class Recognizer {
       channel.close();
       fin.close();
 
-      return UltAlprSdkEngine.exifOrientation(buffer, buffer.remaining());
+	  final int orientation = UltAlprSdkEngine.exifOrientation(buffer, buffer.remaining());
+      if (orientation < 1 || orientation > 8) {
+         System.err.println(String.format("Invalid EXIF orientation value: %d", orientation));
+         return 1;
+      }
+      return orientation;
     }
 
    static Hashtable<String, String> ParseArgs(String[] args) throws IllegalArgumentException

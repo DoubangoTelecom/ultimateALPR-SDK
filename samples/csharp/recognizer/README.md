@@ -6,7 +6,7 @@
 - [Testing](#testing)
   - [Usage](#testing-usage)
   - [Examples](#testing-examples)
-
+<hr />
 
 This application is a reference implementation for developers to show how to use the C# API and could
 be used to easily check the accuracy. The C# API is a wrapper around the C++ API defined at [https://www.doubango.org/SDKs/anpr/docs/cpp-api.html](https://www.doubango.org/SDKs/anpr/docs/cpp-api.html). A C++ twin sample application is at [c++/recognizer](../../c++/recognizer).

@@ -10,7 +10,7 @@
   - [Usage](#testing-usage)
   - [Examples](#testing-examples)
   - [Amazon Web Services (AWS) and Microsoft Azure](#testing-aws-azure)
-
+<hr />
 
 This application is used as reference code for developers to show how to use the [C++ API](https://www.doubango.org/SDKs/anpr/docs/cpp-api.html) to
 generate a runtime key. Once a runtime key is generated it must be [activated to produce a token](https://www.doubango.org/SDKs/LicenseManager/docs/Activation_use_cases.html).

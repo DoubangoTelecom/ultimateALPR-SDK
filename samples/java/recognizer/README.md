@@ -6,7 +6,7 @@
 - [Testing](#testing)
   - [Usage](#testing-usage)
   - [Examples](#testing-examples)
-
+<hr />
 
 This application is a reference implementation for developers to show how to use the Java API and could
 be used to easily check the accuracy. The Java API is a wrapper around the C++ API defined at [https://www.doubango.org/SDKs/anpr/docs/cpp-api.html](https://www.doubango.org/SDKs/anpr/docs/cpp-api.html).
