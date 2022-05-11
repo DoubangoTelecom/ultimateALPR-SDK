@@ -1,10 +1,9 @@
-﻿/* Copyright (C) 2011-2020 Doubango Telecom <https://www.doubango.org>
+/* Copyright (C) 2011-2022 Doubango Telecom <https://www.doubango.org>
 * File author: Mamadou DIOP (Doubango Telecom, France).
 * License: For non commercial use only.
 * Source code: https://github.com/DoubangoTelecom/ultimateALPR-SDK
 * WebSite: https://www.doubango.org/webapps/alpr/
 */
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileInputStream;
@@ -63,7 +62,7 @@ public class Recognizer {
 
    /**
    * Defines the maximum number of threads to use.
-   * You should not change this value unless you know what you’re doing. Set to -1 to let the SDK choose the right value.
+   * You should not change this value unless you know what you're doing. Set to -1 to let the SDK choose the right value.
    * The right value the SDK will choose will likely be equal to the number of virtual core.
    * For example, on an octa-core device the maximum number of threads will be 8.
    * JSON name: "num_threads"
@@ -78,7 +77,7 @@ public class Recognizer {
    * Whether to enable GPGPU computing. This will enable or disable GPGPU computing on the computer vision and deep learning libraries.
    * On ARM devices this flag will be ignored when fixed-point (integer) math implementation exist for a well-defined function.
    * For example, this function will be disabled for the bilinear scaling as we have a fixed-point SIMD accelerated implementation.
-   * Same for many deep learning parts as we’re using QINT8 quantized inference.
+   * Same for many deep learning parts as we're using QINT8 quantized inference.
    * JSON name: "gpgpu_enabled"
    * Default: true
    * type: bool
@@ -124,7 +123,7 @@ public class Recognizer {
 
   /**
    * Whether to use OpenVINO instead of Tensorflow as deep learning backend engine. OpenVINO is used for detection and classification but not for OCR. 
-   * OpenVINO is always faster than Tensorflow on Intel products (CPUs, VPUs, GPUs, FPGAs…) and we highly recommend using it. 
+   * OpenVINO is always faster than Tensorflow on Intel products (CPUs, VPUs, GPUs, FPGAs...) and we highly recommend using it. 
    * We require a CPU with support for both AVX2 and FMA features before trying to load OpenVINO plugin (shared library). 
    * OpenVINO will be disabled with a fallback on Tensorflow if these CPU features are not detected.
    * JSON name: "openvino_enabled"
@@ -329,8 +328,8 @@ public class Recognizer {
   static final String CONFIG_RECOGN_SCORE_TYPE = "min";
 
    /**
-   * Whether to add rectification layer between the detector’s output and the recognizer’s input. A rectification layer is used to suppress the distortion.
-   * A plate is distorted when it’s skewed and/or slanted. The rectification layer will deslant and deskew the plate to make it straight which make the recognition more accurate.
+   * Whether to add rectification layer between the detector's output and the recognizer's input. A rectification layer is used to suppress the distortion.
+   * A plate is distorted when it's skewed and/or slanted. The rectification layer will deslant and deskew the plate to make it straight which make the recognition more accurate.
    * Please note that you only need to enable this feature when the license plates are highly distorted. The implementation can handle moderate distortion without a rectification layer.
    * The rectification layer adds many CPU intensive operations to the pipeline which decrease the frame rate.
    * More info on the rectification layer could be found at https://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html#rectificationlayer
