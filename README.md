@@ -38,12 +38,10 @@ This opens the doors for the possibilities of running fully featured [ITS (Intel
 Being able to run all ITS applications on the device **will significantly lower the cost to acquire, deploy and maintain** such systems. 
 Please check [Device-based versus Cloud-based solution](https://www.doubango.org/SDKs/anpr/docs/Device-based_versus_Cloud-based_solution.html) section for more information about how this would reduce the cost.
 
-The next [video](https://youtu.be/xQO7ABHTg1w) ([https://youtu.be/xQO7ABHTg1w](https://youtu.be/xQO7ABHTg1w)) shows the [Recognizer sample](#sample-application-recognizer-others) running on Windows: <br />
-[![Recognizer Running on Windows](https://www.doubango.org/SDKs/anpr/docs/_images/vlcsnap-2020-09-10-03h27m56s176.jpg)](https://www.youtube.com/watch?v=xQO7ABHTg1w)
+The next [video](https://doubango.org/videos/anpr/highway-x264.mp4) shows the [Recognizer sample](#sample-application-recognizer-others) running on Windows: <br />
+[![Recognizer Running on Windows](https://www.doubango.org/SDKs/anpr/docs/_images/vlcsnap-2020-09-10-03h27m56s176.jpg)](https://doubango.org/videos/anpr/highway-x264.mp4)
 <hr />
 
-The next [video](https://youtu.be/QCkLPP1ix-c) ([https://youtu.be/QCkLPP1ix-c](https://youtu.be/QCkLPP1ix-c)) shows [Image Enhancement for Night-Vision (IENV)](https://www.doubango.org/SDKs/anpr/docs/Features.html#image-enhancement-for-night-vision-ienv) result on video stream captured at night: <br />
-[![Image Enhancement for Night-Vision (IENV)](https://www.doubango.org/SDKs/anpr/docs/_images/vlcsnap-2020-12-26-22h55m21s103.jpg)](https://www.youtube.com/watch?v=QCkLPP1ix-c)
 <hr />
 
 The code is accelerated on **CPU**, **GPU**, **VPU** and **FPGA**, thanks to [CUDA](https://developer.nvidia.com/cuda-toolkit), [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) and [Intel OpenVINO](https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/hardware.html).
