@@ -42,8 +42,6 @@ The next [video](https://doubango.org/videos/anpr/highway-x264.mp4) shows the [R
 [![Recognizer Running on Windows](https://www.doubango.org/SDKs/anpr/docs/_images/vlcsnap-2020-09-10-03h27m56s176.jpg)](https://doubango.org/videos/anpr/highway-x264.mp4)
 <hr />
 
-<hr />
-
 The code is accelerated on **CPU**, **GPU**, **VPU** and **FPGA**, thanks to [CUDA](https://developer.nvidia.com/cuda-toolkit), [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) and [Intel OpenVINO](https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/hardware.html).
 
 In addition to [License Plate Recognition (LPR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-licenseplaterecognition) we support [Image Enhancement for Night-Vision (IENV)](https://www.doubango.org/SDKs/anpr/docs/Features.html#image-enhancement-for-night-vision-ienv), [License Plate Country Identification (LPCI)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-licenseplatecountryidentification), [Vehicle Color Recognition (VCR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehiclecolorrecognition), [Vehicle Make Model Recognition (VMMR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehiclemakemodelrecognition), [Vehicle Body Style Recognition (VBSR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-body-style-recognition-vbsr), [Vehicle Direction Tracking (VDT)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehicledirectiontracking) and [Vehicle Speed Estimation (VSE)](https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehiclespeedestimation).
