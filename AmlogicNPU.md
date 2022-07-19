@@ -24,9 +24,9 @@ Please note that the **Mainline Kernel images do not support NPU**, make sure to
 
 You don't need to override the Android OS from the eMMC, install the Linux OS on an external SD card. Your Khadas will choose the OS on the SD card at boot time. This is the healthiest way to test NPU acceleration on Linux without overwriting the OS on the eMMC. Once you're happy with the result you could install the Linux OS on the eMMC which is faster than the SD card (memory read/write). You just need to remove the SD card for the boot loader to choose Android (on the eMMC) again.
 
-Make sure to upgrade your OS as explained at https://docs.khadas.com/linux/vim3/UpgradeSystem.html
+When I run `uname -a` on my device I see `Linux Khadas 4.9.241 #22 SMP PREEMPT Fri Dec 17 17:34:50 CST 2021 aarch64 aarch64 aarch64 GNU/Linux`
 
-When I run `uname -a` on my device I see `Linux Khadas 4.9.241 #8 SMP PREEMPT Sat Jan 8 09:27:25 CST 2022 aarch64 aarch64 aarch64 GNU/Linux`
+We do **not** recommend upgrading your OS. More at https://groups.google.com/g/doubango-ai/c/Q8C6cZnObtU
 
 <a name="Enabling-NPU-acceleration"></a>
 # Enabling NPU acceleration #
