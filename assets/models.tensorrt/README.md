@@ -9,4 +9,5 @@ More info [here](../../Jetson.md#building-optimized-models).
 
 On production you'll only need:
   - [optimized](optimized)/*
-  - **ultimateALPR-SDK_recogn1x100_latin.desktop.model.tensorrt.doubango** or **ultimateALPR-SDK_recogn1x100_korean.desktop.model.tensorrt.doubango** depending on your target charset
+  - **charset_anpr_latin_size=37.txt** or **charset_anpr_korean_size=78.txt** or **charset_anpr_chinese_size=73.txt** depending on your target charset
+  - **ultimateALPR-SDK_recogn1x100_latin.desktop.model.tensorrt.doubango** or **ultimateALPR-SDK_recogn1x100_korean.desktop.model.tensorrt.doubango** or **ultimateALPR-SDK_recogn1x100_chinese.desktop.model.tensorrt.doubango** depending on your target charset
