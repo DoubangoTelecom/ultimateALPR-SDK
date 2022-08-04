@@ -19,7 +19,7 @@ This guide will focus on how to use UltimateALPR on Kadas VIM3 but any [SBC (Sin
 
 Your Khadas VIM3 will likely come with an Android 9 installed on the eMMC. Unfortunately that's a 32-bit Android OS and not suitable for high performance applications.
 You'll need to install a Linux AArch64 OS from Khadas website: https://docs.khadas.com/linux/firmware/Vim3UbuntuFirmware.html.
-We're using version 4.9 (https://dl.khadas.com/Firmware/VIM3/Ubuntu/SD_USB/VIM3_Ubuntu-server-focal_Linux-4.9_arm64_SD-USB_V1.0.9-211217.img.xz) but any version should work. 
+We're using version 4.9 (https://doubango.org/khadas_images/VIM3_Ubuntu-server-focal_Linux-4.9_arm64_SD-USB_V1.0.9-211217.img.xz) but any version should work. 
 Please note that the **Mainline Kernel images do not support NPU**, make sure to install the right Linux version (see above).
 
 You don't need to override the Android OS from the eMMC, install the Linux OS on an external SD card. Your Khadas will choose the OS on the SD card at boot time. This is the healthiest way to test NPU acceleration on Linux without overwriting the OS on the eMMC. Once you're happy with the result you could install the Linux OS on the eMMC which is faster than the SD card (memory read/write). You just need to remove the SD card for the boot loader to choose Android (on the eMMC) again.
