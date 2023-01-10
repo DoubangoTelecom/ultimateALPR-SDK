@@ -150,7 +150,7 @@ The C++ API is defined [here](https://www.doubango.org/SDKs/anpr/docs/cpp-api.ht
 
 		"\"klass_lpci_enabled\": true," +
 		"\"klass_vcr_enabled\": true," +
-		"\"klass_vmm_enabled\": true," +
+		"\"klass_vmmr_enabled\": true," +
 
 		"\"recogn_score_type\": \"min\"," + 
 		"\"recogn_minscore\": 0.3," + 
