@@ -11,6 +11,7 @@
 - [Pre-processing operations](#pre-processing-operations)
 - [Coming next](#coming-next)
 - [Known issues and possible fixes](#known-issues-and-possible-fixes)
+  - [Warnings you can safely ignore](#known-issues-and-possible-fixes_warnings-to-ignore)
   - [Failed to open file](#known-issues-and-possible-fixes_failed-to-open-file)
   - [Slow load and initialization](#known-issues-and-possible-fixes_slow-load-and-initialization)
   - [High memory usage](#known-issues-and-possible-fixes_high-memory-usage)
@@ -23,7 +24,7 @@ This document is about [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) 
 
 **Starting version 3.1.0** we support full GPGPU acceleration for [NVIDIA Jetson devices](https://developer.nvidia.com/buy-jetson) using [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) and [TF-TRT](https://docs.nvidia.com/deeplearning/frameworks/tf-trt-user-guide/index.html).
 
- - The SDK was tested using [JetPack 4.4.1](https://developer.nvidia.com/embedded/jetpack), the latest version from NVIDIA and **we will not provide support for any other version**.
+ - The SDK was tested using [JetPack 4.4.1](https://developer.nvidia.com/embedded/jetpack) and [JetPack 5.1.0](https://developer.nvidia.com/embedded/jetpack), the latest version from NVIDIA and **we will not provide technical support if you're using any other version**.
  - This repo contains two set of binaries: [binaries/jetson](binaries/jetson) and [binaries/jetson_tftrt](binaries/jetson_tftrt)
 
 <a name="getting-started"></a>
@@ -46,7 +47,14 @@ You don't need to worry about building Tensorflow with support for TensorRT by y
 
 <a name="getting-started_requirements"></a>
 ## Requirements ##
-**We require CUDA 10.2, cuDNN 8.0 and TensorRT 7+.** To make your life easier, just install [JetPack 4.4.1](https://developer.nvidia.com/embedded/jetpack). As of today (11/16/2020), version 4.4.1 is the latest one.
+We require [JetPack 4.4.1](https://developer.nvidia.com/embedded/jetpack) or [JetPack 5.1.0](https://developer.nvidia.com/embedded/jetpack). As of today (***February 20, 2023***), version 5.1.0 is the latest one.
+If you run `apt-cache show nvidia-jetpack | grep "Version:"`, you'll have:
+  - `Version: 4.4.1-b50\nVersion: 4.4-b186\nVersion: 4.4-b144` if you're using Jetpack 4.4.1
+  - `Version: 5.1-b147` if you're using Jetpack 5.1.0
+
+Supported devices (check https://developer.nvidia.com/embedded/jetpack for up to date info):
+  - `Jetpack 5.1.0:` Jetson AGX Orin 32 GB production module, Jetson AGX Orin Developer Kit, Jetson Orin NX 16GB production module, Jetson AGX Xavier series, Jetson Xavier NX series modules, Jetson AGX Xavier Developer Kit and Jetson Xavier NX Developer Kit.
+  - `Jetpack 4.4.1:` Jetson Nano, Jetson Xavier NX, Jetson TX1 and Jetson TX2.
 
 <a name="getting-started_before-trying-to-use-the-sdk-on-jetson"></a>
 ## Before trying to use the SDK on Jetson ##
@@ -186,13 +194,20 @@ Version 3.1.0 is the first release to support NVIDIA Jetson and there is room fo
 <a name="known-issues-and-possible-fixes"></a>
 # Known issues and possible fixes #
 
+<a name="known-issues-and-possible-fixes_warnings-to-ignore"></a>
+## Warnings you can safely ignore ##
+All warnings from NVIDIA logger will be logged as errors on model optimization process. You can safely ignore the following messages:
+  - `Your ONNX model has been generated with INT64 weights, while TensorRT does not natively support INT64. Attempting to cast down to INT32.`
+  - `53 weights are affected by this issue: Detected subnormal FP16 values.`
+  - `The implicit batch dimension mode has been deprecated. Please create the network with NetworkDefinitionCreationFlag::kEXPLICIT_BATCH flag whenever possible.`
+
 <a name="known-issues-and-possible-fixes_failed-to-open-file"></a>
 ## Failed to open file ##
 You may receive `[UltAlprSdkTRT] Failed to open file` error after running `./prepare.sh` script if we fail to write to the local disk. We recommend running the script as root(#) instead of normal user($). 
 
 <a name="known-issues-and-possible-fixes_slow-load-and-initialization"></a>
 ## Slow load and initialization ##
-When your're using [binaries/jetson_tftrt](binaries/jetson_tftrt) the OCR models are built using CUDA engines at runtime before running the inference. Building the models is very slow and not suitable in dev stage. We recommend using [binaries/jetson](binaries/jetson) for your devs as it loads very fast and switch to [binaries/jetson_tftrt](binaries/jetson_tftrt) for production. [binaries/jetson_tftrt](binaries/jetson_tftrt) may be slow to load and initialize but once it's done the frame rate is higher.
+When your're using [binaries/jetson_tftrt](binaries/jetson_tftrt) the OCR models are built using CUDA engines at runtime before running the inference. Building the models is very slow (**several minutes**) and not suitable in dev stage. We recommend using [binaries/jetson](binaries/jetson) for your devs as it loads very fast and switch to [binaries/jetson_tftrt](binaries/jetson_tftrt) for production. [binaries/jetson_tftrt](binaries/jetson_tftrt) may be slow to load and initialize but once it's done the frame rate is higher (**x2 times higher**).
 
 <a name="known-issues-and-possible-fixes_high-memory-usage"></a>
 ## High memory usage ##
