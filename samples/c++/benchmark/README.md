@@ -202,7 +202,7 @@ LD_LIBRARY_PATH=../../../binaries/raspbian/armv7l:$LD_LIBRARY_PATH ./benchmark \
     --rectify false
 ```
 
-- On **NVIDIA Jetson**, you'll need to generate the models as explained [here](../../../Jetson.md#building-optimized-models), put the device on maximum performance mode (`sudo nvpmodel -m 0 && sudo jetson_clocks`), then run:
+- On **NVIDIA Jetson**, you'll need to generate the models as explained [here](../../../Jetson.md#building-optimized-models), put the device on maximum performance mode (`sudo nvpmodel -m 2 && sudo jetson_clocks`), then run:
 ```   
 LD_LIBRARY_PATH=../../../binaries/jetson/aarch64:$LD_LIBRARY_PATH ./benchmark \
     --positive ../../../assets/images/lic_us_1280x720.jpg \
