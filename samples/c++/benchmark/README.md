@@ -202,7 +202,7 @@ LD_LIBRARY_PATH=../../../binaries/raspbian/armv7l:$LD_LIBRARY_PATH ./benchmark \
     --rectify false
 ```
 
-- On **NVIDIA Jetson**, you'll need to generate the models as explained [here](../../../Jetson.md#building-optimized-models), put the device on maximum performance mode (`sudo nvpmodel -m 2 && sudo jetson_clocks`), then run:
+- On **NVIDIA Jetson**, you'll need to generate the models as explained [here](../../../Jetson.md#building-optimized-models), put the device on maximum performance mode (`sudo nvpmodel -m 2 && sudo jetson_clocks`), check that all CPU cores are online (`cat /sys/devices/system/cpu/online`), then run:
 ```   
 LD_LIBRARY_PATH=../../../binaries/jetson/aarch64:$LD_LIBRARY_PATH ./benchmark \
     --positive ../../../assets/images/lic_us_1280x720.jpg \
@@ -214,19 +214,6 @@ LD_LIBRARY_PATH=../../../binaries/jetson/aarch64:$LD_LIBRARY_PATH ./benchmark \
     --parallel true \
     --rectify false
 ```
-or 
-```    
-LD_LIBRARY_PATH=../../../binaries/jetson_tftrt/aarch64:$LD_LIBRARY_PATH ./benchmark \
-    --positive ../../../assets/images/lic_us_1280x720.jpg \
-    --negative ../../../assets/images/london_traffic.jpg \
-    --assets ../../../assets \
-    --charset latin \
-    --loops 100 \
-    --rate 0.2 \
-    --parallel true \
-    --rectify false
-```
-The difference between [jetson_tftrt](../../../binaries/jetson_tftrt) and [jetson](../../../binaries/jetson) binaries is explained [here](../../../Jetson.md#getting-started_jetson-versus-jetsontftrt).
 
 - On **Linux x86_64**, you may use the next command:
 ```
