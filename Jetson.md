@@ -10,9 +10,6 @@
 - [Known issues and possible fixes](#known-issues-and-possible-fixes)
   - [Warnings you can safely ignore](#known-issues-and-possible-fixes_warnings-to-ignore)
   - [Failed to open file](#known-issues-and-possible-fixes_failed-to-open-file)
-  - [Slow load and initialization](#known-issues-and-possible-fixes_slow-load-and-initialization)
-  - [High memory usage](#known-issues-and-possible-fixes_high-memory-usage)
-  - [High CPU usage](#known-issues-and-possible-fixes_high-cpu-usage)
 - [Technical questions](#technical-questions)
 
 <hr />
@@ -22,7 +19,7 @@ This document is about [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) 
 **Starting version 3.1.0** we support full GPGPU acceleration for [NVIDIA Jetson devices](https://developer.nvidia.com/buy-jetson) using [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) and [TF-TRT](https://docs.nvidia.com/deeplearning/frameworks/tf-trt-user-guide/index.html).
 
  - The SDK was tested using [JetPack 4.4.1](https://developer.nvidia.com/embedded/jetpack) and [JetPack 5.1.0](https://developer.nvidia.com/embedded/jetpack), the latest version from NVIDIA and **we will not provide technical support if you're using any other version**.
- - This repo contains two set of binaries: [binaries/jetson](binaries/jetson) and [binaries/jetson_tftrt](binaries/jetson_tftrt)
+ - The binaries for Jetson are under [binaries/jetson](binaries/jetson)
 
 <a name="getting-started"></a>
 # Getting started #
@@ -62,44 +59,12 @@ Please note that this repo doesn't contain optimized TensorRT models and **you'l
 ### Building optimized models ###
 This process will write the optimized models (a.k.a plans) to the local disk which means we'll need write permission. We recommend running the next commands as root(#) instead of normal user($).
 To generate the optimized models:
- - Navigate to the jetson binaries folder: `cd ultimateALPR-SDK/binaries/jetson/aarch64` or `cd ultimateALPR-SDK/binaries/jetson_tftrt/aarch64`
+ - Navigate to the jetson binaries folder: `cd ultimateALPR-SDK/binaries/jetson/aarch64`
  - Generate the optimized models: `sudo chmod +x ./prepare.sh && sudo ./prepare.sh`
  
 This will build the models using CUDA engine and serialize the optimized models into [assets/models.tensorrt/optimized](assets/models.tensorrt/optimized). Please note that **the task will last several minutes and you must be patient**. Next time you run this task it will be faster as only newest models will be generated. So, you can interrupt the process and next time it will continue from where it ended the last time.
 
-For [binaries/jetson_tftrt](binaries/jetson_tftrt) the [prepare.sh](binaries/jetson_tftrt/aarch64/prepare.sh) script will also download Tensorflow libraries which means you'll need internet connection. You'll only need to run the script once.
-
 Models generated on a Jetson device with [Compute Capabilities](https://developer.nvidia.com/cuda-gpus) X and TensorRT version Y will only be usable on devices matching this configuration. For example, **you'll not be able to use models generated on Jetson TX2 ([Compute Capabilities](https://developer.nvidia.com/cuda-gpus) 6.2) on a Jetson nano ([Compute Capabilities](https://developer.nvidia.com/cuda-gpus) 5.3)**.
-
-<a name="getting-started_jetson-versus-jetsontftrt_pros-and-cons"></a>
-### Pros and Cons ###
- - [binaries/jetson](binaries/jetson)
-    - Pros:
-       - Low memory usage
-       - Fast load and initialization
-    - Cons:
-       - High CPU usage
-       - Lower frame rate when there are license plates on the image. [License Plate Recognition (LPR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-recognition-lpr) **NOT** GPGPU accelerated
-       
-       
- - [binaries/jetson_tftrt](binaries/jetson_tftrt)
-     - Pros:
-       - Low CPU usage
-       - Higher frame rate when there are license plates on the image. [License Plate Recognition (LPR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-recognition-lpr) **IS** GPGPU accelerated using [TF-TRT](https://docs.nvidia.com/deeplearning/frameworks/tf-trt-user-guide/index.html)
-    - Cons:
-       - High memory usage. [TF-TRT](https://docs.nvidia.com/deeplearning/frameworks/tf-trt-user-guide/index.html) binaries are >500Mo and this doesn't help.
-       - Slow load and initialization. For now we cannot generated the optimized models for the OCR part using [TF-TRT](https://docs.nvidia.com/deeplearning/frameworks/tf-trt-user-guide/index.html), the models are built and optimized at runtime before inference.
-
-To check GPU and CPU usage: `/usr/bin/tegrastats`
-
-<a name="getting-started_jetson-versus-jetsontftrt_recommendations"></a>
-### Recommendations ###
-
-We recommend using [binaries/jetson](binaries/jetson) for your devs as it loads very fast and switch to [binaries/jetson_tftrt](binaries/jetson_tftrt) for production. [binaries/jetson_tftrt](binaries/jetson_tftrt) may be slow to load and initialize but once it's done the frame rate is higher.
-
-On Jetson Xavier AGX, [binaries/jetson](binaries/jetson) may be faster than [binaries/jetson_tftrt](binaries/jetson_tftrt). Check [issue #128](https://github.com/DoubangoTelecom/ultimateALPR-SDK/issues/128) on why.
-
-If [binaries/jetson](binaries/jetson) is still slow to load and initialize, then use [binaries/linux/aarch64]([binaries/linux/aarch64) which are a very light binaries using Tensorflow Lite (less than 13Mo total size).
 
 <a name="benchmark"></a>
 # Benchmark #
@@ -136,13 +101,11 @@ LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH ./benchmark \
 | **[binaries/jetson](binaries/jetson)<br/> (nano, JetPack 4.4.1)** | 2920 millis <br />**34.24 fps** | 3083 millis <br/> 32.42 fps | 3340 millis <br/> 29.93 fps | 3882 millis <br/> 25.75 fps | 5102 millis <br/> 19.59 fps |
 | **[binaries/linux/aarch64](binaries/linux/aarch64)<br/> (Nano, JetPack 4.4.1)** | 4891 millis <br />**20.44 fps** | 6950 millis <br/> 14.38 fps | 9928 millis <br/> 10.07 fps | 11892 millis <br/> 8.40 fps | 14870 millis <br/> 6.72 fps |
 
-You can notice that [binaries/jetson](binaries/jetson) and [binaries/jetson_tftrt](binaries/jetson_tftrt) have the same fps when positive rate is 0.0 (no plate in the stream) but the gap widen when the rate increase (more plates in the stream). This can be explained by the fact that both use [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) to accelerate the license plate and car detection but only [binaries/jetson_tftrt](binaries/jetson_tftrt) uses GPGPU acceleration for [License Plate Recognition (LPR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-recognition-lpr) (thanks to [TF-TRT](https://docs.nvidia.com/deeplearning/frameworks/tf-trt-user-guide/index.html)).
-
 [binaries/linux/aarch64](binaries/linux/aarch64) contains generic Linux binaries for AArch64 (a.k.a ARM64) devices. All operations are done on CPU. The performance boost between this CPU-only version and the Jetson-based ones may not seem impressive but there is a good reason: [binaries/linux/aarch64](binaries/linux/aarch64) uses INT8 inference while the Jetson-based versions use a mix of FP32 and FP16 **which means more accurate**. Providing INT8 models for Jetson devices is on our roadmap with no ETA.
 
 <a name="jetson-nano-versus-Raspberry-Pi-4"></a>
 # Jetson nano versus Raspberry Pi 4 #
-**On average the SDK is 3 times faster on Jetson nano compared to Raspberry Pi 4** and this may not seem impressive but there is a good reason: [binaries/raspbian/armv7l](binaries/raspbian/armv7l) uses INT8 inference while the Jetson-based binaries ([binaries/jetson](binaries/jetson) and [binaries/jetson_tftrt](binaries/jetson_tftrt)) use a mix of FP32 and FP16 **which means more accurate**. Providing INT8 models for Jetson devices is on our roadmap with no ETA.
+**On average the SDK is 3 times faster on Jetson nano compared to Raspberry Pi 4** and this may not seem impressive but there is a good reason: [binaries/raspbian/armv7l](binaries/raspbian/armv7l) uses INT8 inference while the Jetson-based binaries ([binaries/jetson](binaries/jetson) uses a mix of FP32 and FP16 **which means more accurate**. Providing INT8 models for Jetson devices is on our roadmap with no ETA.
 
 <a name="jetson-nx-versus-jetso-tx2"></a>
 # Jetson Xavier NX versus Jetson TX2 #
@@ -155,7 +118,7 @@ Jetson Xavier NX and Jetson TX2 are proposed at the same price ($399) but **NX h
 
 <a name="pre-processing-operations"></a>
 # Pre-processing operations #
-Please note that even when your're using [binaries/jetson_tftrt](binaries/jetson_tftrt) some pre-processing operations are performed on CPU and this why the CPU usage is at 1/5th. You don't need to worry about these operations, they are massively multi-threaded and entirely written in assembler with **SIMD NEON** acceleration. These functions are open source and you can find them at:
+Please note that some pre-processing operations are performed on CPU and this why the CPU usage is at 1/5th. You don't need to worry about these operations, they are massively multi-threaded and entirely written in assembler with **SIMD NEON** acceleration. These functions are open source and you can find them at:
   - Normalization: [compv_math_op_sub_arm64_neon.S](https://github.com/DoubangoTelecom/compv/blob/e09cdf22801574d322e023872eb0b0a4ceef01b6/base/math/asm/arm/compv_math_op_sub_arm64_neon.S#L141)
   - Chroma Conversion (YUV -> RGB): [compv_image_conv_to_rgbx_arm64_neon.S](https://github.com/DoubangoTelecom/compv/blob/e09cdf22801574d322e023872eb0b0a4ceef01b6/base/image/asm/arm/compv_image_conv_to_rgbx_arm64_neon.S#L34)
   - Type conversion (UINT8 -> FLOAT32): [compv_math_cast_arm64_neon.S](https://github.com/DoubangoTelecom/compv/blob/e09cdf22801574d322e023872eb0b0a4ceef01b6/base/math/asm/arm/compv_math_cast_arm64_neon.S#L23)
@@ -180,20 +143,6 @@ All warnings from NVIDIA logger will be logged as errors on model optimization p
 <a name="known-issues-and-possible-fixes_failed-to-open-file"></a>
 ## Failed to open file ##
 You may receive `[UltAlprSdkTRT] Failed to open file` error after running `./prepare.sh` script if we fail to write to the local disk. We recommend running the script as root(#) instead of normal user($). 
-
-<a name="known-issues-and-possible-fixes_slow-load-and-initialization"></a>
-## Slow load and initialization ##
-When your're using [binaries/jetson_tftrt](binaries/jetson_tftrt) the OCR models are built using CUDA engines at runtime before running the inference. Building the models is very slow (**several minutes**) and not suitable in dev stage. We recommend using [binaries/jetson](binaries/jetson) for your devs as it loads very fast and switch to [binaries/jetson_tftrt](binaries/jetson_tftrt) for production. [binaries/jetson_tftrt](binaries/jetson_tftrt) may be slow to load and initialize but once it's done the frame rate is higher (**x2 times higher**).
-
-<a name="known-issues-and-possible-fixes_high-memory-usage"></a>
-## High memory usage ##
-Disabling [parallel mode](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html) alone could decrease the memory usage by 50%. Off course disabling [parallel mode](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html) will slowdown the frame rate by up to 60%.
-
-[binaries/jetson_tftrt](binaries/jetson_tftrt) is the faster version but it depends on [TF-TRT](https://docs.nvidia.com/deeplearning/frameworks/tf-trt-user-guide/index.html) which is very large (>500Mo). Try with [binaries/jetson](binaries/jetson) which is very small (less than 13Mo total size).
-
-<a name="known-issues-and-possible-fixes_high-cpu-usage"></a>
-## High CPU usage ##
-[binaries/jetson](binaries/jetson) uses the CPU for the OCR part. Use [binaries/jetson_tftrt](binaries/jetson_tftrt) for full GPGPU acceleration to significantly reduce CPU usage.
 
 <a name="technical-questions"></a>
 # Technical questions #
