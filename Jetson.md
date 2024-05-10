@@ -2,9 +2,6 @@
   - [Requirements](#getting-started_requirements)
   - [Before trying to use the SDK on Jetson](#getting-started_before-trying-to-use-the-sdk-on-jetson)
     - [Building optimized models](#getting-started_before-trying-to-use-the-sdk-on-jetson_building-optimized-models)
-  - [**binaries/jetson** versus **binaries/jetson_tftrt**](#getting-started_jetson-versus-jetsontftrt)
-    - [Pros and Cons](#getting-started_jetson-versus-jetsontftrt_pros-and-cons)
-    - [Recommendations](#getting-started_jetson-versus-jetsontftrt_recommendations)
 - [Benchmark](#benchmark)
 - [Jetson nano versus Raspberry Pi 4](#jetson-nano-versus-Raspberry-Pi-4)
 - [Jetson Xavier NX versus Jetson TX2](#jetson-nx-versus-jetso-tx2)
@@ -74,27 +71,6 @@ For [binaries/jetson_tftrt](binaries/jetson_tftrt) the [prepare.sh](binaries/jet
 
 Models generated on a Jetson device with [Compute Capabilities](https://developer.nvidia.com/cuda-gpus) X and TensorRT version Y will only be usable on devices matching this configuration. For example, **you'll not be able to use models generated on Jetson TX2 ([Compute Capabilities](https://developer.nvidia.com/cuda-gpus) 6.2) on a Jetson nano ([Compute Capabilities](https://developer.nvidia.com/cuda-gpus) 5.3)**.
 
-<a name="getting-started_jetson-versus-jetsontftrt"></a>
-## [binaries/jetson](binaries/jetson) versus [binaries/jetson_tftrt](binaries/jetson_tftrt) ##
-If you navigate to the [binaries](binaries) you'll see that there are 2 **'jetson'** folders: [binaries/jetson](binaries/jetson) and [binaries/jetson_tftrt](binaries/jetson_tftrt).
-
-| Feature | [binaries/jetson](binaries/jetson) | [binaries/jetson_tftrt](binaries/jetson_tftrt) |
-|---------|--------|------------ |
-| License plate and car detection | [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) GPGPU acceleration | [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) GPGPU acceleration |
-| [License Plate Country Identification (LPCI)](https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci) | [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) GPGPU acceleration | [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) GPGPU acceleration |
-| [Vehicle Color Recognition (VCR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr) | [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) GPGPU acceleration | [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) GPGPU acceleration |
-| [Vehicle Make Model Recognition (VMMR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr) | [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) GPGPU acceleration | [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) GPGPU acceleration |
-| [Vehicle Body Style Recognition (VBSR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-body-style-recognition-vbsr) | [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) GPGPU acceleration | [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) GPGPU acceleration |
-| [Vehicle Direction Tracking (VDT)](https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-direction-tracking-vdt) | [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) GPGPU acceleration | [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) GPGPU acceleration |
-| [Vehicle Speed Estimation (VSE)](https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-speed-estimation-vse) | [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) GPGPU acceleration | [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) GPGPU acceleration |
-| [License Plate Recognition (LPR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-recognition-lpr) | **CPU** | [TF-TRT](https://docs.nvidia.com/deeplearning/frameworks/tf-trt-user-guide/index.html) GPGPU acceleration (requires Tensorflow C++ libraries built with CUDA 10.2, cuDNN 8.0 and TensorRT 7+) |
-
-**To make it short:** Both versions use [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) GPGPU acceleration for the detection and classification while only [binaries/jetson_tftrt](binaries/jetson_tftrt) uses GPGPU acceleration for [License Plate Recognition (LPR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-recognition-lpr) (a.k.a OCR).
-
-[binaries/jetson](binaries/jetson) is very fast when [parallel mode](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html) is enabled as we'll perform the detection and classification on GPU and the recognition/OCR on CPU. [binaries/jetson_tftrt](binaries/jetson_tftrt) is faster as all operations (detection, classification, OCR...) are done on GPU.
-
-For now we have failed to convert the [License Plate Recognition (LPR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-recognition-lpr) model to [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) and this is why we're using [TF-TRT](https://docs.nvidia.com/deeplearning/frameworks/tf-trt-user-guide/index.html) which comes with many issues: large binary size, high memory usage, slow load and initialization... We're working to have [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) for all models and completly remove Tensorflow.
-
 <a name="getting-started_jetson-versus-jetsontftrt_pros-and-cons"></a>
 ### Pros and Cons ###
  - [binaries/jetson](binaries/jetson)
@@ -132,7 +108,7 @@ Here are some benchmark numbers to compare the speed. For more information about
 Before running the benchmark application:
  - For Jetson nano, make sure you're using a Barrel Jack (5V-4A) power supply instead of microUSB port (5V-2A)
  - Put the device on maximum performance mode: `sudo nvpmodel -m 2 && sudo jetson_clocks`.
-
+ - Make sure all CPU cores are online: `cat /sys/devices/system/cpu/online`
 
 To run the benchmark application for [binaries/jetson](binaries/jetson) with 0.2 positive rate for 100 loops:
 ```
