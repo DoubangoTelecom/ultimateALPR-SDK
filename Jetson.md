@@ -131,7 +131,7 @@ Here are some benchmark numbers to compare the speed. For more information about
 
 Before running the benchmark application:
  - For Jetson nano, make sure you're using a Barrel Jack (5V-4A) power supply instead of microUSB port (5V-2A)
- - Put the device on maximum performance mode: `sudo nvpmodel -m 0 && sudo jetson_clocks`.
+ - Put the device on maximum performance mode: `sudo nvpmodel -m 2 && sudo jetson_clocks`.
 
 
 To run the benchmark application for [binaries/jetson](binaries/jetson) with 0.2 positive rate for 100 loops:
