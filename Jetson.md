@@ -23,7 +23,7 @@ This document is about [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) 
 
 <a name="getting-started"></a>
 # Getting started #
-As explained above, we use both [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) and [TF-TRT](https://docs.nvidia.com/deeplearning/frameworks/tf-trt-user-guide/index.html).
+As explained above, we use both [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) to run the deep learning models on GPU.
  * [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) is used for:
     - License plate and car detection
     - [License Plate Country Identification (LPCI)](https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci)
@@ -32,12 +32,7 @@ As explained above, we use both [NVIDIA TensorRT](https://developer.nvidia.com/t
     - [Vehicle Body Style Recognition (VBSR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-body-style-recognition-vbsr)
     - [Vehicle Direction Tracking (VDT)](https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-direction-tracking-vdt)
     - [Vehicle Speed Estimation (VSE)](https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-speed-estimation-vse)
-    
- * [TF-TRT](https://docs.nvidia.com/deeplearning/frameworks/tf-trt-user-guide/index.html) is used for:
     - [License Plate Recognition (LPR)](https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-recognition-lpr)
-    
-[NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) is natively supported by all Jetson devices once flashed with [Jetpack](https://developer.nvidia.com/embedded/jetpack) while [TF-TRT](https://docs.nvidia.com/deeplearning/frameworks/tf-trt-user-guide/index.html) requires [TensorFlow](https://www.tensorflow.org/) binaries with TensorRT support. 
-You don't need to worry about building Tensorflow with support for TensorRT by yourself, this repo contains all required binaries.
 
 <a name="getting-started_requirements"></a>
 ## Requirements ##
