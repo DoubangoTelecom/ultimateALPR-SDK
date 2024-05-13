@@ -3,8 +3,7 @@
   - [Before trying to use the SDK on Jetson](#getting-started_before-trying-to-use-the-sdk-on-jetson)
     - [Building optimized models](#getting-started_before-trying-to-use-the-sdk-on-jetson_building-optimized-models)
 - [Benchmark](#benchmark)
-- [Jetson nano versus Raspberry Pi 4](#jetson-nano-versus-Raspberry-Pi-4)
-- [Jetson Xavier NX versus Jetson TX2](#jetson-nx-versus-jetso-tx2)
+- [Jetson Nano A01/B01 versus Raspberry Pi 4](#jetson-nano-versus-Raspberry-Pi-4)
 - [Pre-processing operations](#pre-processing-operations)
 - [Coming next](#coming-next)
 - [Known issues and possible fixes](#known-issues-and-possible-fixes)
@@ -16,14 +15,14 @@
 
 This document is about [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) in general but will focus on [NVIDIA Jetson devices](https://developer.nvidia.com/buy-jetson) (TX1, TX2, Nano, Xavier AGX/NX...).
 
-**Starting version 3.1.0** we support full GPGPU acceleration for [NVIDIA Jetson devices](https://developer.nvidia.com/buy-jetson) using [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) and [TF-TRT](https://docs.nvidia.com/deeplearning/frameworks/tf-trt-user-guide/index.html).
+**Starting version 3.13.0** we support full GPGPU acceleration for [NVIDIA Jetson devices](https://developer.nvidia.com/buy-jetson) using [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) (no longer need [TF-TRT](https://docs.nvidia.com/deeplearning/frameworks/tf-trt-user-guide/index.html)).
 
  - The SDK was tested using [JetPack 4.4.1](https://developer.nvidia.com/embedded/jetpack) and [JetPack 5.1.0](https://developer.nvidia.com/embedded/jetpack), the latest version from NVIDIA and **we will not provide technical support if you're using any other version**.
  - The binaries for Jetson are under [binaries/jetson](binaries/jetson)
 
 <a name="getting-started"></a>
 # Getting started #
-As explained above, we use both [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) to run the deep learning models on GPU.
+As explained above, we use [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) to run the deep learning models on GPU.
  * [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) is used for:
     - License plate and car detection
     - [License Plate Country Identification (LPCI)](https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci)
@@ -86,30 +85,16 @@ LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH ./benchmark \
 
 |  | 0.0 rate | 0.2 rate | 0.5 rate | 0.7 rate | 1.0 rate |
 |-------- | --- | --- | --- | --- | --- |
-| **[binaries/jetson_tftrt](binaries/jetson_tftrt)<br/> (Xavier NX, JetPack 4.4.1)** | 657 millis <br />**152.06 fps** | 967 millis <br/> 103.39 fps | 1280 millis <br/> 78.06 fps | 1539 millis <br/> 64.95 fps | 1849 millis <br/> 54.07 fps |
-| **[binaries/jetson](binaries/jetson)<br/> (Xavier NX, JetPack 4.4.1)** | 657 millis <br />**152.02 fps** | 1169 millis <br/> 85.47 fps | 2112 millis <br/> 47.34 fps | 2703 millis <br/> 36.98 fps | 3628 millis <br/> 27.56 fps |
-| **[binaries/linux/aarch64](binaries/linux/aarch64)<br/> (Xavier NX, JetPack 4.4.1)** | 7498 millis <br />**13.33 fps** | 8281 millis <br/> 12.07 fps | 9421 millis <br/> 10.61 fps | 10161 millis <br/> 9.84 fps | 11006 millis <br/> 9.08 fps |
-| **[binaries/jetson_tftrt](binaries/jetson_tftrt)<br/> (TX2, JetPack 4.4.1)** | 1420 millis <br />**70.38 fps** | 1653 millis <br/> 60.47 fps | 1998 millis <br/> 50.02 fps | 2273 millis <br/> 43.97 fps | 2681 millis <br/> 37.29 fps |
-| **[binaries/jetson](binaries/jetson)<br/> (TX2, JetPack 4.4.1)** | 1428 millis <br />**70.01 fps** | 1712 millis <br/> 58.40 fps | 2165 millis <br/> 46.17 fps | 2692 millis <br/> 37.13 fps | 3673 millis <br/> 27.22 fps |
-| **[binaries/linux/aarch64](binaries/linux/aarch64)<br/> (TX2, JetPack 4.4.1)** | 4591 millis <br />**21.77 fps** | 4722 millis <br/> 21.17 fps | 5290 millis <br/> 18.90 fps | 7154 millis <br/> 13.97 fps | 10032 millis <br/> 9.96 fps |
-| **[binaries/jetson_tftrt](binaries/jetson_tftrt)<br/> (Nano, JetPack 4.4.1)** | 3106 millis <br />**32.19 fps** | 3292 millis <br/> 30.37 fps | 3754 millis <br/> 26.63 fps | 3967 millis <br/> 25.20 fps | 4621 millis <br/> 21.63 fps |
-| **[binaries/jetson](binaries/jetson)<br/> (nano, JetPack 4.4.1)** | 2920 millis <br />**34.24 fps** | 3083 millis <br/> 32.42 fps | 3340 millis <br/> 29.93 fps | 3882 millis <br/> 25.75 fps | 5102 millis <br/> 19.59 fps |
-| **[binaries/linux/aarch64](binaries/linux/aarch64)<br/> (Nano, JetPack 4.4.1)** | 4891 millis <br />**20.44 fps** | 6950 millis <br/> 14.38 fps | 9928 millis <br/> 10.07 fps | 11892 millis <br/> 8.40 fps | 14870 millis <br/> 6.72 fps |
+| **[binaries/jetson](binaries/jetson)<br/> (Xavier NX, JetPack 5.1.0)** | 657 millis <br />**152 fps** | 744 millis <br/> 134 fps | 837 millis <br/> 119 fps | 961 millis <br/> 104 fps | 1068 millis <br/> 93 fps |
+| **[binaries/linux/aarch64](binaries/linux/aarch64)<br/> (Xavier NX, JetPack 5.1.0)** | 7498 millis <br />**13.33 fps** | 8281 millis <br/> 12.07 fps | 9421 millis <br/> 10.61 fps | 10161 millis <br/> 9.84 fps | 11006 millis <br/> 9.08 fps |
+| **[binaries/jetson](binaries/jetson)<br/> (Nano B01, JetPack 4.4.1)** | 2920 millis <br />**34.24 fps** | 3102 millis <br/> 32.23 fps | 3274 millis <br/> 30.53 fps | 3415 millis <br/> 29.27 fps | 3727 millis <br/> 26.82 fps |
+| **[binaries/linux/aarch64](binaries/linux/aarch64)<br/> (Nano B01, JetPack 4.4.1)** | 4891 millis <br />**20.44 fps** | 6950 millis <br/> 14.38 fps | 9928 millis <br/> 10.07 fps | 11892 millis <br/> 8.40 fps | 14870 millis <br/> 6.72 fps |
 
 [binaries/linux/aarch64](binaries/linux/aarch64) contains generic Linux binaries for AArch64 (a.k.a ARM64) devices. All operations are done on CPU. The performance boost between this CPU-only version and the Jetson-based ones may not seem impressive but there is a good reason: [binaries/linux/aarch64](binaries/linux/aarch64) uses INT8 inference while the Jetson-based versions use a mix of FP32 and FP16 **which means more accurate**. Providing INT8 models for Jetson devices is on our roadmap with no ETA.
 
 <a name="jetson-nano-versus-Raspberry-Pi-4"></a>
-# Jetson nano versus Raspberry Pi 4 #
+# Jetson Nano B01/A01 versus Raspberry Pi 4 #
 **On average the SDK is 3 times faster on Jetson nano compared to Raspberry Pi 4** and this may not seem impressive but there is a good reason: [binaries/raspbian/armv7l](binaries/raspbian/armv7l) uses INT8 inference while the Jetson-based binaries ([binaries/jetson](binaries/jetson) uses a mix of FP32 and FP16 **which means more accurate**. Providing INT8 models for Jetson devices is on our roadmap with no ETA.
-
-<a name="jetson-nx-versus-jetso-tx2"></a>
-# Jetson Xavier NX versus Jetson TX2 #
-Jetson Xavier NX and Jetson TX2 are proposed at the same price ($399) but **NX has 4.6 times more compute power than TX2 for FP16**: *6 TFLOPS versus 1.3 TFLOPS*.
-
-**We highly recommend using Xavier NX instead of TX2.**
-
-- NX (€342): https://www.amazon.com/NVIDIA-Jetson-Xavier-Developer-812674024318/dp/B086874Q5R
-- TX2: (€343): https://www.amazon.com/NVIDIA-945-82771-0000-000-Jetson-TX2-Development/dp/B06XPFH939
 
 <a name="pre-processing-operations"></a>
 # Pre-processing operations #

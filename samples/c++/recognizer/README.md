@@ -34,6 +34,7 @@ To check if all dependencies are present:
 <a name="gpu-acceleration"></a>
 # GPGPU acceleration #
 - On x86-64, GPGPU acceleration is disabled by default. Check [here](../README.md#gpu-acceleration) for more information on how to enable it.
+- We highly recommend enabling NVIDIA TensorRT (`--trt_enabled true`). Enabling TensorRT will disable OpenVINO.
 - On NVIDIA Jetson (AArch64), GPGPU acceleration is always enabled. Check [here](../../../Jetson.md) for more information.
 
 <a name="prebuilt"></a>
@@ -110,6 +111,7 @@ recognizer \
       [--openvino_enabled <whether-to-enable-OpenVINO:true/false>] \
       [--openvino_device <openvino-device-to-use>] \
       [--npu_enabled <whether-to-enable-NPU-acceleration:true/false>] \
+      [--trt_enabled <whether-to-enable-TensorRT-acceleration:true/false>] \
       [--klass_lpci_enabled <whether-to-enable-LPCI:true/false>] \
       [--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \
       [--klass_vmmr_enabled <whether-to-enable-VMMR:true/false>] \
@@ -129,6 +131,7 @@ Options surrounded with **[]** are optional.
 - `--openvino_enabled` Whether to enable OpenVINO. Tensorflow will be used when OpenVINO is disabled. Default: *true*.
 - `--openvino_device` Defines the OpenVINO device to use (CPU, GPU, FPGA...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino-device. Default: *CPU*."
 - `--npu_enabled` Whether to enable NPU acceleration (Amlogic, NXP...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#npu-enabled. Default: *true*.
+- `--trt_enabled` Whether to enable TensorRT acceleration (NVIDIA GPUs). This will disable OpenVINO. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#trt-enabled. You must generate the plans as explained [here](../README.md#gpu-acceleration-tensorrt-build) before being able to use the TensorRT models. Default: *false*.
 - `--klass_lpci_enabled` Whether to enable License Plate Country Identification (LPCI). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci. Default: *false*.
 - `--klass_vcr_enabled` Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr. Default: *false*.
 - `--klass_vmmr_enabled` Whether to enable Vehicle Make Model Recognition (VMMR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr. Default: *false*.
@@ -158,16 +161,6 @@ LD_LIBRARY_PATH=../../../binaries/jetson/aarch64:$LD_LIBRARY_PATH ./recognizer \
     --parallel false \
     --rectify true
 ```
-or 
-```
-LD_LIBRARY_PATH=../../../binaries/jetson_tftrt/aarch64:$LD_LIBRARY_PATH ./recognizer \
-    --image ../../../assets/images/lic_us_1280x720.jpg \
-    --assets ../../../assets \
-    --charset latin \
-    --parallel false \
-    --rectify true
-```
-The difference between [jetson_tftrt](../../../binaries/jetson_tftrt) and [jetson](../../../binaries/jetson) binaries is explained [here](../../../Jetson.md#getting-started_jetson-versus-jetsontftrt).
 
 - On **Linux x86_64**, you may use the next command:
 ```

@@ -34,41 +34,41 @@ To check if all dependencies are present:
 <a name="gpu-acceleration"></a>
 # GPGPU acceleration #
 - On x86-64, GPGPU acceleration is disabled by default. Check [here](../README.md#gpu-acceleration) for more information on how to enable it.
+- We highly recommend enabling NVIDIA TensorRT (`--trt_enabled true`). Enabling TensorRT will disable OpenVINO.
 - On NVIDIA Jetson (AArch64), GPGPU acceleration is always enabled. Check [here](../../../Jetson.md) for more information.
 
 
 <a name="peformance-numbers"></a>
 # Peformance numbers #
 
-These performance numbers are obtained using **version 3.0**. You can use any later version. **Please notice the boost when OpenVINO is enabled.**
+These performance numbers are obtained using **version 3.13** and parallel mode enabled. You can use any later version. **Please notice the boost when OpenVINO is enabled on machines without GPU.**
 
 Some performance numbers on mid-range GPU (**GTX 1070**), high-range ARM CPU (**Galaxy S10+**), low-range ARM CPU (**Raspberry Pi 4**) devices using **720p (1280x720)** images:
 
 |  | 0.0 rate | 0.2 rate | 0.5 rate | 0.7 rate | 1.0 rate |
 |-------- | --- | --- | --- | --- | --- |
-| **AMD Ryzen 7 3700X 8-Core + RTX 3060<br/> (Ubuntu 20, OpenVINO enabled)** | 615 millis <br />**162.54 fps** | 679 millis <br/> 147.13 fps | 740 millis <br/> 135.01 fps | 773 millis <br/> 129.21 fps | 809.18 millis <br/> 123.58 fps |
-| **AMD Ryzen 7 3700X 8-Core + RTX 3060<br/> (Ubuntu 20, OpenVINO disabled)** | 961 millis <br />**103.97 fps** | 1047 millis <br/> 95.46 fps | 1206 millis <br/> 82.90 fps | 1325 millis <br/> 75.45 fps | 1434.16 millis <br/> 69.72 fps |
-| **Intel® Xeon® E3 1230v5 + GTX 1070<br/> (Ubuntu 18, OpenVINO enabled)** | 737 millis <br />**135.62 fps** | 809 millis <br/> 123.55 fps | 903 millis <br/> 110.72 fps | 968 millis <br/> 103.22 fps | 1063 millis <br/> 94.07 fps |
-| **Intel® Xeon® E3 1230v5 + GTX 1070<br/> (Ubuntu 18, OpenVINO disabled)** | 711 millis <br />**140.51 fps** | 828 millis <br/> 120.76 fps | 1004 millis <br/> 99.53 fps | 1127 millis <br/> 88.70 fps | 1292 millis <br/> 77.38 fps |
+| **AMD Ryzen 7 3700X 8-Core + RTX 3060<br/> (Ubuntu 20, OpenVINO disabled, TensorRT enabled)** | 201 millis <br/> **497.40 fps** | 238 millis <br/> 419.71 fps | 291 millis <br/> 343.12 fps | 333 millis <br/> 299.41 fps | 379 millis <br/> 263.36 fps |
+| **AMD Ryzen 7 3700X 8-Core + RTX 3060<br/> (Ubuntu 20, OpenVINO enabled, TensorRT disabled)** | 615 millis <br />**162.54 fps** | 679 millis <br/> 147.13 fps | 740 millis <br/> 135.01 fps | 773 millis <br/> 129.21 fps | 809.18 millis <br/> 123.58 fps |
+| **AMD Ryzen 7 3700X 8-Core + RTX 3060<br/> (Ubuntu 20, OpenVINO disabled, TensorRT disabled)** | 961 millis <br />**103.97 fps** | 1047 millis <br/> 95.46 fps | 1206 millis <br/> 82.90 fps | 1325 millis <br/> 75.45 fps | 1434.16 millis <br/> 69.72 fps |
+| **Intel® Xeon® E3 1230v5 + GTX 1070<br/> (Ubuntu 18, OpenVINO enabled, TensorRT disabled)** | 737 millis <br />**135.62 fps** | 809 millis <br/> 123.55 fps | 903 millis <br/> 110.72 fps | 968 millis <br/> 103.22 fps | 1063 millis <br/> 94.07 fps |
+| **Intel® Xeon® E3 1230v5 + GTX 1070<br/> (Ubuntu 18, OpenVINO disabled, TensorRT disabled)** | 711 millis <br />**140.51 fps** | 828 millis <br/> 120.76 fps | 1004 millis <br/> 99.53 fps | 1127 millis <br/> 88.70 fps | 1292 millis <br/> 77.38 fps |
 | **i7-4790K<br/> (Windows 8, OpenVINO enabled)** | 758 millis <br />**131.78 fps** | 1110 millis <br/> 90.07 fps | 1597 millis <br/> 62.58 fps | 1907 millis <br/> 52.42 fps | 2399 millis <br/> 41.66 fps |
 | **i7-4790K<br/> (Windows 8, OpenVINO disabled)** | 2427 millis <br />**41.18 fps** | 2658 millis <br/> 37.60 fps | 2999 millis <br/> 33.34 fps | 3360 millis <br/> 29.75 fps | 3607 millis <br/> 27.72 fps |
 | **i7-4770HQ<br/> (Winows 10, OpenVINO enabled)** | 1094 millis <br />**91.35 fps** | 1674 millis <br/> 59.71 fps | 2456 millis <br/> 40.71 fps | 2923 millis <br/> 34.21 fps | 4255 millis <br/> 23.49 fps |
 | **i7-4770HQ<br/> (Windows 10, OpenVINO disabled)** | 4129 millis <br />**24.21 fps** | 4486 millis <br/> 22.28 fps | 4916 millis <br/> 20.34 fps | 5460 millis <br/> 18.31 fps | 5740 millis <br/> 17.42 fps |
 | **Khadas VIM3 Basic<br/> Linux 4.9, NPU, Parallel mode** | 1560 millis <br />**64.08 fps** | 1797 millis <br/> 55.63 fps | 1876 millis <br/> 53.29 fps | 2162 millis <br/> 46.25 fps | 2902 millis <br/> 34.45 fps |
-| Khadas VIM3 Basic<br/> Linux 4.9, NPU, Sequential mode | 1776 millis <br />**56.30 fps** | 3443 millis <br/> 29.04 fps | 6009 millis <br/> 16.63 fps | 7705 millis <br/> 12.97 fps | 10275 millis <br/> 9.73 fps |
-| Khadas VIM3 Basic<br/> Linux 4.9, CPU, Parallel mode | 4187 millis <br />**23.88 fps** | 4414 millis <br/> 22.65 fps | 4824 millis <br/> 20.72 fps | 5189 millis <br/> 19.26 fps | 5740 millis <br/> 17.42 fps |
-| Khadas VIM3 Basic<br/> Linux 4.9, CPU, Sequential mode | 4184 millis <br />**23.89 fps** | 5972 millis <br/> 16.74 fps | 8513 millis <br/> 11.74 fps | 10258 millis <br/> 9.74 fps | 12867 millis <br/> 7.77 fps |
+| **Khadas VIM3 Basic<br/> Linux 4.9, NPU, Sequential mode** | 1776 millis <br />**56.30 fps** | 3443 millis <br/> 29.04 fps | 6009 millis <br/> 16.63 fps | 7705 millis <br/> 12.97 fps | 10275 millis <br/> 9.73 fps |
+| **Khadas VIM3 Basic<br/> Linux 4.9, CPU, Parallel mode** | 4187 millis <br />**23.88 fps** | 4414 millis <br/> 22.65 fps | 4824 millis <br/> 20.72 fps | 5189 millis <br/> 19.26 fps | 5740 millis <br/> 17.42 fps |
+| **Khadas VIM3 Basic<br/> Linux 4.9, CPU, Sequential mode** | 4184 millis <br />**23.89 fps** | 5972 millis <br/> 16.74 fps | 8513 millis <br/> 11.74 fps | 10258 millis <br/> 9.74 fps | 12867 millis <br/> 7.77 fps |
 | **RockPi 4B <br/> (Ubuntu Server 18.04)** | 7588 millis <br />**13.17 fps** | 8008 millis <br/> 12.48 fps | 8606 millis <br/> 11.61 fps | 9213 millis <br/> 10.85fps | 9798 millis <br/> 10.20 fps |
 | **Raspberry Pi 4<br/> (Raspbian Buster)** | 81890 millis <br />**12.21 fps** | 89770 millis <br/> 11.13 fps | 115190 millis <br/> 8.68 fps | 122950 millis <br/> 8.13fps | 141460 millis <br/> 7.06 fps |
-| **[binaries/jetson_tftrt](../../../binaries/jetson_tftrt/aarch64)<br/> (Xavier NX, JetPack 4.4.1)** | 657 millis <br />**152.06 fps** | 967 millis <br/> 103.39 fps | 1280 millis <br/> 78.06 fps | 1539 millis <br/> 64.95 fps | 1849 millis <br/> 54.07 fps |
-| **[binaries/jetson](../../../binaries/jetson/aarch64)<br/> (Xavier NX, JetPack 4.4.1)** | 657 millis <br />**152.02 fps** | 1169 millis <br/> 85.47 fps | 2112 millis <br/> 47.34 fps | 2703 millis <br/> 36.98 fps | 3628 millis <br/> 27.56 fps |
-| **[binaries/jetson_tftrt](../../../binaries/jetson_tftrt/aarch64)<br/> (TX2, JetPack 4.4.1)** | 1420 millis <br />**70.38 fps** | 1653 millis <br/> 60.47 fps | 1998 millis <br/> 50.02 fps | 2273 millis <br/> 43.97 fps | 2681 millis <br/> 37.29 fps |
-| **[binaries/jetson](../../../binaries/jetson/aarch64)<br/> (TX2, JetPack 4.4.1)** | 1428 millis <br />**70.01 fps** | 1712 millis <br/> 58.40 fps | 2165 millis <br/> 46.17 fps | 2692 millis <br/> 37.13 fps | 3673 millis <br/> 27.22 fps |
-| **[binaries/jetson_tftrt](../../../binaries/jetson_tftrt/aarch64)<br/> (Nano, JetPack 4.4.1)** | 3106 millis <br />**32.19 fps** | 3292 millis <br/> 30.37 fps | 3754 millis <br/> 26.63 fps | 3967 millis <br/> 25.20 fps | 4621 millis <br/> 21.63 fps |
-| **[binaries/jetson](../../../binaries/jetson/aarch64)<br/> (nano, JetPack 4.4.1)** | 2920 millis <br />**34.24 fps** | 3083 millis <br/> 32.42 fps | 3340 millis <br/> 29.93 fps | 3882 millis <br/> 25.75 fps | 5102 millis <br/> 19.59 fps |
+| **Jetson Xavier NX<br/> (JetPack 5.1.0)** | 657 millis <br />**152 fps** | 744 millis <br/> 134 fps | 837 millis <br/> 119 fps | 961 millis <br/> 104 fps | 1068 millis <br/> 93 fps |
+| **Jetson Nano B01<br/> (JetPack 4.4.1)** | 2920 millis <br />**34 fps** | 3102 millis <br/> 32 fps | 3274 millis <br/> 30 fps | 3415 millis <br/> 29 fps | 3727 millis <br/> 27 fps |
+
 
 Some notes:
-- **The above numbers show that the best case is 'AMD Ryzen 7 3700X 8-Core + RTX 3060 + OpenVINO enabled'. In such case the GPU (TensorRT, CUDA) and the CPU (OpenVINO) are used in parallel. The CPU is used for detection and the GPU for recognition/OCR.**
+- **The above numbers show that the best case is 'AMD Ryzen 7 3700X 8-Core + RTX 3060 + TensorRT enabled'. In such case the GPU (TensorRT, CUDA) will be used for all modules (detection, classification and OCR).**
+- When TensorRT is disabled we still use the GPU via Tensorflow. Notice the huge difference between TensorRT and Tensorflow.
 - **Please note that even if Raspberry Pi 4 has a 64-bit CPU [Raspbian OS](https://en.wikipedia.org/wiki/Raspbian>) uses a 32-bit kernel which means we're loosing many SIMD optimizations.**
 - **On RockPi 4B the code is 5 times faster when [parallel processing](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html) is enabled.**
 - **On NVIDIA Jetson the code is 3 times faster when [parallel processing](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html) is enabled.**
@@ -149,6 +149,7 @@ benchmark \
       [--openvino_enabled <whether-to-enable-OpenVINO:true/false>] \
       [--openvino_device <openvino-device-to-use>] \
       [--npu_enabled <whether-to-enable-NPU-acceleration:true/false>] \
+      [--trt_enabled <whether-to-enable-TensorRT-acceleration:true/false>] \
       [--simd_enabled <whether-to-enable-SIMD-acceleration:true/false>] \
       [--klass_lpci_enabled <whether-to-enable-LPCI:true/false>] \
       [--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \
@@ -172,6 +173,7 @@ Options surrounded with **[]** are optional.
 - `--openvino_enabled` Whether to enable OpenVINO. Tensorflow will be used when OpenVINO is disabled. Default: *true*.
 - `--openvino_device` Defines the OpenVINO device to use (CPU, GPU, FPGA...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino-device. Default: *CPU*."
 - `--npu_enabled` Whether to enable NPU acceleration (Amlogic, NXP...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#npu-enabled. Default: *true*.
+- `--trt_enabled` Whether to enable TensorRT acceleration (NVIDIA GPUs). This will disable OpenVINO. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#trt-enabled. You must generate the plans as explained [here](../README.md#gpu-acceleration-tensorrt-build) before being able to use the TensorRT models. Default: *false*.
 - `--simd_enabled` Whether to enable SIMD acceleration -Assembler and Intrinsics- (SSE, AVX, MMX, NEON...). More info at https://en.wikipedia.org/wiki/Single_instruction,_multiple_data. Default: *true*.
 - `--klass_lpci_enabled` Whether to enable License Plate Country Identification (LPCI). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci. Default: *false*.
 - `--klass_vcr_enabled` Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr. Default: *false*.
@@ -202,7 +204,7 @@ LD_LIBRARY_PATH=../../../binaries/raspbian/armv7l:$LD_LIBRARY_PATH ./benchmark \
     --rectify false
 ```
 
-- On **NVIDIA Jetson**, you'll need to generate the models as explained [here](../../../Jetson.md#building-optimized-models), put the device on maximum performance mode (`sudo nvpmodel -m 2 && sudo jetson_clocks`), check that all CPU cores are online (`cat /sys/devices/system/cpu/online`), then run:
+- On **NVIDIA Jetson**, you'll need to generate the models as explained [here](../../../Jetson.md#building-optimized-models), put the device on maximum performance mode (`sudo nvpmodel -m 2 && sudo jetson_clocks`), then run:
 ```   
 LD_LIBRARY_PATH=../../../binaries/jetson/aarch64:$LD_LIBRARY_PATH ./benchmark \
     --positive ../../../assets/images/lic_us_1280x720.jpg \

@@ -1,10 +1,12 @@
 - [GPGPU acceleration](#gpu-acceleration)
   - [OpenVINO](#gpu-acceleration-openvino)
     - [Myriad](#gpu-acceleration-openvino-myriad)
+  - [NVIDIA TensorRT](#gpu-acceleration-tensorrt)
+    - [Installation](#gpu-acceleration-tensorrt-install)
+    - [Building plans](#gpu-acceleration-tensorrt-build)
   - [Tensorflow libraries](#gpu-acceleration-tensorflow)
     - [Windows](#gpu-acceleration-tensorflow-windows)
     - [Linux](#gpu-acceleration-tensorflow-linux)
-    - [NVIDIA Jetson](#gpu-acceleration-tensorflow-jetson)
 - [Migration to Tensorflow 2.x and CUDA 11.x](#migration-tf2)
 - [Cross compilation](#cross-compilation)
   - [Raspberry Pi](#cross-compilation-rpi)
@@ -22,7 +24,7 @@ For **Android**, we recommend using the Java samples under [android](../android)
 <a name="gpu-acceleration"></a>
 # GPGPU acceleration #
 
-We use [Tensorflow](https://www.tensorflow.org/) and [OpenVINO](https://docs.openvinotoolkit.org/) as deep learning frameworks. The current repository contains [Tensorflow](https://www.tensorflow.org/) libraries built without GPU functions to reduce the size. Also, few developers need GPGPU accelerated libraries. The GPU libraries will work on your device even if you don't have NVIDIA GPU.
+We use [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt), [Tensorflow](https://www.tensorflow.org/) and [OpenVINO](https://docs.openvinotoolkit.org/) as deep learning frameworks. The current repository contains [Tensorflow](https://www.tensorflow.org/) libraries built without GPU functions to reduce the size. Also, few developers need GPGPU accelerated libraries. The GPU libraries will work on your device even if you don't have NVIDIA GPU.
 
 <a name="gpu-acceleration-openvino"></a>
 ## OpenVINO ##
@@ -36,8 +38,33 @@ You have to run the sample applications with the following options: `--openvino_
 - If you get `Can not init Myriad device: NC_MVCMD_NOT_FOUND`, make sure the driver is correctly installed as explained [here](https://docs.openvinotoolkit.org/2018_R5/_docs_install_guides_installing_openvino_windows.html#usb-myriad). You can find these driver files in the [binaries](../../binaries/windows/x86_64) folder but we recommend using yours.
 - If you get `Can not init Myriad device: NC_ERROR`, make sure you're using **v3.3.5 or later**. Check [issue #133](https://github.com/DoubangoTelecom/ultimateALPR-SDK/issues/133) for more info.
 
+<a name="gpu-acceleration-tensorrt"></a>
+## NVIDIA TensorRT ##
+Starting **UltimateALPR v3.13** we recommend using [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) instead of Tensorflow to run the models on GPU. You still need to download Tensorflow libraries as they are used as fallback when TensorRT plugin fail to load.
+**This section is about using TensorRT on Windows/Linux x64, check [here](../../Jetson.md) for NVIDIA Jetson.**
+
+<a name="gpu-acceleration-tensorrt-install"></a>
+### Installation ###
+We recommend **TensorRT 8.6.1.6** on Windows/Linux x64 and **require TensorRT 8.x**. That version work on CUDA 11 or later. For now we don't support CUDA 10.
+We recommend using the `tar` (Linux) or the `zip` (Windows) versions as they don't require installation which means you'll not override your native TensorRT if you have one.
+- Download the tar/zip from https://developer.nvidia.com/nvidia-tensorrt-8x-download
+- Unzip/untar the file (e.g. under `/home/TensorRT-8.6.1.6`)
+
+<a name="gpu-acceleration-tensorrt-build"></a>
+### Building plans ###
+The [models folder](../../assets/models.tensorrt) contains ONNX models, you need to generate TensorRT optimized models (a.k.a plans):
+```
+cd binaries/linux/x86_64
+sudo LD_LIBRARY_PATH=/home/TensorRT-8.6.1.6/lib:$LD_LIBRARY_PATH ./trt_optimizer --assets ../../../assets
+```
+This will take several minutes, you must be patient.
+
+That's it. You're ready to use TensorRT models.
+
 <a name="gpu-acceleration-tensorflow"></a>
 ## Tensorflow libraries ##
+[NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) is preferred to Tensorflow if you're using **UltimateALPR v3.13 or later**.
+
 The Tensorflow libraries are hosted at:
  - [1] Windows_x86_64_CPU+GPU: https://doubango.org/deep_learning/libtensorflow_r1.15_cpu+gpu_windows_x86-64.zip
  - [2] Windows_x86_64_CPU: https://doubango.org/deep_learning/libtensorflow_r1.15_cpu_windows_x86-64.zip
@@ -53,14 +80,10 @@ To use the Tensorflow version with GPU funtions you'll need to download [[1]](ht
 ### Linux ###
 On Linux x86_64, [libtensorflow.so](../../binaries/linux/x86_64/libtensorflow.so) is missing in the [binaries folder](../../binaries/linux/x86_64). You'll need to download your preferred Tensorflow version ([[3]](https://doubango.org/deep_learning/libtensorflow_r1.14_cpu+gpu_linux_x86-64.tar.gz) or [[4]](https://doubango.org/deep_learning/libtensorflow_r1.14_cpu_linux_x86-64.tar.gz)) and copy the content to [binaries/linux/x86_64](../../binaries/linux/x86_64).
 
-<a name="gpu-acceleration-tensorflow-jetson"></a>
-### NVIDIA Jetson ###
-On NVIDIA Jetson TX1/TX2/Nano and Xavier AGX/NX [libtensorflow_cc.so](../../binaries/jetson_tftrt/aarch64/libtensorflow_cc.so) is only needed if you're using binaries in [jetson_tftrt](../../binaries/jetson_tftrt). You don't need Tensorflow to use the binaries under [jetson](../../binaries/jetson). The difference between [jetson_tftrt](../../binaries/jetson_tftrt) and [jetson](../../binaries/jetson) binaries is explained [here](../../Jetson.md#getting-started_jetson-versus-jetsontftrt).
-
-If you're using [jetson_tftrt](../../binaries/jetson_tftrt) instead of [jetson](../../binaries/jetson) then, you'll need to run the [./prepare.sh](../../binaries/jetson_tftrt/aarch64/prepare.sh) script as explained [here](../../Jetson.md#getting-started_before-trying-to-use-the-sdk-on-jetson_building-optimized-models) to download Tensorflow C++ libraries.
-
 <a name="migration-tf2"></a>
 # Migration to Tensorflow 2.x and CUDA 11.x #
+
+You don't need to migrate to Tensorflow 2.x if you're planning to use [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) (**recommend**).
 
 Our SDK is built and shipped with Tensorflow 1.x to make it work on oldest NVIDIA GPUs. If you want to use newest NVIDIA GPUs (e.g. RTX3060) which requires CUDA 11.x, then you'll need to upgrade the Tensorflow version. Check https://www.tensorflow.org/install/source#gpu to know which CUDA version is required for your Tensorflow version.
 

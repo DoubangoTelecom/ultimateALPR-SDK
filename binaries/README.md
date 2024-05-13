@@ -5,9 +5,6 @@ Binaries (shared libraries) for
 - [Windows](windows): x86_64
 - [Linux](linux): x86_64, aarch64
 - [jetson](jetson): aarch64
-- [jetson_tftrt](jetson_tftrt): aarch64
-
-The diference between [jetson](jetson) and [jetson_tftrt](jetson_tftrt) is explained [here](../Jetson.md#getting-started_jetson-versus-jetsontftrt).
 
 OpenCL 1.2+ will be loaded at runtime (no linking).
 

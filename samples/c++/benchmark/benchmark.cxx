@@ -19,6 +19,7 @@
 			[--openvino_enabled <whether-to-enable-OpenVINO:true/false>] \
 			[--openvino_device <openvino_device-to-use>] \
 			[--npu_enabled <whether-to-enable-NPU-acceleration:true/false>] \
+			[--trt_enabled <whether-to-enable-NPU-acceleration:true/false>] \
 			[--simd_enabled <whether-to-enable-SIMD-acceleration:true/false>] \
 			[--klass_lpci_enabled <whether-to-enable-LPCI:true/false>] \
 			[--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \
@@ -66,9 +67,15 @@ static const char* __jsonConfig =
 "\"debug_internal_data_path\": \".\","
 ""
 "\"gpgpu_enabled\": true,"
+"\"asm_enabled\": true,"
+"\"intrin_enabled\": true,"
 "\"max_latency\": -1,"
 ""
 "\"klass_vcr_gamma\": 1.5,"
+""
+"\"detect_tf_gpu_memory_alloc_max_percent\": 1.0,"
+"\"recogn_tf_gpu_memory_alloc_max_percent\": 1.0,"
+"\"pyramidal_search_tf_gpu_memory_alloc_max_percent\": 1.0,"
 ""
 "\"detect_roi\": [0, 0, 0, 0],"
 "\"detect_minscore\": 0.1,"
@@ -135,6 +142,7 @@ int main(int argc, char *argv[])
 		true;
 #endif
 	bool isNpuEnabled = true; // Amlogic, NXP...
+	bool isTensorRTEnabled = false; // NVIDIA TensorRT
 	bool isSimdEnabled = true; // Assembler and Intrinsics (SSE, AVX, MMX, NEON...)
 	bool isKlassLPCI_Enabled = false;
 	bool isKlassVCR_Enabled = false;
@@ -209,6 +217,9 @@ int main(int argc, char *argv[])
 	if (args.find("--npu_enabled") != args.end()) {
 		isNpuEnabled = (args["--npu_enabled"].compare("true") == 0);
 	}
+	if (args.find("--trt_enabled") != args.end()) {
+		isTensorRTEnabled = (args["--trt_enabled"].compare("true") == 0);
+	}
 	if (args.find("--simd_enabled") != args.end()) {
 		isSimdEnabled = (args["--simd_enabled"].compare("true") == 0);
 	}
@@ -251,6 +262,7 @@ int main(int argc, char *argv[])
 		jsonConfig += std::string(",\"openvino_device\": \"") + openvinoDevice + std::string("\"");
 	}
 	jsonConfig += std::string(",\"npu_enabled\": ") + (isNpuEnabled ? "true" : "false");
+	jsonConfig += std::string(",\"trt_enabled\": ") + (isTensorRTEnabled ? "true" : "false");
 	jsonConfig += std::string(",\"asm_enabled\": ") + (isSimdEnabled ? "true" : "false");
 	jsonConfig += std::string(",\"intrin_enabled\": ") + (isSimdEnabled ? "true" : "false");
 	jsonConfig += std::string(",\"klass_lpci_enabled\": ") + (isKlassLPCI_Enabled ? "true" : "false");
@@ -379,6 +391,7 @@ static void printUsage(const std::string& message /*= ""*/)
 		"\t[--openvino_enabled <whether-to-enable-OpenVINO:true/false>] \n"
 		"\t[--openvino_device <openvino_device-to-use>] \n"
 		"\t[--npu_enabled <whether-to-enable-NPU-acceleration:true/false>] \n"
+		"\t[--trt_enabled <whether-to-enable-TensorRT-acceleration:true/false>] \n"
 		"\t[--simd_enabled <whether-to-enable-SIMD-acceleration:true/false>] \n"
 		"\t[--klass_lpci_enabled <whether-to-enable-LPCI:true/false>] \n"
 		"\t[--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \n"
@@ -402,6 +415,7 @@ static void printUsage(const std::string& message /*= ""*/)
 		"--openvino_enabled: Whether to enable OpenVINO. Tensorflow will be used when OpenVINO is disabled. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino-enabled. Default: true.\n\n"
 		"--openvino_device: Defines the OpenVINO device to use (CPU, GPU, FPGA...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino_device. Default: CPU.\n\n"
 		"--npu_enabled: Whether to enable NPU acceleration (Amlogic, NXP...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#npu-enabled. Default: true.\n\n"
+		"--trt_enabled: Whether to enable NVIDIA TensorRT acceleration. This will disable OpenVINO. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#trt-enabled. Default: false.\n\n"
 		"--simd_enabled: Whether to enable SIMD acceleration -Assembler and Intrinsics- (SSE, AVX, MMX, NEON...). More info at https://en.wikipedia.org/wiki/Single_instruction,_multiple_data. Default: true.\n\n"
 		"--klass_lpci_enabled: Whether to enable License Plate Country Identification (LPCI). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci. Default: false.\n\n"
 		"--klass_vcr_enabled: Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr. Default: false.\n\n"

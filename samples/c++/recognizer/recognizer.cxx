@@ -1,4 +1,4 @@
-/* Copyright (C) 2011-2020 Doubango Telecom <https://www.doubango.org>
+/* Copyright (C) 2011-2024 Doubango Telecom <https://www.doubango.org>
 * File author: Mamadou DIOP (Doubango Telecom, France).
 * License: For non commercial use only.
 * Source code: https://github.com/DoubangoTelecom/ultimateALPR-SDK
@@ -19,6 +19,7 @@
 			[--openvino_enabled <whether-to-enable-OpenVINO:true/false>] \
 			[--openvino_device <openvino_device-to-use>] \
 			[--npu_enabled <whether-to-enable-NPU-acceleration:true/false>] \
+			[--trt_enabled <whether-to-enable-TensorRT-acceleration:true/false>] \
 			[--klass_lpci_enabled <whether-to-enable-LPCI:true/false>] \
 			[--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \
 			[--klass_vmmr_enabled <whether-to-enable-VMMR:true/false>] \
@@ -159,6 +160,7 @@ int main(int argc, char *argv[])
 		true;
 #endif
 	bool isNpuEnabled = true; // Amlogic, NXP...
+	bool isTensorRTEnabled = false; // NVIDIA TensorRT
 	bool isKlassLPCI_Enabled = false;
 	bool isKlassVCR_Enabled = false;
 	bool isKlassVMMR_Enabled = false;
@@ -209,6 +211,10 @@ int main(int argc, char *argv[])
 	if (args.find("--npu_enabled") != args.end()) {
 		isNpuEnabled = (args["--npu_enabled"].compare("true") == 0);
 	}
+	if (args.find("--trt_enabled") != args.end()) {
+		isTensorRTEnabled = (args["--trt_enabled"].compare("true") == 0);
+	}
+	
 	if (args.find("--klass_lpci_enabled") != args.end()) {
 		isKlassLPCI_Enabled = (args["--klass_lpci_enabled"].compare("true") == 0);
 	}
@@ -247,6 +253,7 @@ int main(int argc, char *argv[])
 		jsonConfig += std::string(",\"openvino_device\": \"") + openvinoDevice + std::string("\"");
 	}
 	jsonConfig += std::string(",\"npu_enabled\": ") + (isNpuEnabled ? "true" : "false");
+	jsonConfig += std::string(",\"trt_enabled\": ") + (isTensorRTEnabled ? "true" : "false");
 	jsonConfig += std::string(",\"klass_lpci_enabled\": ") + (isKlassLPCI_Enabled ? "true" : "false");
 	jsonConfig += std::string(",\"klass_vcr_enabled\": ") + (isKlassVCR_Enabled ? "true" : "false");
 	jsonConfig += std::string(",\"klass_vmmr_enabled\": ") + (isKlassVMMR_Enabled ? "true" : "false");
@@ -346,7 +353,8 @@ static void printUsage(const std::string& message /*= ""*/)
 		"--ienv_enabled: Whether to enable Image Enhancement for Night-Vision (IENV). More info about IENV at https://www.doubango.org/SDKs/anpr/docs/Features.html#image-enhancement-for-night-vision-ienv. Default: true for x86-64 and false for ARM.\n\n"
 		"--openvino_enabled: Whether to enable OpenVINO. Tensorflow will be used when OpenVINO is disabled. Default: true.\n\n"
 		"--openvino_device: Defines the OpenVINO device to use (CPU, GPU, FPGA...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino_device. Default: CPU.\n\n"
-		"--npu_enabled: Whether to enable NPU acceleration (Amlogic, NXP...). Default: true.\n\n"
+		"--npu_enabled: Whether to enable NPU acceleration (Amlogic, NXP...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#npu-enabled. Default: true.\n\n"
+		"--trt_enabled: Whether to enable NVIDIA TensorRT acceleration. This will disable OpenVINO More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#trt-enabled. Default: false.\n\n"
 		"--klass_lpci_enabled: Whether to enable License Plate Country Identification (LPCI). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci. Default: false.\n\n"
 		"--klass_vcr_enabled: Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr. Default: false.\n\n"
 		"--klass_vmmr_enabled: Whether to enable Vehicle Make Model Recognition (VMMR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr. Default: false.\n\n"

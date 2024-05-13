@@ -1,6 +1,6 @@
-assets/models.tensorrt/optimized/*
-binaries/jetson_tftrt/aarch64/libultimate_alpr-sdk.so
 libultimatePluginTensorRT.so
+binaries/jetson_tftrt/aarch64/libultimate_alpr-sdk.so
+assets/models.tensorrt/optimized/*
 *.user
 *.suo
 *.opensdf

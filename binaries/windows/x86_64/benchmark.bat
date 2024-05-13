@@ -5,6 +5,7 @@ benchmark.exe ^
     --ienv_enabled false ^
     --openvino_enabled true ^
     --openvino_device CPU ^
+    --trt_enabled false ^
     --klass_lpci_enabled false ^
     --klass_vcr_enabled false ^
     --klass_vmmr_enabled false ^
