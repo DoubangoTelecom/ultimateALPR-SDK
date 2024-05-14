@@ -50,6 +50,10 @@ We recommend using the `tar` (Linux) or the `zip` (Windows) versions as they don
 - Download the tar/zip from https://developer.nvidia.com/nvidia-tensorrt-8x-download
 - Unzip/untar the file (e.g. under `/home/TensorRT-8.6.1.6`)
 
+You'll need to use `LD_LIBRARY_PATH` envvar to tell the linker where to find TensorRT libraries required by [libultimatePluginTensorRT.so](../../binaries/linux/x86_64/libultimatePluginTensorRT.so). You can avoid using `LD_LIBRARY_PATH` by copying the TensorRT libraries to [binaries/linux/x86_64](../../binaries/linux/x86_64): `cp /home/TensorRT-8.6.1.6/lib/* binaries/linux/x86_64`.
+
+To check if all dependencies can found: `ldd libultimatePluginTensorRT.so`
+
 <a name="gpu-acceleration-tensorrt-build"></a>
 ### Building plans ###
 The [models folder](../../assets/models.tensorrt) contains ONNX models, you need to generate TensorRT optimized models (a.k.a plans):
@@ -57,6 +61,8 @@ The [models folder](../../assets/models.tensorrt) contains ONNX models, you need
 cd binaries/linux/x86_64
 sudo LD_LIBRARY_PATH=/home/TensorRT-8.6.1.6/lib:$LD_LIBRARY_PATH ./trt_optimizer --assets ../../../assets
 ```
+Notice how we use `LD_LIBRARY_PATH` envvar to tell the linker where to find the TensorRT libs. An alternative would be copying the TensorRT libs to [binaries/linux/x86_64](../../binaries/linux/x86_64) as explained above.
+
 This will take several minutes, you must be patient.
 
 That's it. You're ready to use TensorRT models.
