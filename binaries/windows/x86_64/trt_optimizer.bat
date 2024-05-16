@@ -1,0 +1,1 @@
+trt_optimizer.exe --assets ../../../assets
