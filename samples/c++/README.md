@@ -93,7 +93,7 @@ You don't need to migrate to Tensorflow 2.x if you're planning to use [NVIDIA Te
 
 Our SDK is built and shipped with Tensorflow 1.x to make it work on oldest NVIDIA GPUs. If you want to use newest NVIDIA GPUs (e.g. RTX3060) which requires CUDA 11.x, then you'll need to upgrade the Tensorflow version. Check https://www.tensorflow.org/install/source#gpu to know which CUDA version is required for your Tensorflow version.
 
-***This section is about Tensorflow 2.6, Ubuntu 20.04.2 LTS, NVIDIA RTX3060 GPU and cuda_11.1.TC455_06.29190527_0***. Tensorflow 2.6 is the latest (**11/29/2021**) public version published at https://www.tensorflow.org/install/lang_c. Please note that we use CUDA 11.1 instead of 11.2 as suggested at https://www.tensorflow.org/install/source#gpu but both will work.
+***This section is about Tensorflow 2.6, Ubuntu 20.04.2 LTS, NVIDIA RTX3060 GPU and cuda_11.1.TC455_06.29190527_0***. Tensorflow 2.6 is the latest (**11/29/2021**) public version published at [https://www.tensorflow.org/install/lang_c](https://www.tensorflow.org/install/lang_c?hl=en). Please note that we use CUDA 11.1 instead of 11.2 as suggested at https://www.tensorflow.org/install/source#gpu but both will work.
 
 - Links:
   - Linux CPU only:	https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-linux-x86_64-2.6.0.tar.gz
