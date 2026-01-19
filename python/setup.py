@@ -26,7 +26,7 @@ class NoSuffixBuilder(build_ext):
         return filename.replace(suffix, "") + ext
 
 ultimateAlprSdk_module = Extension('_ultimateAlprSdk',
-                           sources=[os.path.abspath('../../../python/ultimateALPR-SDK-API-PUBLIC-SWIG_python.cxx')],
+                           sources=['../../../python/ultimateALPR-SDK-API-PUBLIC-SWIG_python.cxx'],
                            include_dirs=['../../../c++'],
                            language='c++11',
                            library_dirs=['.'],

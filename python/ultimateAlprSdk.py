@@ -9,20 +9,39 @@
 from sys import version_info
 if version_info >= (2,6,0):
     def swig_import_helper():
-        from os.path import dirname
-        import imp
-        fp = None
+        import importlib
+        import importlib.util
+        from os.path import dirname, join
+        import os
+        
         try:
-            fp, pathname, description = imp.find_module('_ultimateAlprSdk', [dirname(__file__)])
+            # Try to load the module from the current directory
+            module_name = '_ultimateAlprSdk'
+            module_dir = dirname(__file__)
+            # Look for likely files (either .pyd for Windows or .so for Linux/Mac)
+            # This is a simplified search that mimics what imp.find_module might find
+            found_path = None
+            for ext in ['.pyd', '.so']:
+                possible_path = join(module_dir, module_name + ext)
+                if os.path.exists(possible_path):
+                    found_path = possible_path
+                    break
+            
+            if found_path:
+                spec = importlib.util.spec_from_file_location(module_name, found_path)
+                if spec and spec.loader:
+                    _mod = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(_mod)
+                    return _mod
+            
+            # If not found locally, fall back to standard import which handles PYTHONPATH
+            import _ultimateAlprSdk
+            return _ultimateAlprSdk
+            
         except ImportError:
             import _ultimateAlprSdk
             return _ultimateAlprSdk
-        if fp is not None:
-            try:
-                _mod = imp.load_module('_ultimateAlprSdk', fp, pathname, description)
-            finally:
-                fp.close()
-            return _mod
+        return None
     _ultimateAlprSdk = swig_import_helper()
     del swig_import_helper
 else:

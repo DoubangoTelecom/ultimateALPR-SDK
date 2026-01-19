@@ -119,6 +119,9 @@ if __name__ == "__main__":
     parser.add_argument("--tokenfile", required=False, default="", help="Path to license token file")
     parser.add_argument("--tokendata", required=False, default="", help="Base64 license token data")
 
+    parser.add_argument("--output", required=False, default="", help="Path to the output JSON file")
+    parser.add_argument("--output_image", required=False, default="", help="Path to the output annotated image")
+
     args = parser.parse_args()
 
     # Check if image exist
@@ -153,8 +156,7 @@ if __name__ == "__main__":
     # Please note that the first time you call this function all deep learning models will be loaded 
     # and initialized which means it will be slow. In your application you've to initialize the engine
     # once and do all the recognitions you need then, deinitialize it.
-    checkResult("Process",
-                ultimateAlprSdk.UltAlprSdkEngine_process(
+    result = ultimateAlprSdk.UltAlprSdkEngine_process(
                     imageType,
                     image.tobytes(), # type(x) == bytes
                     width,
@@ -162,10 +164,49 @@ if __name__ == "__main__":
                     0, # stride
                     1 # exifOrientation (already rotated in load_image -> use default value: 1)
                 )
-        )
+    checkResult("Process", result)
+
+    # Save to file if requested
+    if args.output and result.isOK():
+        with open(args.output, "w") as f:
+            f.write(result.json())
+        print(TAG + "Result saved to: " + args.output)
+
+    # Save annotated image if requested
+    if args.output_image and result.isOK():
+        from PIL import ImageDraw, ImageFont
+        try:
+            draw = ImageDraw.Draw(image)
+            # Try to load a nice font, fallback to default
+            try:
+                font = ImageFont.truetype("arial.ttf", 20)
+            except IOError:
+                font = ImageFont.load_default()
+            
+            res_json = json.loads(result.json())
+            
+            # Draw plates
+            for plate in res_json.get("plates", []):
+                if "warpedBox" in plate:
+                    # warpedBox is [x1, y1, x2, y2, x3, y3, x4, y4]
+                    wb = plate["warpedBox"]
+                    points = [(wb[0], wb[1]), (wb[2], wb[3]), (wb[4], wb[5]), (wb[6], wb[7])]
+                    draw.polygon(points, outline="red", width=3)
+                    
+                    # Draw text
+                    text = f"{plate['text']} ({plate.get('conf', 0):.0f}%)"
+                    # Get text position (top-left of box)
+                    text_pos = points[0]
+                    # Draw background for text
+                    draw.text(text_pos, text, fill="red", font=font)
+                    
+            image.save(args.output_image)
+            print(TAG + "Annotated image saved to: " + args.output_image)
+        except Exception as e:
+            print(TAG + "Failed to save annotated image: " + str(e))
 
     # Press any key to exit
-    input("\nPress Enter to exit...\n") 
+    # input("\nPress Enter to exit...\n") 
 
     # DeInit the engine
     checkResult("DeInit", 
