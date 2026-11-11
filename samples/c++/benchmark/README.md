@@ -1,258 +1,242 @@
 - [Dependencies](#dependencies)
   - [Debugging missing dependencies](#dependencies-debugging)
 - [GPGPU acceleration](#gpu-acceleration)
-- [Peformance numbers](#peformance-numbers)
 - [Pre-built binaries](#prebuilt)
 - [Building](#building)
-  - [Windows](#building-windows)
-  - [Generic GCC](#building-generic-gcc)
-  - [Raspberry Pi (Raspbian OS)](#building-rpi)
-- [Testing](#testing)
-  - [Usage](#testing-usage)
-  - [Examples](#testing-examples)
+- [Usage](#testing-usage)
+- [Peformance numbers](#peformance-numbers)
+  - [Desktop (Linux/Windows X86_64)](#peformance-numbers-desktop)
+  - [Mobile (Linux aarch64)](#peformance-numbers-mobile)
+    - [NVIDIA Jetson](#peformance-numbers-mobile-jetson)
+    - [Raspberry Pi](#peformance-numbers-mobile-rpi)
+    - [OrangePi 5+ (rk3588 NPU)](#peformance-numbers-mobile-orangepi)
+    - [Radxa rock 5b (rk3588 NPU)](#peformance-numbers-mobile-rock5b)
+    - [Radxa Dragon Q6A (Qualcomm NPU)](#peformance-numbers-mobile-dragon)
+    - [Debix A (NXP i.MX 8M Plus NPU)](#peformance-numbers-mobile-debixa)
+    - [Samsung Galaxy S24 (Qualcomm NPU)](#peformance-numbers-mobile-s24)
 <hr />
 
-This application is used to check everything is ok and running as fast as expected. 
-The information about the maximum frame rate (**237fps** on Intel Xeon, **152fps** on Jetson NX, **47fps** on Snapdragon 855 and **12fps** on Raspberry Pi 4) could be checked using this application. 
+This application is used to check everything is ok and running as fast as expected on Windows and Linux. Check [here](../../android/benchmark) for Android. 
 It's open source and doesn't require registration or license key.
-
-More information about the benchmark rules at [https://www.doubango.org/SDKs/anpr/docs/Benchmark.html](https://www.doubango.org/SDKs/anpr/docs/Benchmark.html).
 
 <a name="dependencies"></a>
 # Dependencies #
-**The SDK is developed in C++11** and you'll need **glibc 2.27+** on *Linux* and **[Microsoft Visual C++ 2015 Redistributable(x64) - 14.0.24123](https://www.microsoft.com/en-us/download/details.aspx?id=52685)** (any later version is ok) on *Windows*.  **You most likely already have these dependencies on you machine** as almost every program require it.
+**The SDK is developed in C++11** and you'll need **glibc 2.27+** on *Linux* and **[Microsoft Visual C++ 2026 Redistributable(x64)](https://aka.ms/vc14/vc_redist.x64.exe)** (any later version is ok) on *Windows*.  **You most likely already have these dependencies on you machine** as almost every program require it.
 
-If you're planning to use [OpenVINO](https://docs.openvinotoolkit.org/), then you'll need [Intel C++ Compiler Redistributable](https://software.intel.com/en-us/articles/intel-compilers-redistributable-libraries-by-version) (choose newest). Please note that OpenVINO is packaged in the SDK as plugin and loaded (`dlopen`) at runtime. The engine will fail to load the plugin if [Intel C++ Compiler Redistributable](https://software.intel.com/en-us/articles/intel-compilers-redistributable-libraries-by-version) is missing on your machine **but the program will work as expected** with Tensorflow as fallback. We highly recommend using [OpenVINO](https://docs.openvinotoolkit.org/) to speedup the inference time. See benchmark numbers with/without [OpenVINO](https://docs.openvinotoolkit.org/) at https://www.doubango.org/SDKs/anpr/docs/Benchmark.html#core-i7-windows.
+If you're planning to use [OpenVINO](https://docs.openvinotoolkit.org/), then you'll need [Intel C++ Compiler Redistributable](https://software.intel.com/en-us/articles/intel-compilers-redistributable-libraries-by-version) (choose newest). Please note that OpenVINO is packaged in the SDK as plugin and loaded (`dlopen`) at runtime. The engine will fail to load the plugin if [Intel C++ Compiler Redistributable](https://software.intel.com/en-us/articles/intel-compilers-redistributable-libraries-by-version) is missing on your machine **but the program will work as expected** with ONNX as fallback. We highly recommend using [OpenVINO](https://docs.openvinotoolkit.org/) to speedup the inference time. See benchmark numbers with/without [OpenVINO](https://docs.openvinotoolkit.org/).
 
 <a name="dependencies-debugging"></a>
 ## Debugging missing dependencies ##
 To check if all dependencies are present:
-- **Windows x86_64:** Use [Dependency Walker](https://www.dependencywalker.com/) on [binaries/windows/x86_64/ultimateALPR-SDK.dll](../../../binaries/windows/x86_64/ultimateALPR-SDK.dll) and [binaries/windows/x86_64/ultimatePluginOpenVINO.dll](../../../binaries/windows/x86_64/ultimatePluginOpenVINO.dll) if you're planning to use [OpenVINO](https://docs.openvinotoolkit.org/).
-- **Linux x86_64:** Use `ldd <your-shared-lib>` on [binaries/linux/x86_64/libultimate_alpr-sdk.so](../../../binaries/linux/x86_64/libultimate_alpr-sdk.so) and [binaries/linux/x86_64/libultimatePluginOpenVINO.so](../../../binaries/linux/x86_64/libultimatePluginOpenVINO.so) if you're planning to use [OpenVINO](https://docs.openvinotoolkit.org/).
-
+- **Windows x86_64:** Use [Dependency Walker](https://www.dependencywalker.com/) on [binaries/windows/x86_64/ultimateALPR-SDK.dll](../../../binaries/windows/x86_64/ultimateALPR-SDK.dll) and [binaries/windows/x86_64/plugin_dl_vino.dll](../../../binaries/windows/x86_64/plugin_dl_vino.dll) if you're planning to use [OpenVINO](https://docs.openvinotoolkit.org/).
+- **Linux x86_64:** Use `ldd <your-shared-lib>` on [binaries/linux/x86_64/libultimate_alpr-sdk.so](../../../binaries/linux/x86_64/libultimate_alpr-sdk.so) and [binaries/linux/x86_64/libplugin_dl_vino.so](../../../binaries/linux/x86_64/libplugin_dl_vino.so) if you're planning to use [OpenVINO](https://docs.openvinotoolkit.org/).
 
 <a name="gpu-acceleration"></a>
 # GPGPU acceleration #
-- On x86-64, GPGPU acceleration is disabled by default. Check [here](../README.md#gpu-acceleration) for more information on how to enable it.
-- We highly recommend enabling NVIDIA TensorRT (`--trt_enabled true`). Enabling TensorRT will disable OpenVINO.
-- On NVIDIA Jetson (AArch64), GPGPU acceleration is always enabled. Check [here](../../../Jetson.md) for more information.
-
-
-<a name="peformance-numbers"></a>
-# Peformance numbers #
-
-These performance numbers are obtained using **version 3.13** and parallel mode enabled. You can use any later version. **Please notice the boost when OpenVINO is enabled on machines without GPU.**
-
-Some performance numbers on mid-range GPU (**GTX 1070**), high-range ARM CPU (**Galaxy S10+**), low-range ARM CPU (**Raspberry Pi 4**) devices using **720p (1280x720)** images:
-
-|  | 0.0 rate | 0.2 rate | 0.5 rate | 0.7 rate | 1.0 rate |
-|-------- | --- | --- | --- | --- | --- |
-| **AMD Ryzen 7 3700X 8-Core + RTX 3060<br/> (Ubuntu 20, OpenVINO disabled, TensorRT enabled)** | 201 millis <br/> **497.40 fps** | 238 millis <br/> 419.71 fps | 291 millis <br/> 343.12 fps | 333 millis <br/> 299.41 fps | 379 millis <br/> 263.36 fps |
-| **AMD Ryzen 7 3700X 8-Core + RTX 3060<br/> (Ubuntu 20, OpenVINO enabled, TensorRT disabled)** | 615 millis <br />**162.54 fps** | 679 millis <br/> 147.13 fps | 740 millis <br/> 135.01 fps | 773 millis <br/> 129.21 fps | 809.18 millis <br/> 123.58 fps |
-| **AMD Ryzen 7 3700X 8-Core + RTX 3060<br/> (Ubuntu 20, OpenVINO disabled, TensorRT disabled)** | 961 millis <br />**103.97 fps** | 1047 millis <br/> 95.46 fps | 1206 millis <br/> 82.90 fps | 1325 millis <br/> 75.45 fps | 1434.16 millis <br/> 69.72 fps |
-| **Intel® Xeon® E3 1230v5 + GTX 1070<br/> (Ubuntu 18, OpenVINO enabled, TensorRT disabled)** | 737 millis <br />**135.62 fps** | 809 millis <br/> 123.55 fps | 903 millis <br/> 110.72 fps | 968 millis <br/> 103.22 fps | 1063 millis <br/> 94.07 fps |
-| **Intel® Xeon® E3 1230v5 + GTX 1070<br/> (Ubuntu 18, OpenVINO disabled, TensorRT disabled)** | 711 millis <br />**140.51 fps** | 828 millis <br/> 120.76 fps | 1004 millis <br/> 99.53 fps | 1127 millis <br/> 88.70 fps | 1292 millis <br/> 77.38 fps |
-| **i7-4790K<br/> (Windows 8, OpenVINO enabled)** | 758 millis <br />**131.78 fps** | 1110 millis <br/> 90.07 fps | 1597 millis <br/> 62.58 fps | 1907 millis <br/> 52.42 fps | 2399 millis <br/> 41.66 fps |
-| **i7-4790K<br/> (Windows 8, OpenVINO disabled)** | 2427 millis <br />**41.18 fps** | 2658 millis <br/> 37.60 fps | 2999 millis <br/> 33.34 fps | 3360 millis <br/> 29.75 fps | 3607 millis <br/> 27.72 fps |
-| **i7-4770HQ<br/> (Winows 10, OpenVINO enabled)** | 1094 millis <br />**91.35 fps** | 1674 millis <br/> 59.71 fps | 2456 millis <br/> 40.71 fps | 2923 millis <br/> 34.21 fps | 4255 millis <br/> 23.49 fps |
-| **i7-4770HQ<br/> (Windows 10, OpenVINO disabled)** | 4129 millis <br />**24.21 fps** | 4486 millis <br/> 22.28 fps | 4916 millis <br/> 20.34 fps | 5460 millis <br/> 18.31 fps | 5740 millis <br/> 17.42 fps |
-| **Khadas VIM3 Basic<br/> Linux 4.9, NPU, Parallel mode** | 1560 millis <br />**64.08 fps** | 1797 millis <br/> 55.63 fps | 1876 millis <br/> 53.29 fps | 2162 millis <br/> 46.25 fps | 2902 millis <br/> 34.45 fps |
-| **Khadas VIM3 Basic<br/> Linux 4.9, NPU, Sequential mode** | 1776 millis <br />**56.30 fps** | 3443 millis <br/> 29.04 fps | 6009 millis <br/> 16.63 fps | 7705 millis <br/> 12.97 fps | 10275 millis <br/> 9.73 fps |
-| **Khadas VIM3 Basic<br/> Linux 4.9, CPU, Parallel mode** | 4187 millis <br />**23.88 fps** | 4414 millis <br/> 22.65 fps | 4824 millis <br/> 20.72 fps | 5189 millis <br/> 19.26 fps | 5740 millis <br/> 17.42 fps |
-| **Khadas VIM3 Basic<br/> Linux 4.9, CPU, Sequential mode** | 4184 millis <br />**23.89 fps** | 5972 millis <br/> 16.74 fps | 8513 millis <br/> 11.74 fps | 10258 millis <br/> 9.74 fps | 12867 millis <br/> 7.77 fps |
-| **RockPi 4B <br/> (Ubuntu Server 18.04)** | 7588 millis <br />**13.17 fps** | 8008 millis <br/> 12.48 fps | 8606 millis <br/> 11.61 fps | 9213 millis <br/> 10.85fps | 9798 millis <br/> 10.20 fps |
-| **Raspberry Pi 4<br/> (Raspbian Buster)** | 81890 millis <br />**12.21 fps** | 89770 millis <br/> 11.13 fps | 115190 millis <br/> 8.68 fps | 122950 millis <br/> 8.13fps | 141460 millis <br/> 7.06 fps |
-| **Jetson Xavier NX<br/> (JetPack 5.1.0)** | 657 millis <br />**152 fps** | 744 millis <br/> 134 fps | 837 millis <br/> 119 fps | 961 millis <br/> 104 fps | 1068 millis <br/> 93 fps |
-| **Jetson Nano B01<br/> (JetPack 4.4.1)** | 2920 millis <br />**34 fps** | 3102 millis <br/> 32 fps | 3274 millis <br/> 30 fps | 3415 millis <br/> 29 fps | 3727 millis <br/> 27 fps |
-
-
-Some notes:
-- **The above numbers show that the best case is 'AMD Ryzen 7 3700X 8-Core + RTX 3060 + TensorRT enabled'. In such case the GPU (TensorRT, CUDA) will be used for all modules (detection, classification and OCR).**
-- When TensorRT is disabled we still use the GPU via Tensorflow. Notice the huge difference between TensorRT and Tensorflow.
-- **Please note that even if Raspberry Pi 4 has a 64-bit CPU [Raspbian OS](https://en.wikipedia.org/wiki/Raspbian>) uses a 32-bit kernel which means we're loosing many SIMD optimizations.**
-- **On RockPi 4B the code is 5 times faster when [parallel processing](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html) is enabled.**
-- **On NVIDIA Jetson the code is 3 times faster when [parallel processing](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html) is enabled.**
-- **On Khadas VIM3 the code is almost 4 times faster when [parallel processing](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html) is enabled.**
-- **On Android devices we have noticed that [parallel processing](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html) can speedup the pipeline by up to 120% on some devices while on Raspberry Pi the gain is marginal.**
-- **Both i7 CPUs are 6yr+ old (2014) to make sure everyone can easily find them at the cheapest price possible.**
+Please read [this](../../../GPGPU.md) if you're planning to use your GPU (CUDA or TensorRT). We recommend using TensorRT which is faster than CUDA.
 
 <a name="prebuilt"></a>
 # Pre-built binaries #
 
-If you don't want to build this sample by yourself then, use the pre-built versions:
- - Windows x86_64: [benchmark.exe](../../../binaries/windows/x86_64/benchmark.exe) under [binaries/windows/x86_64](../../../binaries/windows/x86_64)
- - Linux x86_64: [benchmark](../../../binaries/linux/x86_64/benchmark) under [binaries/linux/x86_64](../../../binaries/linux/x86_64). Built on Ubuntu 18. **You'll need to download libtensorflow.so as explained [here](../README.md#gpu-acceleration-tensorflow-linux)**.
- - Linux aarch64: [benchmark](../../../binaries/linux/aarch64/benchmark) under [binaries/linux/aarch64](../../../binaries/linux/aarch64).
- - Raspberry Pi: [benchmark](../../../binaries/raspbian/armv7l/benchmark) under [binaries/raspbian/armv7l](../../../binaries/raspbian/armv7l)
+If you don't want to build this sample by yourself, then use the pre-built versions:
+ - Windows x86_64: [benchmark.exe](../../../binaries/windows/x86_64/benchmark.exe) under [binaries/windows/x86_64](../../../binaries/windows/x86_64).
+ - Linux x86_64: [benchmark](../../../binaries/linux/x86_64/benchmark) under [binaries/linux/x86_64](../../../binaries/linux/x86_64).
+ - Linux aarch64 (Raspberry Pi, Jetson, Orange Pi...): [benchmark](../../../binaries/linux/aarch64/benchmark) under [binaries/linux/aarch64](../../../binaries/linux/aarch64).
  - Android: check [android](../../android) folder
- - NVIDIA Jetson: [binaries/jetson/aarch64/benchmark](../../../binaries/jetson/aarch64/benchmark) or [binaries/jetson_tftrt/aarch64/benchmark](../../../binaries/jetson_tftrt/aarch64/benchmark). **You'll need to generate the optimized models as explained [here](../../../Jetson.md#getting-started_before-trying-to-use-the-sdk-on-jetson)**.
- 
-On **Windows**, the easiest way to try this sample is to navigate to [binaries/windows/x86_64](../../../binaries/windows/x86_64/) and run [binaries/windows/x86_64/benchmark.bat](../../../binaries/windows/x86_64/benchmark.bat). You can edit these files to use your own images and configuration options.
 
 <a name="building"></a>
 # Building #
 
-This sample contains [a single C++ source file](benchmark.cxx) and is easy to build. The documentation about the C++ API is at [https://www.doubango.org/SDKs/anpr/docs/cpp-api.html](https://www.doubango.org/SDKs/anpr/docs/cpp-api.html).
+You'll need [CMake](https://cmake.org/) to build this sample.
 
-<a name="building-windows"></a>
-## Windows ##
-You'll need Visual Studio to build the code. The VS project is at [benchmark.vcxproj](benchmark.vcxproj). Open it.
- 1. You will need to change the **"Command Arguments"** like the [below image](../../../VC++_config.jpg). Default value: `--loops 100 --rate 0.2 --positive $(ProjectDir)..\..\..\assets\images\lic_us_1280x720.jpg --negative $(ProjectDir)..\..\..\assets\images\london_traffic.jpg --assets $(ProjectDir)..\..\..\assets --charset latin`
- 2. You will need to change the **"Environment"** variable like the [below image](../../../VC++_config.jpg). Default value: `PATH=$(VCRedistPaths)%PATH%;$(ProjectDir)..\..\..\binaries\windows\x86_64`
- 
-![VC++ config](../../../VCpp_config.jpg)
- 
-You're now ready to build and run the sample.
+- Create build folder and move into it: `mkdir build && cd build`
 
-<a name="building-generic-gcc"></a>
-## Generic GCC ##
-Next command is a generic GCC command:
-```
-cd ultimateALPR-SDK/samples/c++/benchmark
+To generate the build files:
+- Windows (Visual Studio files): `cmake .. -DCMAKE_GENERATOR_PLATFORM=x64`
+- Linux (Makefile): `cmake .. -G"Unix Makefiles"`
 
-g++ benchmark.cxx -O3 -I../../../c++ -L../../../binaries/<yourOS>/<yourArch> -lultimate_alpr-sdk -o benchmark
-```
-- You've to change `yourOS` and  `yourArch` with the correct values. For example, on **Linux x86_64** they would be equal to `linux` and `x86_64` respectively. On **Linux aarch64** they would be `linux` and `aarch64` respectively.
-- If you're cross compiling then, you'll have to change `g++` with the correct triplet. For example, on Linux host for Android ARM64 target the triplet would be equal to `aarch64-linux-android-g++`.
-
-<a name="building-rpi"></a>
-## Raspberry Pi (Raspbian OS) ##
-
-To build the sample for Raspberry Pi you can either do it on the device itself or cross compile it on [Windows](../#cross-compilation-rpi-install-windows), [Linux](../#cross-compilation-rpi-install-ubuntu) or OSX machines. 
-For more information on how to install the toolchain for cross compilation please check [here](../README.md#cross-compilation-rpi).
-
-```
-cd ultimateALPR-SDK/samples/c++/benchmark
-
-arm-linux-gnueabihf-g++ benchmark.cxx -O3 -I../../../c++ -L../../../binaries/raspbian/armv7l -lultimate_alpr-sdk -o benchmark
-```
-- On Windows: replace `arm-linux-gnueabihf-g++` with `arm-linux-gnueabihf-g++.exe`
-- If you're building on the device itself: replace `arm-linux-gnueabihf-g++` with `g++` to use the default GCC
-
-<a name="testing"></a>
-# Testing #
-After [building](#building) the application you can test it on your local machine.
+To build the project:
+- Windows: Open the VS solution and build the projet
+- Linux: Run `make` to build the project
 
 <a name="testing-usage"></a>
-## Usage ##
+# Usage #
 
-Benchmark is a command line application with the following usage:
 ```
-benchmark \
-      --positive <path-to-image-with-a-plate> \
-      --negative <path-to-image-without-a-plate> \
-      [--assets <path-to-assets-folder>] \
-      [--charset <recognition-charset:latin/korean/chinese>] \
-      [--num_threads <number of threads:[1, inf]>] \
-      [--car_noplate_detect_enabled <whether-to-enable-detecting-cars-with-no-plate:true/false>] \
-      [--ienv_enabled <whether-to-enable-IENV:true/false>] \
-      [--openvino_enabled <whether-to-enable-OpenVINO:true/false>] \
-      [--openvino_device <openvino-device-to-use>] \
-      [--npu_enabled <whether-to-enable-NPU-acceleration:true/false>] \
-      [--trt_enabled <whether-to-enable-TensorRT-acceleration:true/false>] \
-      [--simd_enabled <whether-to-enable-SIMD-acceleration:true/false>] \
-      [--klass_lpci_enabled <whether-to-enable-LPCI:true/false>] \
-      [--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \
-      [--klass_vmmr_enabled <whether-to-enable-VMMR:true/false>] \
-      [--klass_vbsr_enabled <whether-to-enable-VMMR:true/false>] \
-      [--loops <number-of-times-to-run-the-loop:[1, inf]>] \
-      [--rate <positive-rate:[0.0, 1.0]>] \
-      [--parallel <whether-to-enable-parallel-mode:true/false>] \
-      [--rectify <whether-to-enable-rectification-layer:true/false>] \
-      [--tokenfile <path-to-license-token-file>] \
-      [--tokendata <base64-license-token-data>]
+		benchmark \
+			--image <path-to-image-with-to-benchmark> \
+			--assets <path-to-assets-folder> \
+			[--charset <recognition-charset:latin/korean/chinese>] \
+			[--num_threads <number-of-threads:[1, inf]>] \
+			[--max_latency <max-latency:]-inf,+inf[>] \
+			[--nvision_enabled <whether-to-enable-IENV:true/false>] \
+			[--platform <target-platform:auto/mobile/desktop>] \
+			[--batching_mode <batching-mode:auto/on/off>] \
+			[--backend <backend:auto,onnx,tflite,rknn2,trt,vino...>] \
+			[--pysearch_enabled <whether-to-pyramidal-search:true/false>]
+			[--recogn_enabled <whether-to-enabled-LPR:true/false>]
+			[--klass_lpci_enabled <whether-to-enable-LPCI:true/false>] \
+			[--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \
+			[--klass_vmmr_enabled <whether-to-enable-VMMR:true/false>] \
+			[--klass_vbsr_enabled <whether-to-enable-VBSR:true/false>] \
+			[--loops <number-of-times-to-run-the-loop:[1, inf]>] \
+			[--parallel <whether-to-enable-parallel-mode:true/false>] \
+			[--tokenfile <path-to-license-token-file>] \
+			[--tokendata <base64-license-token-data>]
 ```
 Options surrounded with **[]** are optional.
-- `--positive` Path to an image (JPEG/PNG/BMP) with a license plate. This image will be used to evaluate the recognizer. You can use default image at [../../../assets/images/lic_us_1280x720.jpg](../../../assets/images/lic_us_1280x720.jpg).
-- `--negative` Path to an image (JPEG/PNG/BMP) without a license plate. This image will be used to evaluate the decoder. You can use default image at [../../../assets/images/london_traffic.jpg](../../../assets/images/london_traffic.jpg).
-- `--assets` Path to the [assets](../../../assets) folder containing the configuration files and models. Default value is the current folder.
-- `--charset` Defines the recognition charset (a.k.a alphabet) value (latin, korean, chinese...). Default: *latin*.
+- `--image` Path to the image(JPEG/PNG/BMP) to benchmark. You can use default image at [../../../assets/images/lic_us_1280x720.jpg](../../../assets/images/lic_us_1280x720.jpg).
+- `--assets` Path to the [assets](../../../assets) folder containing the configuration files and models. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#assets-folder.
+- `--charset` Defines the recognition charset (a.k.a alphabet) value (latin, korean, chinese...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#recogn-charset. Default: *latin*.
 - `--num_threads` Number of threads to use. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#num-threads. Default: *-1*.
-- `--car_noplate_detect_enabled` Whether to detect and return cars with no plate. Default: *false*.
-- `--ienv_enabled` Whether to enable Image Enhancement for Night-Vision (IENV). More info about IENV at https://www.doubango.org/SDKs/anpr/docs/Features.html#image-enhancement-for-night-vision-ienv. Default: *false*.
-- `--openvino_enabled` Whether to enable OpenVINO. Tensorflow will be used when OpenVINO is disabled. Default: *true*.
-- `--openvino_device` Defines the OpenVINO device to use (CPU, GPU, FPGA...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino-device. Default: *CPU*."
-- `--npu_enabled` Whether to enable NPU acceleration (Amlogic, NXP...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#npu-enabled. Default: *true*.
-- `--trt_enabled` Whether to enable TensorRT acceleration (NVIDIA GPUs). This will disable OpenVINO. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#trt-enabled. You must generate the plans as explained [here](../README.md#gpu-acceleration-tensorrt-build) before being able to use the TensorRT models. Default: *false*.
-- `--simd_enabled` Whether to enable SIMD acceleration -Assembler and Intrinsics- (SSE, AVX, MMX, NEON...). More info at https://en.wikipedia.org/wiki/Single_instruction,_multiple_data. Default: *true*.
-- `--klass_lpci_enabled` Whether to enable License Plate Country Identification (LPCI). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci. Default: *false*.
-- `--klass_vcr_enabled` Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr. Default: *false*.
-- `--klass_vmmr_enabled` Whether to enable Vehicle Make Model Recognition (VMMR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr. Default: *false*.
-- `--klass_vbsr_enabled` Whether to enable Vehicle Body Style Recognition (VBSR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-body-style-recognition-vbsr. Default: *false*.
+- `--max_latency` Max latency when parallel processing is enabled. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#max-latency. Default: *-1*.
+- `--nvision_enabled` Whether to enable Image Enhancement for Night-Vision (IENV). More info about IENV at https://www.doubango.org/SDKs/anpr/docs/Features.html#night-vision-enabled. Default: *false*.
+- `--platform` Target platform. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#platform. Default: *auto*.
+- `--backend` Target backend. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#backend. Default: *auto*.
+- `--pysearch_enabled` Whether to enable Pyramidal search. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#pyramidal-search-enabled. Default: *false*.
+- `--recogn_enabled` Whether to enable License Plate Recognition (LPR) / OCR. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#recogn-enabled. Default: *false*.
+- `--klass_lpci_enabled` Whether to enable License Plate Country Identification (LPCI). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-lpci-enabled. Default: *false*.
+- `--klass_vcr_enabled` Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vcr-enabled. Default: *false*.
+- `--klass_vmmr_enabled` Whether to enable Vehicle Make Model Recognition (VMMR). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vmmr-enabled. Default: *false*.
+- `--klass_vbsr_enabled` Whether to enable Vehicle Body Style Recognition (VBSR). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vbsr-enabled. Default: *false*.
 - `--loops` Number of times to run the processing pipeline.
-- `--rate` Percentage value within [0.0, 1.0] defining the positive rate. The positive rate defines the percentage of images with a plate.
-- `--parallel` Whether to enabled the parallel mode. More info about the parallel mode at [https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html](https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html). Default: *true*.
-- `--rectify` Whether to enable the rectification layer. More info about the rectification layer at [https://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html](https://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html). Always enabled on x86_64 CPUs. Default: *false*.
+- `--parallel` Whether to enabled the parallel mode. More info about the parallel mode at https://www.doubango.org/SDKs/anpr/docs/Parallel_processing.html. Default: *true*.
 - `--tokenfile` Path to the file containing the base64 license token if you have one. If not provided then, the application will act like a trial version. Default: *null*.
 - `--tokendata` Base64 license token if you have one. If not provided then, the application will act like a trial version. Default: *null*.
 
-The information about the maximum frame rate (**140fps** on GTX 1070, **47fps** on Snapdragon 855 and **12fps** on Raspberry Pi 4) is obtained using `--rate 0.0` which means evaluating the negative (no license plate) image only. The minimum frame rate could be obtained using `--rate 1.0` which means evaluating the positive image only (all images on the video stream have a license plate). In real life, very few frames from a video stream will contain a license plate (`--rate` **< 0.01**).
+<a name="peformance-numbers"></a>
+# Peformance numbers #
 
-<a name="testing-examples"></a>
-## Examples ##
+You should run the benchmark app at least `#100 times on low-end devices` (e.g. Raspberry Pi) and `#5000 times on on high-end devices` (x86_64, GPUs, NPUs...).
 
-- For example, on **Raspberry Pi** you may call the benchmark application using the following command:
-```
-LD_LIBRARY_PATH=../../../binaries/raspbian/armv7l:$LD_LIBRARY_PATH ./benchmark \
-    --positive ../../../assets/images/lic_us_1280x720.jpg \
-    --negative ../../../assets/images/london_traffic.jpg \
-    --assets ../../../assets \
-    --charset latin \
-    --loops 100 \
-    --rate 0.2 \
-    --parallel true \
-    --rectify false
-```
+**Next numbers are FPS (frames per second).** `1000/fps` gives you the number of milliseconds it takes to process a single frame.
 
-- On **NVIDIA Jetson**, you'll need to generate the models as explained [here](../../../Jetson.md#building-optimized-models), put the device on maximum performance mode (`sudo nvpmodel -m 2 && sudo jetson_clocks`), then run:
-```   
-LD_LIBRARY_PATH=../../../binaries/jetson/aarch64:$LD_LIBRARY_PATH ./benchmark \
-    --positive ../../../assets/images/lic_us_1280x720.jpg \
-    --negative ../../../assets/images/london_traffic.jpg \
-    --assets ../../../assets \
-    --charset latin \
-    --loops 100 \
-    --rate 0.2 \
-    --parallel true \
-    --rectify false
-```
+The columns are the [backend](https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#backend) values.
+
+All benchmark experiments are done with [parallel processing](https://www.doubango.org/SDKs/anpr/docs/Parallel_processing.html) enabled and both detection and recognition (OCR) are evaluated for each frame.
+
+<a name="peformance-numbers-desktop"></a>
+## Desktop (Linux/Windows X86_64) ##
 
 - On **Linux x86_64**, you may use the next command:
 ```
 LD_LIBRARY_PATH=../../../binaries/linux/x86_64:$LD_LIBRARY_PATH ./benchmark \
-    --positive ../../../assets/images/lic_us_1280x720.jpg \
-    --negative ../../../assets/images/london_traffic.jpg \
+    --image "../../../assets/images/lic_us_1280x720.jpg" \
     --assets ../../../assets \
-    --charset latin \
-    --loops 100 \
-    --rate 0.2 \
+    --backend "auto" \
+    --loops 500 \
     --parallel true
 ```
+
+- On **Windows x86_64**, you can also use [binaries/windows/x86_64/benchmark.bat](../../../binaries/windows/x86_64/benchmark.bat) to make your life easier, or run:
+```
+benchmark.exe ^
+    --image "../../../assets/images/lic_us_1280x720.jpg" ^
+    --assets ../../../assets ^
+    --backend "auto" ^
+    --loops 500 \
+    --parallel true
+```
+
+| | trt           | vino[cpu]    | vino[gpu] | onnx[cuda]    |  onnx[none]    | tflite[xnnpack]| tflite[none] |
+| --- | --- | --- | --- | --- | --- | --- |--- |
+| AMD Ryzen 7 9800X3D 8-Core<br/>(NVIDIA RTX 5060 GPU)<br/>(Windows 11) | 875.17 | 405.65 | -- | 572.17 | 126.32 | 233.66 | 8.92 |
+| AMD Ryzen 9 7950X 16-Core<br/>(NVIDIA RTX 4060 GPU)<br/>(Ubuntu 22) | 595.32 | 269.15 | -- | 338.41 | 84.78 | 76.35 | 16.69 |
+| Mobile Intel i7-12650H<br/>(Intel GPU)<br/>(Windows 11) | -- | 120.48 | 44.95 | -- | 50.65 | 81.35 | 3.61 |
+
+Important to note that you must [generate the optimized models](../../../GPGPU.md#ggpu-acceleration-tensorrt) if you're planning to use TensorRT (`trt` backend).
+
+<a name="peformance-numbers-mobile"></a>
+## Mobile (Linux aarch64) ##
 
 - On **Linux aarch64**, you may use the next command:
 ```
 LD_LIBRARY_PATH=../../../binaries/linux/aarch64:$LD_LIBRARY_PATH ./benchmark \
-    --positive ../../../assets/images/lic_us_1280x720.jpg \
-    --negative ../../../assets/images/london_traffic.jpg \
+    --image "../../../assets/images/lic_us_1280x720.jpg" \
     --assets ../../../assets \
-    --charset latin \
-    --loops 100 \
-    --rate 0.2 \
+    --backend "auto" \
+    --loops 500 \
     --parallel true
 ```
 
-- On **Windows x86_64**, you may use the next command:
-```
-benchmark.exe ^
-    --positive ../../../assets/images/lic_us_1280x720.jpg ^
-    --negative ../../../assets/images/london_traffic.jpg ^
-    --assets ../../../assets ^
-    --charset latin ^
-    --loops 100 ^
-    --rate 0.2 ^
-    --parallel true
-```
+<a name="peformance-numbers-mobile-jetson"></a>
+### NVIDIA Jetson ###
 
-Please note that if you're cross compiling the application then you've to make sure to copy the application and both the [assets](../../../assets) and [binaries](../../../binaries) folders to the target device.
+Important to note that you must [generate the optimized models](../../../GPGPU.md#gpu-acceleration-tensorrt-install-jetson) if you're planning to use TensorRT TensorRT (`trt` backend).
+
+We recommend putting the device in maximum performance mode (`sudo nvpmodel -m 2` on Jetson Nano Orin or `sudo nvpmodel -m 0` on Jetson Nano B01) before running the script.
+
+To check if your NVIDIA Jetson is running in maximum performance mode, run `sudo nvpmodel -q` to view the active power mode and `sudo jetson_clocks --show` to verify if the clocks are locked at maximum frequency.
+
+| | trt           |tflite[xnnpack]| tflite[none]  | onnx          |
+| --- | --- | --- | --- | --- |
+| Jetson Nano Orin<br/>(Jetpack 7.2.0) | 472.89 | 49.78 | 20.46 | 22.09 |
+| Jetson Nano B01<br/>(Jetpack 4.6.6) | 37.31 | -- | -- | -- |
+
+<a name="peformance-numbers-mobile-rpi"></a>
+### Raspberry Pi ###
+
+| | hailo[hailo8l] |tflite[xnnpack]| tflite[none]  | onnx          |
+| --- | --- | --- | --- | --- |
+| Raspberry Pi 5 | 143.67 | 37.41 | 15.03 | 14.74 |
+| Raspberry Pi 4B | -- | 10.65 | 5.89 | -- |
+| Raspberry Pi 3B+ | -- | 5.61 | 3.64 | -- |
+
+For Hailo, run `sudo lspci -vv` command and check **"LnkSta"** entry associated to the device to get the communication speed. The speed should be **"8GT/s"** and a lower value means you're using the **"PCI gen 2"** bus instead of **"PCI gen 3"**. To migrate to **"PCI gen 3"**:
+ - 1. open the file `/boot/firmware/config.txt` for edit
+ - 2. under the line `dtparam=pciex1` add the following line `dtparam=pciex1_gen=3`
+ - 3. reboot the device
+
+Please also note that Hailo uses different OCR models and may produce difference results. **OCR models for Hailo are less accurate** (do be improved in next versions).
+
+<a name="peformance-numbers-mobile-orangepi"></a>
+### OrangePi 5+ (rk3588 NPU) ###
+
+| | rknpu2[rk3588]|tflite[xnnpack]|tflite[nnapi]  | tflite[gpu]   | tflite[none]  |  onnx          |
+| --- | --- | --- | --- | --- | --- | --- |
+| OrangePi 5+ (Ubuntu) | 310.21 | 55.08 | -- | -- | 20.19 | 20.56 |
+| OrangePi 5+ (Android) | 275.22 | 35.19 | 24.77 | 8.65 | 24.53 | -- |
+
+ - Android and Linux uses the exact same QINT8 models but the latter is faster because it is 100% C++ while the former uses a JNI (Java) wrapper.
+ - The Android project contains only TensorflowLite models, you need to change **sdk/build.gradle** to include everything: from `assets.srcDirs += ['../../../assets/models.tflite']` to `assets.srcDirs += ['../../../assets/models']`.
+
+<a name="peformance-numbers-mobile-rock5b"></a>
+### Radxa rock 5b (rk3588 NPU) ###
+
+| | rknpu2[rk3588]|tflite[xnnpack]|tflite[nnapi]  | tflite[gpu]   | tflite[none]  |  onnx          |
+| --- | --- | --- | --- | --- | --- | --- |
+| Radxa rock 5b (Ubuntu) | 311.49 | 64.12 | -- | -- | 23.64 | 22.74 |
+| Radxa rock 5b (Android) | 277.89 | 38.12 | 26.09 | 9.78 | 26.54 | -- |
+
+ - Android and Linux uses the exact same QINT8 models but the latter is faster because it is 100% C++ while the former uses a JNI (Java) wrapper.
+ - The Android project contains only TensorflowLite models, you need to change **sdk/build.gradle** to include everything: from `assets.srcDirs += ['../../../assets/models.tflite']` to `assets.srcDirs += ['../../../assets/models']`.
+
+<a name="peformance-numbers-mobile-dragon"></a>
+### Radxa Dragon Q6A (Qualcomm NPU) ###
+
+| | tflite[ext=/usr/lib/libvx_delegate.so] |tflite[xnnpack]| tflite[none]  | onnx          |
+| --- | --- | --- | --- | --- |
+| Dragon Q6A | -- | 43.06 | 19.97 | 16.67 |
+
+<a name="peformance-numbers-mobile-debixa"></a>
+### Debix A (NXP i.MX 8M Plus NPU) ###
+
+| | tflite[ext=/usr/lib/libvx_delegate.so] |tflite[xnnpack]| tflite[none]  | onnx          |
+| --- | --- | --- | --- | --- |
+| [Debix A](https://debix.io/product/debix-model-a/) | 71.02 | 5.18 | 3.25 | -- |
+
+First inference is slow when using the NPU, you need some warm up before doing the benchmark.
+
+<a name="peformance-numbers-mobile-s24"></a>
+### Samsung Galaxy S24 (Qualcomm NPU) ###
+
+These numbers are generated using [Android benchmark app](../../android/benchmark).
+
+| | tflite[ext=libQnnTFLiteDelegate.so]    |tflite[xnnpack]|tflite[nnapi]  | tflite[gpu]   | tflite[none]  |
+| --- | --- | --- | --- | --- | --- |
+| Samsung Galaxy S24 | -- | 91.24 | 51.64 | 6.84 | 54.47 |
+
+
+
 
 

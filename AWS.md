@@ -32,7 +32,7 @@ To generate a [runtime key](https://www.doubango.org/SDKs/LicenseManager/docs/Ja
 ./runtimeKey --type aws-instance --assets ../../../assets
 ```
 
-The SDK uses [libcurl](https://curl.haxx.se/libcurl/) hunder the hood to query the information associated to the instance. [libcurl](https://curl.haxx.se/libcurl/) is loaded at runtime to avoid liking.
+The SDK uses [libcurl](https://curl.haxx.se/libcurl/) under the hood to query the information associated to the instance. [libcurl](https://curl.haxx.se/libcurl/) is loaded at runtime to avoid linking.
 
 On Linux, install [libcurl](https://curl.haxx.se/libcurl/) like this: `sudo apt-get install libcurl-dev`
 

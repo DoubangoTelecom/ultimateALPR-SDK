@@ -1,6 +1,4 @@
-libultimatePluginTensorRT.so
-binaries/jetson_tftrt/aarch64/libultimate_alpr-sdk.so
-assets/models.tensorrt/optimized/*
+assets/models.tensorrt/*
 *.user
 *.suo
 *.opensdf
@@ -45,8 +43,11 @@ out
 My Amplifier XE Results*
 My Advisor Results*
 *.rbg
-/.vs/config
+.vs
+*.class
 /vs_android/.vs
 /docs/*.odt#
 /vs_android/.workspace
+.env
+.vscode
 

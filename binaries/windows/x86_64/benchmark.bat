@@ -1,16 +1,19 @@
+setlocal
+set PATH=%PATH%;%~dp0;%CUDA_PATH%\bin;%CUDNN_PATH%\bin;%TENSORRT_PATH%\bin;
 benchmark.exe ^
-    --positive ../../../assets/images/lic_us_1280x720.jpg ^
-    --negative ../../../assets/images/london_traffic.jpg ^
     --assets ../../../assets ^
-    --ienv_enabled false ^
-    --openvino_enabled true ^
-    --openvino_device CPU ^
-    --trt_enabled false ^
+    --image ../../../assets/images/lic_us_1280x720.jpg ^
+    --charset latin ^
+    --backend auto ^
+    --batching_mode auto ^
+    --num_threads -1 ^
+    --max_latency -1 ^
+    --pysearch_enabled false ^
+    --recogn_enabled true ^
     --klass_lpci_enabled false ^
     --klass_vcr_enabled false ^
     --klass_vmmr_enabled false ^
     --klass_vbsr_enabled false ^
-    --charset latin ^
-    --loops 100 ^
-    --rate 0.2 ^
+    --loops 500 ^
     --parallel true
+endlocal

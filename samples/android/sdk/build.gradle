@@ -1,12 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
-
+    compileSdkVersion 30
+    namespace 'org.doubango.ultimateAlpr.sdk'
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 28
+        minSdkVersion 29
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
 
@@ -25,7 +25,7 @@ android {
         main {
             jniLibs.srcDirs += ['../../../binaries/android/jniLibs']
             java.srcDirs += ['../../../java/android']
-            assets.srcDirs += ['../../../assets/models']
+            assets.srcDirs += ['../../../assets/models.tflite']
             assets.srcDirs += ['../../../assets/fonts']
         }
     }

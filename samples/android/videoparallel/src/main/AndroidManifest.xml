@@ -4,8 +4,7 @@
  Source code: https://github.com/DoubangoTelecom/ultimateALPR-SDK
  WebSite: https://www.doubango.org/webapps/alpr/
 -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.doubango.ultimateAlpr">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" /> <!-- Network permission need for license activation only. This line could be removed if you're not planning to activate any license. -->
@@ -16,9 +15,9 @@
     <application android:allowBackup="true"
         android:label="@string/app_name"
         android:icon="@drawable/ic_launcher"
-        android:theme="@style/MaterialTheme">
-
-        <activity android:name=".AlprVideoParallelActivity"
+        android:theme="@style/MaterialTheme"
+        >
+        <activity android:name="org.doubango.ultimateAlpr.AlprVideoParallelActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

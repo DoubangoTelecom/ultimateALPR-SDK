@@ -68,9 +68,6 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-import org.doubango.ultimateAlpr.R; // FIXME(dmi): must remove
-
-
 public class AlprCameraFragment extends Fragment
         implements ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -136,7 +133,6 @@ public class AlprCameraFragment extends Fragment
 
     private final AlprBackgroundTask mBackgroundTaskCamera = new AlprBackgroundTask();
     private final AlprBackgroundTask mBackgroundTaskDrawing = new AlprBackgroundTask();
-    private final AlprBackgroundTask mBackgroundTaskInference = new AlprBackgroundTask();
 
     /**
      * {@link CameraDevice.StateCallback} is called when {@link CameraDevice} changes its state.
@@ -253,16 +249,26 @@ public class AlprCameraFragment extends Fragment
         return new AlprCameraFragment(preferredSize, sink);
     }
 
+    /**
+     * Get the resource id without including videoparallel.R or videosequential.R
+     * @param name
+     * @param type
+     * @return
+     */
+    public int getResourceId(String name, String type) {
+        return getResources().getIdentifier(name, type, getActivity().getPackageName());
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_camera, container, false);
+        return inflater.inflate(getResourceId("fragment_camera", "layout"), container, false);
     }
 
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
-        mGLSurfaceView = (AlprGLSurfaceView) view.findViewById(R.id.glSurfaceView);
-        mPlateView = (AlprPlateView) view.findViewById(R.id.plateView);
+        mGLSurfaceView = (AlprGLSurfaceView) view.findViewById(getResourceId("glSurfaceView", "id"));
+        mPlateView = (AlprPlateView) view.findViewById(getResourceId("plateView", "id"));
         //mPlateView.setBackgroundColor(Color.RED);
     }
 
@@ -305,7 +311,7 @@ public class AlprCameraFragment extends Fragment
                                            @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CAMERA_PERMISSION) {
             if (grantResults.length != 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                ErrorDialog.newInstance(getString(R.string.request_permission))
+                ErrorDialog.newInstance(getString(getResourceId("request_permission", "string")))
                         .show(getChildFragmentManager(), FRAGMENT_DIALOG);
             }
         } else {
@@ -439,7 +445,7 @@ public class AlprCameraFragment extends Fragment
         } catch (NullPointerException e) {
             // Currently an NPE is thrown when the Camera2API is used but not supported on the
             // device this code runs.
-            ErrorDialog.newInstance(getString(R.string.camera_error))
+            ErrorDialog.newInstance(getString(getResourceId("camera_error", "string")))
                     .show(getChildFragmentManager(), FRAGMENT_DIALOG);
         }
     }
@@ -504,7 +510,6 @@ public class AlprCameraFragment extends Fragment
      * Starts a background threads
      */
     private void startBackgroundThreads() {
-        mBackgroundTaskInference.start("InferenceBackgroundThread");
         mBackgroundTaskDrawing.start("DrawingBackgroundThread");
         mBackgroundTaskCamera.start("CameraBackgroundThread");
     }
@@ -513,7 +518,6 @@ public class AlprCameraFragment extends Fragment
      * Stops the background threads
      */
     private void stopBackgroundThreads() {
-        mBackgroundTaskInference.stop();
         mBackgroundTaskDrawing.stop();
         mBackgroundTaskCamera.stop();
     }
@@ -664,7 +668,7 @@ public class AlprCameraFragment extends Fragment
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             final Fragment parent = getParentFragment();
             return new AlertDialog.Builder(getActivity())
-                    .setMessage(R.string.request_permission)
+                    .setMessage(getResources().getIdentifier("request_permission", "string", getActivity().getPackageName()))
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {

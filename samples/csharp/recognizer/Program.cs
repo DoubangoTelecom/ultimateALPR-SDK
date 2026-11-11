@@ -1,24 +1,24 @@
-﻿/* Copyright (C) 2011-2020 Doubango Telecom <https://www.doubango.org>
+﻿/* Copyright (C) 2011-2026 Doubango Telecom <https://www.doubango.org>
 * File author: Mamadou DIOP (Doubango Telecom, France).
 * License: For non commercial use only.
 * Source code: https://github.com/DoubangoTelecom/ultimateALPR-SDK
 * WebSite: https://www.doubango.org/webapps/alpr/
 */
+// Include ultimateALPR namespace
+using org.doubango.ultimateAlpr.Sdk;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 using System.Web.Script.Serialization;
-// Include ultimateALPR namespace
-using org.doubango.ultimateAlpr.Sdk;
 
 /*
 	https://github.com/DoubangoTelecom/ultimateALPR-SDK/blob/master/samples/c%2B%2B/recognizer/README.md
 	Usage: 
 		recognizer \
 			---image <path-to-image-with-to-recognize> \
-            [--assets <path-to-assets-folder>] \
-			[--rectify <whether-to-enable-rectification-layer:true/false>] \
+            --assets <path-to-assets-folder> \
             [--charset <recognition-charset:latin/korean/chinese>] \
 			[--tokenfile <path-to-license-token-file>] \
 			[--tokendata <base64-license-token-data>]
@@ -26,7 +26,6 @@ using org.doubango.ultimateAlpr.Sdk;
 		recognizer \
 			--image "ultimateALPR-SDK/assets/images/lic_us_1280x720.jpg" \
             --assets "ultimateALPR-SDK/assets" \
-			--rectify false \
             --charset "latin" \
 			--tokendata "xyz"
 */
@@ -63,7 +62,7 @@ namespace recognizer
          * pattern: folder path
          * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#debug-internal-data-path
          */
-        const String CONFIG_DEBUG_DEBUG_INTERNAL_DATA_PATH = ".";
+        const String CONFIG_DEBUG_INTERNAL_DATA_PATH = ".";
 
         /**
          * Defines the maximum number of threads to use.
@@ -79,89 +78,88 @@ namespace recognizer
         const int CONFIG_NUM_THREADS = -1;
 
         /**
-         * Whether to enable GPGPU computing. This will enable or disable GPGPU computing on the computer vision and deep learning libraries.
-         * On ARM devices this flag will be ignored when fixed-point (integer) math implementation exist for a well-defined function.
-         * For example, this function will be disabled for the bilinear scaling as we have a fixed-point SIMD accelerated implementation.
-         * Same for many deep learning parts as we’re using QINT8 quantized inference.
-         * JSON name: "gpgpu_enabled"
-         * Default: true
-         * type: bool
-         * pattern: true | false
-         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#gpgpu-enabled
-         */
-        const bool CONFIG_GPGPU_ENABLED = true;
-
-        /**
-         * The parallel processing method could introduce delay/latency in the delivery callback on low-end CPUs. 
-         * This parameter controls the maximum latency you can tolerate. The unit is number of frames. 
-         * The default value is -1 which means auto.
-         * JSON name: "max_latency"
+         * The parallel processing method could introduce delay/latency in the delivery callback on low-end CPUs. T
+         * his parameter controls the maximum latency you can tolerate. The unit is number of frames. The default value is -1 which means auto
+         * * JSON name: "max_latency"
          * Default: -1
          * type: int
          * pattern: [0, +inf[
          * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#max-latency
          */
-        const int CONFIG_MAX_LATENCY = -1;
-
-        /**
-         * Defines a charset (Alphabet) to use for the recognizer.
-         * JSON name: "charset"
-         * Default: "latin"
-         * type: string
-         * pattern: "latin" | "korean" | "chinese"
-         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#charset
-         */
-        const String CONFIG_CHARSET = "latin";
+        const int CONFIG_MAX_LATENCY = -1;        
 
         /**
          * Whether to enable Image Enhancement for Night-Vision (IENV).
          * IENV is explained at https://www.doubango.org/SDKs/anpr/docs/Features.html#features-imageenhancementfornightvision.
          *
-         * JSON name: "ienv_enabled"
+         * JSON name: "night_vision_enabled"
          * Default: false
          * type: bool
          * pattern: true | false
-         * Available since: 3.2.0
-         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#ienv-enabled
+         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#night-vision-enabled
          */
-        const bool CONFIG_IENV_ENABLED = false;
+        const bool CONFIG_NIGHT_VISION_ENABLED = false;
 
         /**
-         * Whether to use OpenVINO instead of Tensorflow as deep learning backend engine. OpenVINO is used for detection and classification but not for OCR. 
-         * OpenVINO is always faster than Tensorflow on Intel products (CPUs, VPUs, GPUs, FPGAs…) and we highly recommend using it. 
-         * We require a CPU with support for both AVX2 and FMA features before trying to load OpenVINO plugin (shared library). 
-         * OpenVINO will be disabled with a fallback on Tensorflow if these CPU features are not detected.
-         * JSON name: "openvino_enabled"
+         * Defines the activation type for the batching mode. |br| *auto* will let the SDK choose the appropriate value. 
+         * "on" will activate the batching while "off" will disable it. 
+         * The SDK would activate batching when the target hardware is a GPU, NPU or FPGA and deactivate the option on CPU. 
+         * Deactivating the batching means the parallel processing is used using CPU multi-threading.
+         *
+         * JSON name: "batching_mode"
+         * Default: "auto"
+         * type: string
+         * pattern: "auto" | "on" | "off"
+         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#batching-mode
+         */
+        const String CONFIG_BATCHING_MODE = "auto";
+
+        /**
+         * The backend string is a tuple defining the deeplearning framework to utilize and the acceleration hardware/software to activate. 
+         * Examples: "auto", "tflite[nnapi]", "onnx[cuda]", "vino[fpga]", "hailo[hailo8l]", "rknpu2[rk3588]", "trt"... 
+         * Check https://www.doubango.org/SDKs/anpr/docs/Architecture_overview.html#supported-backends for more information.
+         *
+         * JSON name: "backend"
+         * Default: "auto"
+         * type: string
+         * pattern: "framework"["acceleration"]
+         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#backend
+         */
+        const String CONFIG_BACKEND = "auto";
+
+        /**
+         * Defines the target platform. "mobile" will configure the SDK to focus on speed while "desktop" would focus on accuracy. 
+         * "auto" translates to "mobile" on ARM and "desktop" on x86_64.
+         *
+         * JSON name: "platform"
+         * Default: "auto"
+         * type: string
+         * pattern: "auto" | "mobile" | "desktop"
+         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#platform
+         */
+        const String CONFIG_PLATFORM = "auto";
+
+        /**
+         * Whether to enable assembler code to use SIMD acceleration (SSE, AVX, NEON).
+         *
+         * JSON name: "asm_enabled"
          * Default: true
          * type: bool
          * pattern: true | false
-         * Available since: 3.0.0
-         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino-enabled
+         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#asm-enabled
          */
-        const bool CONFIG_OPENVINO_ENABLED = true;
+        const bool CONFIG_ASM_ENABLED = true;
 
         /**
-         * OpenVINO device to use for computations. We recommend using "CPU" which is always correct. 
-         * If you have an Intel GPU, VPU or FPGA, then you can change this value. 
-         * If you try to use any other value than "CPU" without having the right device, then OpenVINO will be completely disabled with a fallback on Tensorflow. 
-         * JSON name: "openvino_device"
-         * Default: "CPU"
-         * type: string
-         * pattern: "GNA" | "HETERO" | "CPU" | "MULTI" | "GPU" | "MYRIAD" | "HDDL " | "FPGA"
-         * Available since: 3.0.0
-         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino-device
+         * Whether to enable intrinsic code to use SIMD acceleration (SSE, AVX, NEON).
+         *
+         * JSON name: "intrin_enabled"
+         * Default: true
+         * type: bool
+         * pattern: true | false
+         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#intrin-enabled
          */
-        const String CONFIG_OPENVINO_DEVICE = "CPU";
-
-        /**
-         * Define a threshold for the detection score. Any detection with a score below that threshold will be ignored. 0.f being poor confidence and 1.f excellent confidence.
-         * JSON name: "detect_minscore",
-         * Default: 0.3f
-         * type: float
-         * pattern: ]0.f, 1.f]
-         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#detect-minscore
-         */
-        const double CONFIG_DETECT_MINSCORE = 0.3;
+        const bool CONFIG_INTRIN_ENABLED = true;
 
         /**
          * Defines the Region Of Interest (ROI) for the detector. Any pixels outside region of interest will be ignored by the detector.
@@ -175,27 +173,26 @@ namespace recognizer
         static readonly IList<float> CONFIG_DETECT_ROI = new[] { 0f, 0f, 0f, 0f };
 
         /**
-         * Whether to return cars with no plate. By default any car without plate will be silently ignored.
-         * To filter false-positives: https://www.doubango.org/SDKs/anpr/docs/Known_issues.html#false-positives-for-cars-with-no-plate
-         * JSON name: "car_noplate_detect_enabled"
-         * Default: false
-         * type: bool
-         * pattern: true | false
-         * Available since: 3.2.0
-         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#car-noplate-detect-enabled
+         * Define a threshold for the detection score. Any detection with a score below that threshold will be ignored. 0.f being poor confidence and 1.f excellent confidence.
+         * JSON name: "detect_minscore",
+         * Default: 0.4f
+         * type: float
+         * pattern: ]0.f, 1.f]
+         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#detect-minscore
          */
-        const bool CONFIG_CAR_NOPLATE_DETECT_ENABLED = false;
+        const double CONFIG_DETECT_MINSCORE = 0.4;
 
         /**
-        * Defines a threshold for the detection score for cars with no plate. Any detection with a score below that threshold will be ignored. 0.f being poor confidence and 1.f excellent confidence.
-        * JSON name: "car_noplate_detect_min_score",
-        * Default: 0.8f
-        * type: float
-        * pattern: [0.f, 1.f]
-        * Available since: 3.2.0
-        * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#car-noplate-detect-min-score
-        */
-        const double CONFIG_CAR_NOPLATE_DETECT_MINSCORE = 0.8; // 80%
+         * Defines a threshold for the detection IoU (Intersection over union) for the boxes. 
+         * This threshold is used in the `NMS (Non-Maximum Suppression) step. |br| 
+         * The value range is ]0.f, 1.f], 0.f being no overlap and 1.f perfect overlap.
+         * JSON name: "detect_miniou",
+         * Default: 0.4f
+         * type: float
+         * pattern: ]0.f, 1.f]
+         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#detect-miniou
+         */
+        const double CONFIG_DETECT_MINIOU = 0.4;
 
         /**
          * Whether to enable pyramidal search. Pyramidal search is an advanced feature to accurately detect very small or far away license plates.
@@ -208,23 +205,11 @@ namespace recognizer
         const bool CONFIG_PYRAMIDAL_SEARCH_ENABLED = true;
 
         /**
-         * Defines how sensitive the pyramidal search anchor resolution function should be. The higher this value is, the higher the number of pyramid levels will be.
-         * More levels means better accuracy but higher CPU usage and inference time.
-         * Pyramidal search will be disabled if this value is equal to 0.
-         * JSON name: "pyramidal_search_sensitivity"
-         * Default: 0.28f
-         * type: float
-         * pattern: [0.f, 1.f]
-         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#pyramidal-search-sensitivity
-         */
-        const double CONFIG_PYRAMIDAL_SEARCH_SENSITIVITY = 0.33; // 33%
-
-        /**
          * Defines a threshold for the detection score associated to the plates retrieved after pyramidal search.
          * Any detection with a score below that threshold will be ignored.
          * 0.f being poor confidence and 1.f excellent confidence.
          * JSON name: "pyramidal_search_minscore"
-         * Default: 0.8f
+         * Default: 0.3f
          * type: float
          * pattern: ]0.f, 1.f]
          * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#pyramidal-search-minscore
@@ -237,10 +222,22 @@ namespace recognizer
          * JSON name: "pyramidal_search_min_image_size_inpixels"
          * Default: 800
          * type: integer
-         * pattern: [0, inf]
+         * pattern: [0, inf[
          * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#pyramidal-search-min-image-size-inpixels
          */
         const int CONFIG_PYRAMIDAL_SEARCH_MIN_IMAGE_SIZE_INPIXELS = 800; // pixels
+
+        /**
+         * Defines a threshold for the pyramidal search detection IoU (Intersection over union) for the boxes. 
+         * This threshold is used in the `NMS (Non-Maximum Suppression) step. |br| 
+         * The value range is ]0.f, 1.f], 0.f being no overlap and 1.f perfect overlap.
+         * JSON name: "pyramidal_search_miniou",
+         * Default: 0.4f
+         * type: float
+         * pattern: ]0.f, 1.f]
+         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#pyramidal-search-miniou
+         */
+        const double CONFIG_PYRAMIDAL_SEARCH_MINIOU = 0.4;
 
         /**
          * Whether to enable License Plate Country Identification (LPCI) function (https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci). 
@@ -249,10 +246,19 @@ namespace recognizer
          * Default: false
          * type: bool
          * pattern: true | false
-         * Available since: 3.0.0
          * More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-lpci-enabled
          */
         const bool CONFIG_KLASS_LPCI_ENABLED = false;
+
+        /**
+         * License Plate Country Identification (LPCI) is a classification problem and the result is the top K most probable classes. This configuration entry defines K.
+         * JSON name: "klass_lpci_topk"
+         * Default: 5
+         * type: integer
+         * pattern: [1, inf[
+         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-lpci-topk
+         */
+        const int CONFIG_KLASS_LPCI_TOPK = 5;
 
         /**
          * Whether to enable Vehicle Color Recognition (VCR) function (https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr). 
@@ -261,10 +267,19 @@ namespace recognizer
          * Default: false
          * type: bool
          * pattern: true | false
-         * Available since: 3.0.0
          * More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vcr-enabled
          */
         const bool CONFIG_KLASS_VCR_ENABLED = false;
+
+        /**
+         * Vehicle Color Recognition (VCR) is a classification problem and the result is the top K most probable classes. This configuration entry defines K.
+         * JSON name: "klass_vcr_topk"
+         * Default: 5
+         * type: integer
+         * pattern: [1, inf[
+         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vcr-topk
+         */
+        const int CONFIG_KLASS_VCR_TOPK = 5;
 
         /**
          * Whether to enable Vehicle Make Model Recognition (VMMR) function (https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr).
@@ -273,10 +288,19 @@ namespace recognizer
          * Default: false
          * type: bool
          * pattern: true | false
-         * Available since: 3.0.0
          * More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vmmr-enabled
          */
         const bool CONFIG_KLASS_VMMR_ENABLED = false;
+
+        /**
+         * Vehicle Make Model Recognition (VMMR) is a classification problem and the result is the top K most probable classes. This configuration entry defines K.
+         * JSON name: "klass_vmmr_topk"
+         * Default: 5
+         * type: integer
+         * pattern: [1, inf[
+         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vmmr-topk
+         */
+        const int CONFIG_KLASS_VMMR_TOPK = 5;
 
         /**
          * Whether to enable Vehicle Body Style Recognition (VBSR) function (https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehiclebodystylerecognition).
@@ -285,35 +309,39 @@ namespace recognizer
          * Default: false
          * type: bool
          * pattern: true | false
-         * Available since: 3.2.0
          * More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vbsr-enabled
          */
         const bool CONFIG_KLASS_VBSR_ENABLED = false;
 
         /**
-         * 1/G coefficient value to use for gamma correction operation in order to enhance the car color before applying VCR classification. 
-         * More information on gamma correction could be found at https://en.wikipedia.org/wiki/Gamma_correction. 
-         * Values higher than 1.0f mean lighter and lower than 1.0f mean darker. Value equal to 1.0f mean bypass gamma correction operation.
-         * This parameter in action: https://www.doubango.org/SDKs/anpr/docs/Improving_the_accuracy.html#gamma-correction
-         * * JSON name: "recogn_minscore"
-         * Default: 1.5
-         * type: float
-         * pattern: [0.f, inf[
-         * Available since: 3.0.0
-         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vcr-gamma
+         * Vehicle Body Style Recognition (VBSR)  is a classification problem and the result is the top K most probable classes. This configuration entry defines K.
+         * JSON name: "klass_vbsr_topk"
+         * Default: 5
+         * type: integer
+         * pattern: [1, inf[
+         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vbsr-topk
          */
-        const double CONFIG_KLASS_VCR_GAMMA = 1.5;
+        const int CONFIG_KLASS_VBSR_TOPK = 5;
 
         /**
-         * Define a threshold for the overall recognition score. Any recognition with a score below that threshold will be ignored.
-         * The overall score is computed based on "recogn_score_type". 0.f being poor confidence and 1.f excellent confidence.
-         * JSON name: "recogn_minscore"
-         * Default: 0.3f
-         * type: float
-         * pattern: ]0.f, 1.f]
-         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#recogn-minscore
+         * Whether to enable License Plate Recognition (LPR) function.
+         * JSON name: "recogn_enabled"
+         * Default: true
+         * type: bool
+         * pattern: true | false
+         * More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#recogn-enabled
          */
-        const double CONFIG_RECOGN_MINSCORE = 0.2; // 20%
+        const bool CONFIG_RECOGN_ENABLED = true;
+
+        /**
+         * Defines a charset (Alphabet) to use for the recognizer.
+         * JSON name: "recogn_charset"
+         * Default: "latin"
+         * type: string
+         * pattern: "latin" | "korean" | "chinese" | "brazilian" | "israeli"
+         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#recogn-charset
+         */
+        const String CONFIG_RECOGN_CHARSET = "latin";
 
         /**
          * Defines the overall score type. The recognizer outputs a recognition score ([0.f, 1.f]) for every character in the license plate.
@@ -323,29 +351,29 @@ namespace recognizer
          * - "median": Takes the median score.
          * - "max": Takes the maximum score.
          * - "minmax": Takes (max + min) * 0.5f.
+         * - "cumprod": Cumulative product(https://en.cppreference.com/cpp/algorithm/accumulate).
          * The "min" score is the more robust type as it ensure that every character have at least a certain confidence value.
          * The median score is the default type as it provide a higher recall. In production we recommend using min type.
          * JSON name: "recogn_score_type"
-         * Default: "median"
+         * Default: "cumprod"
          * Recommended: "min"
          * type: string
+         * pattern: "min" | "mean" | "median" | "max" | "minmax" | "cumprod"
          *  More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#recogn-score-type
          */
-        const String CONFIG_RECOGN_SCORE_TYPE = "min";
+        const String CONFIG_RECOGN_SCORE_TYPE = "cumprod";
 
         /**
-         * Whether to add rectification layer between the detector’s output and the recognizer’s input. A rectification layer is used to suppress the distortion.
-         * A plate is distorted when it’s skewed and/or slanted. The rectification layer will deslant and deskew the plate to make it straight which make the recognition more accurate.
-         * Please note that you only need to enable this feature when the license plates are highly distorted. The implementation can handle moderate distortion without a rectification layer.
-         * The rectification layer adds many CPU intensive operations to the pipeline which decrease the frame rate.
-         * More info on the rectification layer could be found at https://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html#rectificationlayer
-         * JSON name: "recogn_rectify_enabled"
-         * Default: false
-         * Recommended: false
-         * type: string
-         * More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#recogn-rectify-enabled
+         * Define a threshold for the overall recognition score. Any recognition with a score below that threshold will be ignored.
+         * The overall score is computed based on "recogn_score_type". 0.f being poor confidence and 1.f excellent confidence.
+         * JSON name: "recogn_minscore"
+         * Default: 0.2f
+         * type: float
+         * pattern: ]0.f, 1.f]
+         * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#recogn-minscore
          */
-        const bool CONFIG_RECOGN_RECTIFY_ENABLED = true;
+        const double CONFIG_RECOGN_MINSCORE = 0.2; // 20%
+
 
         static void Main(String[] args)
         {
@@ -360,13 +388,17 @@ namespace recognizer
             }
             // Extract assets folder
             // https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#assets-folder
-            String assetsFolder = parameters.ContainsKey("--assets")
-                ? parameters["--assets"] : String.Empty;
+            if (!parameters.ContainsKey("--assets"))
+            {
+                Console.Error.WriteLine("--assets required");
+                throw new Exception("--assets required");
+            }
+            String assetsFolder = parameters["--assets"];
 
             // Charset - Optional
             // https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#charset
             String charsetAkaAlphabet = parameters.ContainsKey("--charset")
-                ? parameters["--charset"] : CONFIG_CHARSET;
+                ? parameters["--charset"] : CONFIG_RECOGN_CHARSET;
 
             // License data - Optional
             // https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#license-token-data
@@ -418,6 +450,7 @@ namespace recognizer
             {
                 // For packed formats (RGB-family): https://www.doubango.org/SDKs/anpr/docs/cpp-api.html#_CPPv4N15ultimateAlprSdk16UltAlprSdkEngine7processEK22ULTALPR_SDK_IMAGE_TYPEPKvK6size_tK6size_tK6size_tKi
                 // For YUV formats (data from camera): https://www.doubango.org/SDKs/anpr/docs/cpp-api.html#_CPPv4N15ultimateAlprSdk16UltAlprSdkEngine7processEK22ULTALPR_SDK_IMAGE_TYPEPKvPKvPKvK6size_tK6size_tK6size_tK6size_tK6size_tK6size_tKi
+                // For compressed data (jpeg, png...): https://www.doubango.org/SDKs/anpr/docs/cpp-api.html#_CPPv4N15ultimateAlprSdk16UltAlprSdkEngine7processEPKvK6size_t
                 result = CheckResult("Process", UltAlprSdkEngine.process(
                         (bytesPerPixel == 1) ? ULTALPR_SDK_IMAGE_TYPE.ULTALPR_SDK_IMAGE_TYPE_Y : (bytesPerPixel == 4 ? ULTALPR_SDK_IMAGE_TYPE.ULTALPR_SDK_IMAGE_TYPE_BGRA32 : ULTALPR_SDK_IMAGE_TYPE.ULTALPR_SDK_IMAGE_TYPE_BGR24),
                         imageData.Scan0,
@@ -487,39 +520,45 @@ namespace recognizer
             {
                 debug_level = CONFIG_DEBUG_LEVEL,
                 debug_write_input_image_enabled = CONFIG_DEBUG_WRITE_INPUT_IMAGE,
-                debug_internal_data_path = CONFIG_DEBUG_DEBUG_INTERNAL_DATA_PATH,
+                debug_internal_data_path = CONFIG_DEBUG_INTERNAL_DATA_PATH,
 
                 num_threads = CONFIG_NUM_THREADS,
-                gpgpu_enabled = CONFIG_GPGPU_ENABLED,
                 max_latency = CONFIG_MAX_LATENCY,
-                ienv_enabled = CONFIG_IENV_ENABLED,
-                openvino_enabled = CONFIG_OPENVINO_ENABLED,
-                openvino_device = CONFIG_OPENVINO_DEVICE,
+                night_vision_enabled = CONFIG_NIGHT_VISION_ENABLED,
+                batching_mode = CONFIG_BATCHING_MODE,
+                backend = CONFIG_BACKEND,
+                platform = CONFIG_PLATFORM,
+                asm_enabled = CONFIG_ASM_ENABLED,
+                intrin_enabled = CONFIG_INTRIN_ENABLED,
 
-                detect_minscore = CONFIG_DETECT_MINSCORE,
                 detect_roi = CONFIG_DETECT_ROI,
-
-                car_noplate_detect_enabled = CONFIG_CAR_NOPLATE_DETECT_ENABLED,
-                car_noplate_detect_min_score = CONFIG_CAR_NOPLATE_DETECT_MINSCORE,
+                detect_minscore = CONFIG_DETECT_MINSCORE,
+                detect_miniou = CONFIG_DETECT_MINIOU,
 
                 pyramidal_search_enabled = CONFIG_PYRAMIDAL_SEARCH_ENABLED,
-                pyramidal_search_sensitivity = CONFIG_PYRAMIDAL_SEARCH_SENSITIVITY,
                 pyramidal_search_minscore = CONFIG_PYRAMIDAL_SEARCH_MINSCORE,
                 pyramidal_search_min_image_size_inpixels = CONFIG_PYRAMIDAL_SEARCH_MIN_IMAGE_SIZE_INPIXELS,
+                pyramidal_search_miniou = CONFIG_PYRAMIDAL_SEARCH_MINIOU,
 
                 klass_lpci_enabled = CONFIG_KLASS_LPCI_ENABLED,
-                klass_vcr_enabled = CONFIG_KLASS_VCR_ENABLED,
-                klass_vmmr_enabled = CONFIG_KLASS_VMMR_ENABLED,
-                klass_vbsr_enabled = CONFIG_KLASS_VBSR_ENABLED,
-                klass_vcr_gamma = CONFIG_KLASS_VCR_GAMMA,
+                klass_lpci_topk = CONFIG_KLASS_LPCI_TOPK,
 
-                recogn_minscore = CONFIG_RECOGN_MINSCORE,
+                klass_vcr_enabled = CONFIG_KLASS_VCR_ENABLED,
+                klass_vcr_topk = CONFIG_KLASS_VCR_TOPK,
+
+                klass_vmmr_enabled = CONFIG_KLASS_VMMR_ENABLED,
+                klass_vmmr_topk = CONFIG_KLASS_VMMR_TOPK,
+
+                klass_vbsr_enabled = CONFIG_KLASS_VBSR_ENABLED,
+                klass_vbsr_topk = CONFIG_KLASS_VBSR_TOPK,
+
+                recogn_enabled = CONFIG_RECOGN_ENABLED,
                 recogn_score_type = CONFIG_RECOGN_SCORE_TYPE,
-                recogn_rectify_enabled = CONFIG_RECOGN_RECTIFY_ENABLED,
+                recogn_minscore = CONFIG_RECOGN_MINSCORE,
 
                 // Value added using command line args
                 assets_folder = assetsFolder,
-                charset = charsetAkaAlphabet,
+                recogn_charset = charsetAkaAlphabet,
                 license_token_data = tokenDataBase64,
             });
         }        

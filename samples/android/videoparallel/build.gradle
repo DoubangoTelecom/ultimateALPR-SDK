@@ -1,17 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
-
+    compileSdkVersion 30
+    namespace 'org.doubango.ultimateAlpr.sample.videoparallel'
 
     defaultConfig {
-        applicationId "org.doubango.ultimateAlpr"
-        minSdkVersion 21
-        targetSdkVersion 28
+        applicationId "org.doubango.ultimateAlpr.sample.videoparallel"
+        minSdkVersion 29
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -24,6 +22,12 @@ android {
     compileOptions {
         sourceCompatibility = '1.8'
         targetCompatibility = '1.8'
+    }
+
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true
+        }
     }
 
     sourceSets {

@@ -1,4 +1,4 @@
-/* Copyright (C) 2011-2020 Doubango Telecom <https://www.doubango.org>
+/* Copyright (C) 2011-2026 Doubango Telecom <https://www.doubango.org>
 * File author: Mamadou DIOP (Doubango Telecom, France).
 * License: For non commercial use only.
 * Source code: https://github.com/DoubangoTelecom/ultimateALPR-SDK
@@ -10,52 +10,53 @@
 	https://github.com/DoubangoTelecom/ultimateALPR/blob/master/SDK_dist/samples/c++/benchmark/README.md
 	Usage: 
 		benchmark \
-			--positive <path-to-image-with-a-plate> \
-			--negative <path-to-image-without-a-plate> \
-			[--assets <path-to-assets-folder>] \
+			--image <path-to-image-with-to-benchmark> \
+			--assets <path-to-assets-folder> \
 			[--charset <recognition-charset:latin/korean/chinese>] \
-			[--num_threads <number of threads:[1, inf]>] \
-			[--ienv_enabled <whether-to-enable-IENV:true/false>] \
-			[--openvino_enabled <whether-to-enable-OpenVINO:true/false>] \
-			[--openvino_device <openvino_device-to-use>] \
-			[--npu_enabled <whether-to-enable-NPU-acceleration:true/false>] \
-			[--trt_enabled <whether-to-enable-NPU-acceleration:true/false>] \
-			[--simd_enabled <whether-to-enable-SIMD-acceleration:true/false>] \
+			[--num_threads <number-of-threads:[1, inf]>] \
+			[--nvision_enabled <whether-to-enable-IENV:true/false>] \
+			[--platform <target-platform:auto/mobile/desktop>] \
+			[--batching_mode <batching-mode:auto/on/off>] \
+			[--backend <backend:auto,onnx,tflite,rknn2,trt,vino...>] \
+			[--pysearch_enabled <whether-to-pyramidal-search:true/false>]
+			[--recogn_enabled <whether-to-enabled-LPR:true/false>]
 			[--klass_lpci_enabled <whether-to-enable-LPCI:true/false>] \
 			[--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \
 			[--klass_vmmr_enabled <whether-to-enable-VMMR:true/false>] \
 			[--klass_vbsr_enabled <whether-to-enable-VBSR:true/false>] \
 			[--loops <number-of-times-to-run-the-loop:[1, inf]>] \
-			[--rate <positive-rate:[0.0, 1.0]>] \
 			[--parallel <whether-to-enable-parallel-mode:true/false>] \
-			[--rectify <whether-to-enable-rectification-layer:true/false>] \
 			[--tokenfile <path-to-license-token-file>] \
 			[--tokendata <base64-license-token-data>]
 
 	Example:
 		benchmark \
-			--positive C:/Projects/GitHub/ultimate/ultimateALPR/SDK_dist/assets/images/lic_us_1280x720.jpg \
-			--negative C:/Projects/GitHub/ultimate/ultimateALPR/SDK_dist/assets/images/london_traffic.jpg \
+			--image C:/Projects/GitHub/ultimate/ultimateALPR/SDK_dist/assets/images/lic_us_1280x720.jpg \
 			--loops 100 \
-			--rate 0.2 \
 			--parallel true \
-			--rectify false \
 			--assets C:/Projects/GitHub/ultimate/ultimateALPR/SDK_dist/assets \
 			--charset latin \
 			--tokenfile C:/Projects/GitHub/ultimate/ultimateALPR/SDK_dev/tokens/windows-iMac.lic
 */
 
 #include <ultimateALPR-SDK-API-PUBLIC.h>
-#include "../alpr_utils.h"
+
 #include <chrono>
 #include <vector>
 #include <algorithm>
 #include <random>
 #include <mutex>
+#include <map>
+#include <sys/stat.h>
 #include <condition_variable>
 #if defined(_WIN32)
-#include <algorithm> // std::replace
+#	include <Windows.h> // SetConsoleOutputCP
 #endif
+
+// Not part of the SDK, used to decode images -> https://github.com/nothings/stb
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_STATIC
+#include "stb_image.h"
 
 using namespace ultimateAlprSdk;
 
@@ -66,28 +67,29 @@ static const char* __jsonConfig =
 "\"debug_write_input_image_enabled\": false,"
 "\"debug_internal_data_path\": \".\","
 ""
-"\"gpgpu_enabled\": true,"
 "\"asm_enabled\": true,"
 "\"intrin_enabled\": true,"
-"\"max_latency\": -1,"
-""
-"\"klass_vcr_gamma\": 1.5,"
-""
-"\"detect_tf_gpu_memory_alloc_max_percent\": 1.0,"
-"\"recogn_tf_gpu_memory_alloc_max_percent\": 1.0,"
-"\"pyramidal_search_tf_gpu_memory_alloc_max_percent\": 1.0,"
 ""
 "\"detect_roi\": [0, 0, 0, 0],"
-"\"detect_minscore\": 0.1,"
+"\"detect_minscore\": 0.4,"
+"\"detect_miniou\": 0.4,"
 ""
-"\"pyramidal_search_enabled\": false,"
-"\"pyramidal_search_sensitivity\": 0.28,"
-"\"pyramidal_search_minscore\": 0.8,"
+"\"pyramidal_search_minscore\": 0.3,"
+"\"pyramidal_search_miniou\": 0.4,"
 "\"pyramidal_search_min_image_size_inpixels\": 800,"
 ""
-"\"recogn_minscore\": 0.3,"
-"\"recogn_score_type\": \"min\""
+"\"recogn_minscore\": 0.2,"
+"\"recogn_score_type\": \"cumprod\","
+""
+"\"klass_lpci_topk\": 5,"
+""
+"\"klass_vcr_topk\": 5,"
+""
+"\"klass_vmmr_topk\": 5,"
+""
+"\"klass_vbsr_topk\": 5"
 "";
+
 
 // Asset manager used on Android to files in "assets" folder
 #if ULTALPR_SDK_OS_ANDROID 
@@ -96,21 +98,25 @@ static const char* __jsonConfig =
 #	define ASSET_MGR_PARAM() 
 #endif /* ULTALPR_SDK_OS_ANDROID */
 
-// Including <Windows.h> add clashes between "std::max" and "::max"
-#define ULTAPR_MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define NUM_WARMUP_LOOPS	30 // Number of loops for warmup, should  be >> 1 to reach or parallel threads
 
 /*
 * Parallel callback function used for notification. Not mandatory.
 * More info about parallel delivery: https://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html
 */
+static std::string parallelState;
 static size_t parallelNotifCount = 0;
 static std::condition_variable parallelNotifCondVar;
 class MyUltAlprSdkParallelDeliveryCallback : public UltAlprSdkParallelDeliveryCallback {
+public:
+	MyUltAlprSdkParallelDeliveryCallback(const void* userData = nullptr) : m_pMyDummyData(userData) {}
 	virtual void onNewResult(const UltAlprSdkResult* result) const override {
+		// Use m_pMyDummyData here if you want
 		ULTALPR_SDK_ASSERT(result != nullptr);
 		const std::string& json = result->json();
-		// Printing to the console could be very slow and delayed -> stop displaying the result as soon as all plates are processed
-		ULTALPR_SDK_PRINT_INFO("MyUltAlprSdkParallelDeliveryCallback::onNewResult(%d, %s, %zu): %s",
+		// Printing to the console could be very slow and delayed -> stop displaying the result as soon as all faces are processed
+		ULTALPR_SDK_PRINT_INFO("[%s] MyUltAlprSdkParallelDeliveryCallback::onNewResult(%d, %s, %zu): %s",
+			parallelState.c_str(),
 			result->code(),
 			result->phrase(),
 			++parallelNotifCount,
@@ -118,110 +124,112 @@ class MyUltAlprSdkParallelDeliveryCallback : public UltAlprSdkParallelDeliveryCa
 		);
 		parallelNotifCondVar.notify_one();
 	}
+private:
+	const void* m_pMyDummyData;
+};
+
+struct FileInfo {
+	void* uncompressedData = nullptr;
+	size_t width = 0;
+	size_t height = 0;
+	ULTALPR_SDK_IMAGE_TYPE type;
+	virtual ~FileInfo() {
+		release();
+	}
+	void release() {
+		if (uncompressedData) {
+			free(uncompressedData);
+			uncompressedData = nullptr;
+		}
+	}
+	inline bool isValid() const {
+		return (uncompressedData != nullptr && width && height);
+	}
 };
 
 static void printUsage(const std::string& message = "");
+static bool parseArgs(int argc, char* argv[], std::map<std::string, std::string >& values);
+static bool readFile(const std::string& path, FileInfo& file);
+static bool checkResult(const UltAlprSdkResult& result);
 
 /*
 * Entry point
 */
 int main(int argc, char *argv[])
 {
+	// Activate UT8 display
+#if defined(_WIN32)
+	SetConsoleOutputCP(CP_UTF8);
+#endif
+
 	// local variables
 	UltAlprSdkResult result;
-	MyUltAlprSdkParallelDeliveryCallback parallelDeliveryCallbackCallback;
 	std::string assetsFolder, licenseTokenData, licenseTokenFile;
+	bool isRecognEnabled = true;
+	bool isNightVisionEnabled = false;
+	bool isPySearchEnabled = false;
 	bool isParallelDeliveryEnabled = true;
-	std::string numThreads = "-1";
-	bool isRectificationEnabled = false;
-	bool isIENVEnabled = false;
-	bool isOpenVinoEnabled =
-#if defined(__arm__) || defined(__thumb__) || defined(__TARGET_ARCH_ARM) || defined(__TARGET_ARCH_THUMB) || defined(_ARM) || defined(_M_ARM) || defined(_M_ARMT) || defined(__arm) || defined(__aarch64__)
-		false;
-#else // x86-64
-		true;
-#endif
-	bool isNpuEnabled = true; // Amlogic, NXP...
-	bool isTensorRTEnabled = false; // NVIDIA TensorRT
-	bool isSimdEnabled = true; // Assembler and Intrinsics (SSE, AVX, MMX, NEON...)
 	bool isKlassLPCI_Enabled = false;
 	bool isKlassVCR_Enabled = false;
 	bool isKlassVMMR_Enabled = false;
 	bool isKlassVBSR_Enabled = false;
+	std::string platform = "auto";
 	std::string charset = "latin";
-	std::string openvinoDevice = "CPU";
-	size_t loopCount = 100;
-	double percentPositives = .2; // 20%
-	std::string pathFilePositive;
-	std::string pathFileNegative;
+	std::string backend = "auto"; // auto, onnx, onnx[cuda], tflite, tflite[xnnpack], trt, vino...
+	std::string batching_mode = "auto"; // auto, on, off
+#if defined(__arm__) || defined(__thumb__) || defined(__TARGET_ARCH_ARM) || defined(__TARGET_ARCH_THUMB) || defined(_ARM) || defined(_M_ARM) || defined(_M_ARMT) || defined(__arm) || defined(__aarch64__)
+	size_t loopsCount = 100;
+#else
+	size_t loopsCount = 500;
+#endif
+	int numThreads = -1;
+	int maxLatency = -1;
+	std::string pathFileImage;
 
 	// Parsing args
 	std::map<std::string, std::string > args;
-	if (!alprParseArgs(argc, argv, args)) {
+	if (!parseArgs(argc, argv, args)) {
 		printUsage();
 		return -1;
 	}
-	if (args.find("--positive") == args.end()) {
-		printUsage("--positive required");
+	if (args.find("--image") == args.end()) {
+		printUsage("--image required");
 		return -1;
 	}
-	if (args.find("--negative") == args.end()) {
-		printUsage("--negative required");
-		return -1;
-	}
-	pathFilePositive = args["--positive"];
-	pathFileNegative = args["--negative"];
-	if (args.find("--rate") != args.end()) {
-		const double rate = std::atof(args["--rate"].c_str());
-		if (rate > 1.0 || rate < 0.0) {
-			printUsage("--rate must be within [0.0, 1.0]");
-			return -1;
-		}
-		percentPositives = rate;
-	}
-	if (args.find("--loops") != args.end()) {
-		const int loops = std::atoi(args["--loops"].c_str());
-		if (loops < 1) {
-			printUsage("--loops must be within [1, inf]");
-			return -1;
-		}
-		loopCount = static_cast<size_t>(loops);
-	}
+	pathFileImage = args["--image"];
+
 	if (args.find("--parallel") != args.end()) {
 		isParallelDeliveryEnabled = (args["--parallel"].compare("true") == 0);
 	}
-	if (args.find("--assets") != args.end()) {
-		assetsFolder = args["--assets"];
+	if (args.find("--assets") == args.end()) {
+		printUsage("--assets required");
+		return -1;
+	}
+	assetsFolder = args["--assets"];
 #if defined(_WIN32)
-		std::replace(assetsFolder.begin(), assetsFolder.end(), '\\', '/');
+	std::replace(assetsFolder.begin(), assetsFolder.end(), '\\', '/');
 #endif
+
+	if (args.find("--platform") != args.end()) {
+		platform = args["--platform"];
 	}
 	if (args.find("--charset") != args.end()) {
 		charset = args["--charset"];
 	}
-	if (args.find("--num_threads") != args.end()) {
-		numThreads = args["--num_threads"];
+	if (args.find("--backend") != args.end()) {
+		backend = args["--backend"];
 	}
-	if (args.find("--rectify") != args.end()) {
-		isRectificationEnabled = (args["--rectify"].compare("true") == 0);
+	if (args.find("--batching_mode") != args.end()) {
+		batching_mode = args["--batching_mode"];
 	}
-	if (args.find("--ienv_enabled") != args.end()) {
-		isIENVEnabled = (args["--ienv_enabled"].compare("true") == 0);
+	if (args.find("--recogn_enabled") != args.end()) {
+		isRecognEnabled = (args["--recogn_enabled"].compare("true") == 0);
 	}
-	if (args.find("--openvino_enabled") != args.end()) {
-		isOpenVinoEnabled = (args["--openvino_enabled"].compare("true") == 0);
+	if (args.find("--nvision_enabled") != args.end()) {
+		isNightVisionEnabled = (args["--nvision_enabled"].compare("true") == 0);
 	}
-	if (args.find("--openvino_device") != args.end()) {
-		openvinoDevice = args["--openvino_device"];
-	}
-	if (args.find("--npu_enabled") != args.end()) {
-		isNpuEnabled = (args["--npu_enabled"].compare("true") == 0);
-	}
-	if (args.find("--trt_enabled") != args.end()) {
-		isTensorRTEnabled = (args["--trt_enabled"].compare("true") == 0);
-	}
-	if (args.find("--simd_enabled") != args.end()) {
-		isSimdEnabled = (args["--simd_enabled"].compare("true") == 0);
+	if (args.find("--pysearch_enabled") != args.end()) {
+		isPySearchEnabled = (args["--pysearch_enabled"].compare("true") == 0);
 	}
 	if (args.find("--klass_lpci_enabled") != args.end()) {
 		isKlassLPCI_Enabled = (args["--klass_lpci_enabled"].compare("true") == 0);
@@ -244,111 +252,125 @@ int main(int argc, char *argv[])
 	if (args.find("--tokendata") != args.end()) {
 		licenseTokenData = args["--tokendata"];
 	}
-	
+	if (args.find("--num_threads") != args.end()) {
+		numThreads = std::atoi(args["--num_threads"].c_str());
+	}
+	if (args.find("--max_latency") != args.end()) {
+		maxLatency = std::atoi(args["--max_latency"].c_str());
+	}
+	if (args.find("--loops") != args.end()) {
+		const int loops = std::atoi(args["--loops"].c_str());
+		if (loops < 1) {
+			printUsage("--loops must be within [1, inf]");
+			return -1;
+		}
+		loopsCount = static_cast<size_t>(loops);
+	}
 
 	// Update JSON config
 	std::string jsonConfig = __jsonConfig;
 	if (!assetsFolder.empty()) {
 		jsonConfig += std::string(",\"assets_folder\": \"") + assetsFolder + std::string("\"");
 	}
+	if (!platform.empty()) {
+		jsonConfig += std::string(",\"platform\": \"") + platform + std::string("\"");
+	}
+	if (!backend.empty()) {
+		jsonConfig += std::string(",\"backend\": \"") + backend + std::string("\"");
+	}
+	if (!batching_mode.empty()) {
+		jsonConfig += std::string(",\"batching_mode\": \"") + batching_mode + std::string("\"");
+	}
 	if (!charset.empty()) {
-		jsonConfig += std::string(",\"charset\": \"") + charset + std::string("\"");
+		jsonConfig += std::string(",\"recogn_charset\": \"") + charset + std::string("\"");
 	}
-	jsonConfig += std::string(",\"num_threads\": ") + (numThreads);
-	jsonConfig += std::string(",\"recogn_rectify_enabled\": ") + (isRectificationEnabled ? "true" : "false");	
-	jsonConfig += std::string(",\"ienv_enabled\": ") + (isIENVEnabled ? "true" : "false");
-	jsonConfig += std::string(",\"openvino_enabled\": ") + (isOpenVinoEnabled ? "true" : "false");
-	if (!openvinoDevice.empty()) {
-		jsonConfig += std::string(",\"openvino_device\": \"") + openvinoDevice + std::string("\"");
-	}
-	jsonConfig += std::string(",\"npu_enabled\": ") + (isNpuEnabled ? "true" : "false");
-	jsonConfig += std::string(",\"trt_enabled\": ") + (isTensorRTEnabled ? "true" : "false");
-	jsonConfig += std::string(",\"asm_enabled\": ") + (isSimdEnabled ? "true" : "false");
-	jsonConfig += std::string(",\"intrin_enabled\": ") + (isSimdEnabled ? "true" : "false");
+	jsonConfig += std::string(",\"recogn_enabled\": ") + (isRecognEnabled ? "true" : "false");
+	jsonConfig += std::string(",\"night_vision_enabled\": ") + (isNightVisionEnabled ? "true" : "false");
+	jsonConfig += std::string(",\"pyramidal_search_enabled\": ") + (isPySearchEnabled ? "true" : "false");
 	jsonConfig += std::string(",\"klass_lpci_enabled\": ") + (isKlassLPCI_Enabled ? "true" : "false");
 	jsonConfig += std::string(",\"klass_vcr_enabled\": ") + (isKlassVCR_Enabled ? "true" : "false");
 	jsonConfig += std::string(",\"klass_vmmr_enabled\": ") + (isKlassVMMR_Enabled ? "true" : "false");
 	jsonConfig += std::string(",\"klass_vbsr_enabled\": ") + (isKlassVBSR_Enabled ? "true" : "false");
+	jsonConfig += std::string(",\"num_threads\": ") + std::to_string(numThreads);
+	jsonConfig += std::string(",\"max_latency\": ") + std::to_string(maxLatency);
 	if (!licenseTokenFile.empty()) {
 		jsonConfig += std::string(",\"license_token_file\": \"") + licenseTokenFile + std::string("\"");
 	}
 	if (!licenseTokenData.empty()) {
 		jsonConfig += std::string(",\"license_token_data\": \"") + licenseTokenData + std::string("\"");
 	}
-	
+
 	jsonConfig += "}"; // end-of-config
+	
 
-	// Read files
-	// Positive: the file contains at least one plate
-	// Negative: the file doesn't contain a plate
-	// Change positive rates to evaluate the detector versus recognizer
-	AlprFile filePositive, fileNegative;
-	if (!alprDecodeFile(pathFilePositive, filePositive)) {
-		ULTALPR_SDK_PRINT_INFO("Failed to read positive file: %s", pathFilePositive.c_str());
-		return -1;
-	}
-	if (!alprDecodeFile(pathFileNegative, fileNegative)) {
-		ULTALPR_SDK_PRINT_INFO("Failed to read positive file: %s", pathFilePositive.c_str());
+	// Read input file
+	FileInfo file;
+	if (!readFile(pathFileImage, file) || !file.isValid()) {
+		ULTALPR_SDK_PRINT_FATAL("Can't read %s", pathFileImage.c_str());
 		return -1;
 	}
 
-	// Create image indices
-	std::vector<size_t> indices(loopCount, 0);
-
-	const int numPositives = static_cast<int>(loopCount * percentPositives);
-	for (int i = 0; i < numPositives; ++i) {
-		indices[i] = 1; // positive index
-	}
-	std::shuffle(std::begin(indices), std::end(indices), std::default_random_engine{}); // make the indices random
+	// Function to wait until parallel callback is called
+	static const bool kParallelNotifCountResetTrue = true;
+	static const bool kParallelNotifCountResetFalse = false;
+	auto funcWaitPtr = [&](const size_t& count, const bool& reset = false) -> void {
+		if (isParallelDeliveryEnabled) {
+			static std::mutex parallelNotifMutex;
+			std::unique_lock<std::mutex > lk(parallelNotifMutex);
+			parallelNotifCondVar.wait_for(lk,
+				std::chrono::milliseconds(3 * 60 * 1000), // maximum number of millis to wait for before giving up, must never wait this long
+				[&count] { return (parallelNotifCount >= count); }
+			);
+		}
+		else {
+			parallelNotifCount = count;
+		}
+		if (reset == kParallelNotifCountResetTrue) {
+			parallelNotifCount = 0;
+		}
+	};
 
 	// Init
 	ULTALPR_SDK_PRINT_INFO("Starting benchmark...");
-	ULTALPR_SDK_ASSERT((result = UltAlprSdkEngine::init(
+	MyUltAlprSdkParallelDeliveryCallback parallelDeliveryCallbackCallback(nullptr);
+	ULTALPR_SDK_ASSERT(checkResult(UltAlprSdkEngine::init(
 		ASSET_MGR_PARAM()
 		jsonConfig.c_str(),
 		isParallelDeliveryEnabled ? &parallelDeliveryCallbackCallback : nullptr
-	)).isOK());
+	)));
 
-	// Warm up:
-	// First time the SDK is called we'll be loading the models into CPU or GPU and initializing
-	// some internal variables -> do not include this part in te timing.
-	// The warm up function will make fake inference to force the engine to load the models and init the vars.
-	if (loopCount > 1) {
-		ULTALPR_SDK_ASSERT((result = UltAlprSdkEngine::warmUp(
-			filePositive.type
-		)).isOK());
+	// WarmUp
+	// We load the models into the memory the first time the inference is called which
+	// means it'll be very slow.
+	ULTALPR_SDK_PRINT_INFO("Starting warmup...");
+	parallelState = "WARMUP";
+	const size_t num_warmup_loops = isParallelDeliveryEnabled ? NUM_WARMUP_LOOPS : 1;
+	for (size_t i = 0; i < num_warmup_loops; ++i) {
+		ULTALPR_SDK_ASSERT(checkResult(result = UltAlprSdkEngine::process(
+			file.type, file.uncompressedData, file.width, file.height
+		)));
 	}
+	funcWaitPtr(num_warmup_loops, kParallelNotifCountResetTrue);
+	ULTALPR_SDK_PRINT_INFO("Warmup done.");
 
-	// Recognize/Process
+	// Processing
+	ULTALPR_SDK_PRINT_INFO("Starting benchmarking...");
+	parallelState = "BENCH";
 	const std::chrono::high_resolution_clock::time_point timeStart = std::chrono::high_resolution_clock::now();
-	const AlprFile* files[2] = { &fileNegative, &filePositive };
-	for (const auto& indice : indices) {
-		const AlprFile* file = files[indice];
-		ULTALPR_SDK_ASSERT((result = UltAlprSdkEngine::process(
-			file->type,
-			file->uncompressedData,
-			file->width,
-			file->height
-		)).isOK());
+	for (size_t i = 0; i < loopsCount; ++i) {
+		ULTALPR_SDK_ASSERT(checkResult(result = UltAlprSdkEngine::process(
+			file.type, file.uncompressedData, file.width, file.height
+		)));
 	}
+	funcWaitPtr(loopsCount, kParallelNotifCountResetFalse);
+
 	// Compute the estimated frame rate.
 	// At this step all frames are already processed but the result could be still on the delivery
 	// queue due to the console display latency. You can move here the code used to wait until all
 	// messages are displayed to include the delivery latency.
 	const std::chrono::high_resolution_clock::time_point timeEnd = std::chrono::high_resolution_clock::now();
 	const double elapsedTimeInMillis = std::chrono::duration_cast<std::chrono::duration<double >>(timeEnd - timeStart).count() * 1000.0;
-	ULTALPR_SDK_PRINT_INFO("Elapsed time (ALPR) = [[[ %lf millis ]]]", elapsedTimeInMillis);
-
-	// Printing to the console is very slow and use a low priority thread.
-	// Wait until all results are displayed.
-	if (isParallelDeliveryEnabled) {
-		static std::mutex parallelNotifMutex;
-		std::unique_lock<std::mutex > lk(parallelNotifMutex);
-		parallelNotifCondVar.wait_for(lk, 
-			std::chrono::milliseconds(1500), // maximum number of millis to wait for before giving up, must never wait this long unless your positive image doesn't contain a plate at all
-			[&numPositives] { return (parallelNotifCount == numPositives); }
-		);
-	}
+	ULTALPR_SDK_PRINT_INFO("Elapsed time (Benchmark) = [[[ %lf millis ]]]", elapsedTimeInMillis);
 
 	// Print latest result
 	const std::string& json_ = result.json();
@@ -357,15 +379,15 @@ int main(int argc, char *argv[])
 	}
 
 	// Print estimated frame rate
-	const double estimatedFps = 1000.f / (elapsedTimeInMillis / (double)loopCount);
-	ULTALPR_SDK_PRINT_INFO("*** elapsedTimeInMillis: %lf, estimatedFps: %lf ***", elapsedTimeInMillis, estimatedFps);
+	const double estimatedFps = 1000.f / (elapsedTimeInMillis / static_cast<double>(parallelNotifCount));
+	ULTALPR_SDK_PRINT_INFO("*** elapsedTimeInMillis: %lf, notified: %zu/%zu, estimatedFps: %lf ***", elapsedTimeInMillis, parallelNotifCount, loopsCount, estimatedFps);
 
-	ULTALPR_SDK_PRINT_INFO("Press any key to terminate !!");
+	ULTALPR_SDK_PRINT_INFO("Press ENTER key to terminate !!");
 	getchar();
 
 	// DeInit
 	ULTALPR_SDK_PRINT_INFO("Ending benchmark...");
-	ULTALPR_SDK_ASSERT((result = UltAlprSdkEngine::deInit()).isOK());
+	ULTALPR_SDK_ASSERT(checkResult(UltAlprSdkEngine::deInit()));
 
 	return 0;
 }
@@ -382,51 +404,122 @@ static void printUsage(const std::string& message /*= ""*/)
 	ULTALPR_SDK_PRINT_INFO(
 		"\n********************************************************************************\n"
 		"benchmark\n"
-		"\t--positive <path-to-image-with-a-plate> \n"
-		"\t--negative <path-to-image-without-a-plate> \n"
-		"\t[--assets <path-to-assets-folder>] \n"
-		"\t[--charset <recognition-charset:latin/korean/chinese>] \n"
+		"\t--image <path-to-image-with-to-benchmark> \n"
+		"\t--assets <path-to-assets-folder> \n"
+		"\t[--charset <recognition-charset:latin/korean/chinese/brazilian/israeli>] \n"
 		"\t[--num_threads <number of threads : [1, inf]>] \n"
-		"\t[--ienv_enabled <whether-to-enable-IENV:true/false>] \n"
-		"\t[--openvino_enabled <whether-to-enable-OpenVINO:true/false>] \n"
-		"\t[--openvino_device <openvino_device-to-use>] \n"
-		"\t[--npu_enabled <whether-to-enable-NPU-acceleration:true/false>] \n"
-		"\t[--trt_enabled <whether-to-enable-TensorRT-acceleration:true/false>] \n"
-		"\t[--simd_enabled <whether-to-enable-SIMD-acceleration:true/false>] \n"
+		"\t[--max_latency <max-latency:]-inf,+inf[>] \n"
+		"\t[--nvision_enabled <whether-to-enable-IENV:true/false>] \n"
+		"\t[--platform <target platform:auto/mobile/desktop>] \n"
+		"\t[--backend <backend:auto,onnx,tflite,rknn2,trt,vino...>] \n"
+		"\t[--pysearch_enabled <whether-to-enable-pyramidal-search:true/false>] \n"
+		"\t[--recogn_enabled <whether-to-enable-LPR:true/false>] \n"
 		"\t[--klass_lpci_enabled <whether-to-enable-LPCI:true/false>] \n"
 		"\t[--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \n"
 		"\t[--klass_vmmr_enabled <whether-to-enable-VMMR:true/false>] \n"
 		"\t[--klass_vbsr_enabled <whether-to-enable-VBSR:true/false>] \n"
 		"\t[--loops <number-of-times-to-run-the-loop:[1, inf]>] \n"
-		"\t[--rate <positive-rate:[0.0, 1.0]>] \n"
 		"\t[--parallel <whether-to-enable-parallel-mode:true / false>] \n"
-		"\t[--rectify <whether-to-enable-rectification-layer:true / false>]\n"
 		"\t[--tokenfile <path-to-license-token-file>] \n"
 		"\t[--tokendata <base64-license-token-data>] \n"
 		"\n"
 		"Options surrounded with [] are optional.\n"
 		"\n"
-		"--positive: Path to an image(JPEG/PNG/BMP) with a license plate. This image will be used to evaluate the recognizer. You can use default image at ../../../assets/images/lic_us_1280x720.jpg.\n\n"
-		"--negative: Path to an image(JPEG/PNG/BMP) without a license plate. This image will be used to evaluate the detector. You can use default image at ../../../assets/images/london_traffic.jpg.\n\n"
-		"--assets: Path to the assets folder containing the configuration files and models. Default value is the current folder.\n\n"
-		"--charset: Defines the recognition charset value (latin, korean, chinese...). Default: latin.\n\n"
+		"--image: Path to the image(JPEG/PNG/BMP) to benchmark. You can use default image at ../../../assets/images/lic_us_1280x720.jpg.\n\n"
+		"--assets: Path to the assets folder containing the configuration files and models. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#assets-folder. \n\n"
+		"--charset: Defines the recognition charset (a.k.a alphabet) value (latin, korean, chinese...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#recogn-charset. Default: latin.\n\n"
 		"--num_threads: Number of threads to use. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#num-threads. Default: -1.\n\n"
-		"--ienv_enabled: Whether to enable Image Enhancement for Night-Vision (IENV). More info about IENV at https://www.doubango.org/SDKs/anpr/docs/Features.html#image-enhancement-for-night-vision-ienv. Default: false.\n\n"
-		"--openvino_enabled: Whether to enable OpenVINO. Tensorflow will be used when OpenVINO is disabled. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino-enabled. Default: true.\n\n"
-		"--openvino_device: Defines the OpenVINO device to use (CPU, GPU, FPGA...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino_device. Default: CPU.\n\n"
-		"--npu_enabled: Whether to enable NPU acceleration (Amlogic, NXP...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#npu-enabled. Default: true.\n\n"
-		"--trt_enabled: Whether to enable NVIDIA TensorRT acceleration. This will disable OpenVINO. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#trt-enabled. Default: false.\n\n"
-		"--simd_enabled: Whether to enable SIMD acceleration -Assembler and Intrinsics- (SSE, AVX, MMX, NEON...). More info at https://en.wikipedia.org/wiki/Single_instruction,_multiple_data. Default: true.\n\n"
-		"--klass_lpci_enabled: Whether to enable License Plate Country Identification (LPCI). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci. Default: false.\n\n"
-		"--klass_vcr_enabled: Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr. Default: false.\n\n"
-		"--klass_vmmr_enabled: Whether to enable Vehicle Make Model Recognition (VMMR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr. Default: false.\n\n"
-		"--klass_vbsr_enabled: Whether to enable Vehicle Body Style Recognition (VBSR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vbsr. Default: false.\n\n"
+		"--max_latency: Max latency when parallel processing is enabled. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#max-latency. Default: -1.\n\n"
+		"--nvision_enabled: Whether to enable Image Enhancement for Night-Vision (IENV). More info about IENV at https://www.doubango.org/SDKs/anpr/docs/Features.html#night-vision-enabled. Default: false.\n\n"
+		"--platform: Target platform. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#platform. Default: auto.\n\n"
+		"--backend: Target backend. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#backend. Default: auto.\n\n"
+		"--pysearch_enabled: Whether to enable Pyramidal search. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#pyramidal-search-enabled. Default: false.\n\n"
+		"--recogn_enabled: Whether to enable License Plate Recognition (LPR) / OCR. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#recogn-enabled. Default: false.\n\n"
+		"--klass_lpci_enabled: Whether to enable License Plate Country Identification (LPCI). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-lpci-enabled. Default: false.\n\n"
+		"--klass_vcr_enabled: Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vcr-enabled. Default: false.\n\n"
+		"--klass_vmmr_enabled: Whether to enable Vehicle Make Model Recognition (VMMR). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vmmr-enabled. Default: false.\n\n"
+		"--klass_vbsr_enabled: Whether to enable Vehicle Body Style Recognition (VBSR). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vbsr-enabled. Default: false.\n\n"
 		"--loops: Number of times to run the processing pipeline.\n\n"
-		"--rate: Percentage value within[0.0, 1.0] defining the positive rate. The positive rate defines the percentage of images with a plate.\n\n"
-		"--parallel: Whether to enabled the parallel mode. More info about the parallel mode at https ://www.doubango.org/SDKs/anpr/docs/Parallel_versus_sequential_processing.html. Default: true.\n\n"
-		"--rectify: Whether to enable the rectification layer. More info about the rectification layer at https://www.doubango.org/SDKs/anpr/docs/Rectification_layer.html. Default: false.\n\n"
+		"--parallel: Whether to enabled the parallel mode. More info about the parallel mode at https://www.doubango.org/SDKs/anpr/docs/Parallel_processing.html. Default: true.\n\n"
 		"--tokenfile: Path to the file containing the base64 license token if you have one. If not provided then, the application will act like a trial version. Default: null.\n\n"
 		"--tokendata: Base64 license token if you have one. If not provided then, the application will act like a trial version. Default: null.\n\n"
 		"********************************************************************************\n"
 	);
+}
+
+static bool parseArgs(int argc, char* argv[], std::map<std::string, std::string >& values)
+{
+	ULTALPR_SDK_ASSERT(argc > 0 && argv != nullptr);
+
+	values.clear();
+
+	// Make sure the number of arguments is even
+	if ((argc - 1) & 1) {
+		ULTALPR_SDK_PRINT_INFO("Number of args must be even");
+		return false;
+	}
+
+	// Parsing
+	for (int index = 1; index < argc; index += 2) {
+		std::string key = argv[index];
+		if (key.size() < 2 || key[0] != '-' || key[1] != '-') {
+			ULTALPR_SDK_PRINT_INFO("Invalid key: %s", key.c_str());
+			return false;
+		}
+		values[key] = argv[index + 1];
+	}
+
+	return true;
+}
+
+static bool readFile(const std::string& path, FileInfo& fileInfo)
+{
+	if (path.empty()) {
+		ULTALPR_SDK_PRINT_ERROR("Path is empty");
+		return false;
+	}
+
+	// Open file
+	FILE* file =
+#	if ULTALPR_SDK_OS_ANDROID
+		sdk_android_asset_fopen(path.c_str(), "rb");
+#	else
+		fopen(path.c_str(), "rb");
+#	endif
+	if (!file) {
+		ULTALPR_SDK_PRINT_ERROR("Failed to open file at: %s", path.c_str());
+		return false;
+	}
+
+	// Decode the file
+	int width, height, channels;
+	stbi_uc* uncompressedData = stbi_load_from_file(file, &width, &height, &channels, 0);
+	fclose(file);
+	if (!uncompressedData || width <= 0 || height <= 0 || (channels != 1 && channels != 3 && channels != 4)) {
+		ULTALPR_SDK_PRINT_ERROR("Invalid file(%s, %d, %d, %d)", path.c_str(), width, height, channels);
+		if (uncompressedData) {
+			free(uncompressedData);
+		}
+		return false;
+	}
+
+	// We expect RGB-family data from the JPEG/PNG/BMP file
+	// If you're using data from your camera then, it should be YUV-family and you don't need
+	// to convert to RGB-family.
+	// List of supported types: https://www.doubango.org/SDKs/anpr/docs/cpp-api.html#_CPPv4N15ultimateAlprSdk22ULTALPR_SDK_IMAGE_TYPEE
+	fileInfo.type = (channels == 3) ? ULTALPR_SDK_IMAGE_TYPE_RGB24 : (channels == 1 ? ULTALPR_SDK_IMAGE_TYPE_Y : ULTALPR_SDK_IMAGE_TYPE_RGBA32);
+	fileInfo.uncompressedData = uncompressedData;
+	fileInfo.width = static_cast<size_t>(width);
+	fileInfo.height = static_cast<size_t>(height);
+
+	return fileInfo.isValid();
+}
+
+static bool checkResult(const UltAlprSdkResult& result)
+{
+	if (!result.isOK()) {
+		ULTALPR_SDK_PRINT_ERROR("Failed: phrase: %s, json: %s", result.phrase(), result.json());
+		return false;
+	}
+	return true;
 }

@@ -21,11 +21,16 @@
 */
 
 #include <ultimateALPR-SDK-API-PUBLIC.h>
-#include "../alpr_utils.h"
+
+#include <map>
+#if defined(_WIN32)
+#include <algorithm> // std::replace
+#endif
 
 using namespace ultimateAlprSdk;
 
 static void printUsage(const std::string& message = "");
+static bool parseArgs(int argc, char* argv[], std::map<std::string, std::string >& values);
 
 /*
 * Entry point
@@ -34,7 +39,7 @@ int main(int argc, char *argv[])
 {
 	// Parsing args
 	std::map<std::string, std::string > args;
-	if (!alprParseArgs(argc, argv, args)) {
+	if (!parseArgs(argc, argv, args)) {
 		printUsage();
 		return -1;
 	}
@@ -44,14 +49,21 @@ int main(int argc, char *argv[])
 	}
 
 	// Build JSON string
-	std::string jsonConfig = std::string("\"openvino_enabled\": false");
+	std::string jsonConfig = std::string("\"platform\": \"auto\", \"backend\": \"auto\",");
 	if (args.find("--assets") != args.end()) {
-		jsonConfig += (jsonConfig.empty() ? "" : ",")
-			+ std::string("\"assets_folder\": \"") + args["--assets"] + std::string("\"");
+		std::string assetsFolder = args["--assets"];
+#if defined(_WIN32)
+		std::replace(assetsFolder.begin(), assetsFolder.end(), '\\', '/');
+#endif
+		jsonConfig += std::string("\"assets_folder\": \"") + assetsFolder + std::string("\"");
 	}
 	if (args.find("--type") != args.end()) {
 		jsonConfig += (jsonConfig.empty() ? "" : ",")
-			+ std::string("\"host_type\": \"") + args["--type"] + std::string("\"");
+			+ std::string("\"license_host_type\": \"") + args["--type"] + std::string("\"");
+	}
+	if (args.find("--usbserial") != args.end()) {
+		jsonConfig += (jsonConfig.empty() ? "" : ",")
+			+ std::string("\"license_usbserial\": \"") + args["--usbserial"] + std::string("\"");
 	}
 	jsonConfig = "{" + jsonConfig + "}";
 
@@ -102,4 +114,29 @@ static void printUsage(const std::string& message /*= ""*/)
 		"--type: Defines how the license is attached to the machine/host. Possible values are 'aws-instance', 'aws-byol', 'azure-instance' or 'azure-byol'. Default: null.\n"
 		"********************************************************************************\n"
 	);
+}
+
+static bool parseArgs(int argc, char* argv[], std::map<std::string, std::string >& values)
+{
+	ULTALPR_SDK_ASSERT(argc > 0 && argv != nullptr);
+
+	values.clear();
+
+	// Make sure the number of arguments is even
+	if ((argc - 1) & 1) {
+		ULTALPR_SDK_PRINT_ERROR("Number of args must be even");
+		return false;
+	}
+
+	// Parsing
+	for (int index = 1; index < argc; index += 2) {
+		std::string key = argv[index];
+		if (key.size() < 2 || key[0] != '-' || key[1] != '-') {
+			ULTALPR_SDK_PRINT_ERROR("Invalid key: %s", key.c_str());
+			return false;
+		}
+		values[key] = argv[index + 1];
+	}
+
+	return true;
 }

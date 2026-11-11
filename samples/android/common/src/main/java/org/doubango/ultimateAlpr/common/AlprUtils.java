@@ -123,7 +123,6 @@ public class AlprUtils {
         private float mRecognitionConfidence;
         private float mWarpedBox[];
         private List<Country> mCountries;
-        private Car mCar;
 
         public String getNumber() { return mNumber; }
         public float getDetectionConfidence() { return mDetectionConfidence; }
@@ -131,95 +130,86 @@ public class AlprUtils {
         public float[] getWarpedBox() { return mWarpedBox; }
 
         public List<Country> getCountries() { return mCountries; }
+    }
+
+    static class Block {
+        private Car mCar;
+        private  Plate mPlate;
+
         public Car getCar() { return mCar; }
+        public Plate getPlate() { return mPlate; }
     }
 
-    static public final long extractFrameId(final UltAlprSdkResult result) {
-        final String jsonString = result.json();
-        if (jsonString != null) {
-            try {
-                final JSONObject jObject = new JSONObject(jsonString);
-                return jObject.getLong("frame_id");
-            }
-            catch (JSONException e) { }
-        }
-        return 0;
-    }
+    static public final List<Block> extractBlocks(String jsonString) {
+        final List<Block> blocks = new LinkedList<>();
 
-    static public final List<Plate> extractPlates(final UltAlprSdkResult result) {
-        final List<Plate> plates = new LinkedList<>();
-        if (!result.isOK() || (result.numPlates() == 0 && result.numCars() == 0)) {
-            return plates;
-        }
-        final String jsonString = result.json();
-        //final String jsonString = "{\"frame_id\":178,\"lantency\":0,\"plates\":[{\"car\":{\"color\":[{\"confidence\":59.76562,\"klass\":11,\"name\":\"white\"},{\"confidence\":27.73438,\"klass\":0,\"name\":\"black\"},{\"confidence\":11.32812,\"klass\":9,\"name\":\"silver\"},{\"confidence\":0.390625,\"klass\":4,\"name\":\"gray\"},{\"confidence\":0.390625,\"klass\":5,\"name\":\"green\"}],\"confidence\":89.45312,\"makeModelYear\":[{\"confidence\":5.46875,\"klass\":8072,\"make\":\"nissan\",\"model\":\"nv\",\"year\":2012},{\"confidence\":3.90625,\"klass\":4885,\"make\":\"gmc\",\"model\":\"yukon 1500\",\"year\":2007},{\"confidence\":1.953125,\"klass\":3950,\"make\":\"ford\",\"model\":\"f150\",\"year\":2001},{\"confidence\":1.953125,\"klass\":4401,\"make\":\"ford\",\"model\":\"ranger\",\"year\":2008},{\"confidence\":1.953125,\"klass\":3954,\"make\":\"ford\",\"model\":\"f150\",\"year\":2005}],\"warpedBox\":[37.26704,655.171,253.8487,655.171,253.8487,897.6935,37.26704,897.6935]},\"confidences\":[86.99596,99.60938],\"country\":[{\"code\":\"RUS\",\"confidence\":99.60938,\"klass\":65,\"name\":\"Russian Federation\",\"other\":\"Private vehicle\",\"state\":\"Republic of Karelia\"},{\"code\":\"USA\",\"confidence\":0.0,\"klass\":88,\"name\":\"United States of America\",\"state\":\"Iowa\"},{\"code\":\"USA\",\"confidence\":0.0,\"klass\":80,\"name\":\"United States of America\",\"state\":\"Connecticut\"},{\"code\":\"USA\",\"confidence\":0.0,\"klass\":81,\"name\":\"United States of America\",\"state\":\"Delaware\"},{\"code\":\"USA\",\"confidence\":0.0,\"klass\":82,\"name\":\"United States of America\",\"state\":\"Florida\"}],\"text\":\"K643ET10\",\"warpedBox\":[61.73531,819.796,145.57,819.796,145.57,881.916,61.73531,881.916]}]}";
         if (jsonString == null) { // No plate
-            return plates;
+            return blocks;
         }
 
         try {
             final JSONObject jObject = new JSONObject(jsonString);
-            if (jObject.has("plates")) {
-                final JSONArray jPlates = jObject.getJSONArray("plates");
-                for (int i = 0; i < jPlates.length(); ++i) {
-                    final JSONObject jPlate = jPlates.getJSONObject(i);
+            if (jObject.has("blocks")) {
+                final JSONArray jBlocks = jObject.getJSONArray("blocks");
+                for (int i = 0; i < jBlocks.length(); ++i) {
+                    final JSONObject jBlock = jBlocks.getJSONObject(i);
 
-                    // The plate itself (backward-compatible with 2.0.0)
-                    final Plate plate = new Plate();
-                    plate.mWarpedBox = new float[8];
-                    if (jPlate.has("text")) { // Starting 3.2 it's possible to have cars without plates when enabled
+                    final Block block = new Block(); // a block contains a "plate" and a "car"
+
+                    // Block::Plate
+                    if (jBlock.has("plate")) {
+                        // License Plate Recognition [OCR]
+                        final JSONObject jPlate = jBlock.getJSONObject("plate");
+                        block.mPlate = new Plate();
+
                         final JSONArray jConfidences = jPlate.getJSONArray("confidences");
                         final JSONArray jWarpedBox = jPlate.getJSONArray("warpedBox");
-                        plate.mNumber = jPlate.getString("text");
+                        block.mPlate.mNumber = jPlate.getString("text");
+                        block.mPlate.mWarpedBox = new float[8];
                         for (int j = 0; j < 8; ++j) {
-                            plate.mWarpedBox[j] = (float) jWarpedBox.getDouble(j);
+                            block.mPlate.mWarpedBox[j] = (float) jWarpedBox.getDouble(j);
                         }
-                        plate.mRecognitionConfidence = (float) jConfidences.getDouble(0);
-                        plate.mDetectionConfidence = (float) jConfidences.getDouble(1);
-                    }
-                    else {
-                        plate.mNumber = "";
-                        plate.mRecognitionConfidence = 0.f;
-                        plate.mDetectionConfidence = 0.f;
-                    }
+                        block.mPlate.mRecognitionConfidence = (float) jConfidences.getDouble(0);
+                        block.mPlate.mDetectionConfidence = (float) jConfidences.getDouble(1);
 
-                    // License Plate Country Identification [LPCI] (Added in 3.0.0): https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci
-                    if (jPlate.has("country")) {
-                        plate.mCountries = new LinkedList<>();
-                        final JSONArray jCountries = jPlate.getJSONArray("country");
-                        for (int k = 0; k < jCountries.length(); ++k) {
-                            final JSONObject jCountry = jCountries.getJSONObject(k);
-                            final Country country = new Country();
-                            country.mKlass = jCountry.getInt("klass");
-                            country.mConfidence = (float) jCountry.getDouble("confidence");
-                            country.mCode = jCountry.getString("code"); // ISO-code: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3
-                            country.mName = jCountry.getString("name"); // Name in English
-                            if (jCountry.has("state")) { // optional
-                                country.mState = jCountry.getString("state");
-                            }
-                            if (jCountry.has("other")) { // optional
-                                country.mOther = jCountry.getString("other");
-                            }
+                        // License Plate Country Identification [LPCI]
+                        if (jPlate.has("lpci")) {
+                            block.mPlate.mCountries = new LinkedList<>();
+                            final JSONArray jCountries = jPlate.getJSONArray("lpci");
+                            for (int k = 0; k < jCountries.length(); ++k) {
+                                final JSONObject jCountry = jCountries.getJSONObject(k);
+                                final Country country = new Country();
+                                country.mKlass = jCountry.getInt("klass");
+                                country.mConfidence = (float) jCountry.getDouble("confidence");
+                                country.mCode = jCountry.getString("code"); // ISO-code: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3
+                                country.mName = jCountry.getString("name"); // Name in English
+                                if (jCountry.has("state")) { // optional
+                                    country.mState = jCountry.getString("state");
+                                }
+                                if (jCountry.has("other")) { // optional
+                                    country.mOther = jCountry.getString("other");
+                                }
 
-                            plate.mCountries.add(country);
+                                block.mPlate.mCountries.add(country);
+                            }
                         }
                     }
 
-                    // Car (Added in 3.0.0)
-                    if (jPlate.has("car")) {
-                        final JSONObject jCar = jPlate.getJSONObject("car");
+                    // Block::car
+                    if (jBlock.has("car")) {
+                        final JSONObject jCar = jBlock.getJSONObject("car");
                         final JSONArray jCarWarpedBox = jCar.getJSONArray("warpedBox");
-                        plate.mCar = new Car();
-                        plate.mCar.mConfidence = (float) jCar.getDouble("confidence");
-                        plate.mCar.mWarpedBox = new float[8];
+                        block.mCar = new Car();
+                        block.mCar.mConfidence = (float) jCar.getDouble("confidence");
+                        block.mCar.mWarpedBox = new float[8];
                         for (int j = 0; j < 8; ++j) {
-                            plate.mCar.mWarpedBox[j] = (float) jCarWarpedBox.getDouble(j);
+                            block.mCar.mWarpedBox[j] = (float) jCarWarpedBox.getDouble(j);
                         }
 
-                        // Vehicle Color Recognition [VCR] (added in 3.0.0) : https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr
-                        if (jCar.has("color")) {
-                            plate.mCar.mColors = new LinkedList<>();
-                            final JSONArray jColors = jCar.getJSONArray("color");
+                        // Vehicle Color Recognition [VCR]
+                        if (jCar.has("vcr")) {
+                            block.mCar.mColors = new LinkedList<>();
+                            final JSONArray jColors = jCar.getJSONArray("vcr");
                             for (int k = 0; k < jColors.length(); ++k) {
                                 final JSONObject jColor = jColors.getJSONObject(k);
                                 final Car.Attribute color = new Car.Attribute();
@@ -227,14 +217,14 @@ public class AlprUtils {
                                 color.mConfidence = (float) jColor.getDouble("confidence");
                                 color.mName = jColor.getString("name"); // Name in English
 
-                                plate.mCar.mColors.add(color);
+                                block.mCar.mColors.add(color);
                             }
                         }
 
-                        // Vehicle Make Model Recognition [VMMR] (added in 3.0.0): https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr
-                        if (jCar.has("makeModelYear")) {
-                            plate.mCar.mMakesModelsYears = new LinkedList<>();
-                            final JSONArray jMMYs = jCar.getJSONArray("makeModelYear");
+                        // Vehicle Make Model Recognition [VMMR]
+                        if (jCar.has("vmmr")) {
+                            block.mCar.mMakesModelsYears = new LinkedList<>();
+                            final JSONArray jMMYs = jCar.getJSONArray("vmmr");
                             for (int k = 0; k < jMMYs.length(); ++k) {
                                 final JSONObject jMMY = jMMYs.getJSONObject(k);
                                 final Car.MakeModelYear mmy = new Car.MakeModelYear();
@@ -244,14 +234,14 @@ public class AlprUtils {
                                 mmy.mModel = jMMY.getString("model");
                                 mmy.mYear = jMMY.get("year").toString(); // Maybe Integer or String or whatever
 
-                                plate.mCar.mMakesModelsYears.add(mmy);
+                                block.mCar.mMakesModelsYears.add(mmy);
                             }
                         }
 
-                        // Vehicle Body Style Recognition [VBSR] (added in 3.2.0): https://www.doubango.org/SDKs/anpr/docs/Features.html#features-vehiclebodystylerecognition
-                        if (jCar.has("bodyStyle")) {
-                            plate.mCar.mBodyStyles = new LinkedList<>();
-                            final JSONArray jBodyStyles = jCar.getJSONArray("bodyStyle");
+                        // Vehicle Body Style Recognition [VBSR]
+                        if (jCar.has("vbsr")) {
+                            block.mCar.mBodyStyles = new LinkedList<>();
+                            final JSONArray jBodyStyles = jCar.getJSONArray("vbsr");
                             for (int k = 0; k < jBodyStyles.length(); ++k) {
                                 final JSONObject jBodyStyle = jBodyStyles.getJSONObject(k);
                                 final Car.Attribute bodyStyle = new Car.Attribute();
@@ -259,12 +249,12 @@ public class AlprUtils {
                                 bodyStyle.mConfidence = (float) jBodyStyle.getDouble("confidence");
                                 bodyStyle.mName = jBodyStyle.getString("name"); // Name in English
 
-                                plate.mCar.mBodyStyles.add(bodyStyle);
+                                block.mCar.mBodyStyles.add(bodyStyle);
                             }
                         }
                     }
 
-                    plates.add(plate);
+                    blocks.add(block);
                 }
             }
         }
@@ -272,7 +262,7 @@ public class AlprUtils {
             e.printStackTrace();
             Log.e(TAG, e.toString());
         }
-        return plates;
+        return blocks;
     }
 
     public static <K, V> V getOrDefault(@NonNull Map<K, V> map, K key, V defaultValue) {
@@ -301,7 +291,7 @@ public class AlprUtils {
      * @return
      */
     static public final String resultToString(final UltAlprSdkResult result) {
-        return "code: " + result.code() + ", phrase: " + result.phrase() + ", numPlates: " + result.numPlates() + ", json: " + result.json();
+        return "code: " + result.code() + ", phrase: " + result.phrase() + ", json: " + result.json();
     }
 
     /**

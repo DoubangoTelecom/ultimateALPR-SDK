@@ -7,6 +7,11 @@
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
+/.idea/tasks.xml
+/.idea/dictionaries
+/videoparallel/.idea
+/videosequential/.idea
+/benchmark/.idea
 .DS_Store
 /build
 /captures

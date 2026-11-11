@@ -1,5 +1,5 @@
 '''
-    * Copyright (C) 2011-2020 Doubango Telecom <https://www.doubango.org>
+    * Copyright (C) 2011-2026 Doubango Telecom <https://www.doubango.org>
     * File author: Mamadou DIOP (Doubango Telecom, France).
     * License: For non commercial use only.
     * Source code: https://github.com/DoubangoTelecom/ultimateALPR-SDK
@@ -10,7 +10,7 @@
 	Usage: 
 		recognizer.py \
 			--image <path-to-image-with-plate-to-recognize> \
-			[--assets <path-to-assets-folder>] \
+			--assets <path-to-assets-folder> \
             [--charset <recognition-charset:latin/korean/chinese>] \
 			[--tokenfile <path-to-license-token-file>] \
 			[--tokendata <base64-license-token-data>]
@@ -25,7 +25,7 @@
 import ultimateAlprSdk
 import argparse
 import json
-import os.path
+import os
 
 TAG = "[PythonRecognizer] "
 
@@ -36,67 +36,56 @@ JSON_CONFIG = {
     "debug_internal_data_path": ".",
     
     "num_threads": -1,
-    "gpgpu_enabled": True,
     "max_latency": -1,
+    "night_vision_enabled": False,
+    "batching_mode": "auto",
+    "backend": "auto",
+    "platform": "auto",
+    "asm_enabled": True,
+    "intrin_enabled": True,
 
-    "klass_vcr_gamma": 1.5,
-    
     "detect_roi": [0, 0, 0, 0],
-    "detect_minscore": 0.1,
+    "detect_minscore": 0.4,
+    "detect_miniou": 0.4,
 
-    "car_noplate_detect_min_score": 0.8,
-    
     "pyramidal_search_enabled": True,
-    "pyramidal_search_sensitivity": 0.28,
     "pyramidal_search_minscore": 0.3,
     "pyramidal_search_min_image_size_inpixels": 800,
+    "pyramidal_search_miniou": 0.4,
+
+    "klass_lpci_enabled": False,
+    "klass_lpci_topk": 5,
+
+    "klass_vcr_enabled": False,
+    "klass_vcr_topk": 5,
+
+    "klass_vmmr_enabled": False,
+    "klass_vmmr_topk": 5,
+
+    "klass_vbsr_enabled": False,
+    "klass_vbsr_topk: 5,"
     
-    "recogn_rectify_enabled": True,
-    "recogn_minscore": 0.3,
-    "recogn_score_type": "min"
+    "recogn_enabled": True,
+    "recogn_charset": "latin",
+    "recogn_score_type": "cumprod",
+    "recogn_minscore": 0.2,
 }
-
-IMAGE_TYPES_MAPPING = { 
-        'RGB': ultimateAlprSdk.ULTALPR_SDK_IMAGE_TYPE_RGB24,
-        'RGBA': ultimateAlprSdk.ULTALPR_SDK_IMAGE_TYPE_RGBA32,
-        'L': ultimateAlprSdk.ULTALPR_SDK_IMAGE_TYPE_Y
-}
-
-# Load image
-def load_pil_image(path):
-    from PIL import Image, ExifTags, ImageOps
-    import traceback
-    pil_image = Image.open(path)
-    img_exif = pil_image.getexif()
-    ret = {}
-    orientation  = 1
-    try:
-        if img_exif:
-            for tag, value in img_exif.items():
-                decoded = ExifTags.TAGS.get(tag, tag)
-                ret[decoded] = value
-            orientation  = ret["Orientation"]
-    except Exception as e:
-        print(TAG + "An exception occurred: {}".format(e))
-        traceback.print_exc()
-
-    if orientation > 1:
-        pil_image = ImageOps.exif_transpose(pil_image)
-
-    if pil_image.mode in IMAGE_TYPES_MAPPING:
-        imageType = IMAGE_TYPES_MAPPING[pil_image.mode]
-    else:
-        raise ValueError(TAG + "Invalid mode: %s" % pil_image.mode)
-
-    return pil_image, imageType
 
 # Check result
-def checkResult(operation, result):
+def checkResult(operation :str, result :ultimateAlprSdk.UltAlprSdkResult):
     if not result.isOK():
-        print(TAG + operation + ": failed -> " + result.phrase())
-        assert False
+        print(f'{TAG} {operation}: failed -> {result.phrase()}')
+        raise Exception(f'Error: {result.phrase()}')
     else:
-        print(TAG + operation + ": OK -> " + result.json())
+        print(f'{TAG} {operation}: ok -> {result.json()}')
+    
+    return result
+
+# Async result callback for // processing: https://www.doubango.org/SDKs/anpr/docs/Parallel_processing.html
+class MyParallelDeliveryCallback(ultimateAlprSdk.UltAlprSdkParallelDeliveryCallback):
+    def onNewResult(self, result :ultimateAlprSdk.UltAlprSdkResult):
+        checkResult("Async Process", result)
+        return 0
 
 # Entry point
 if __name__ == "__main__":
@@ -104,18 +93,18 @@ if __name__ == "__main__":
     This is the recognizer sample using python language
     """)
 
-    parser.add_argument("--image", required=True, help="Path to the image with ALPR data to recognize")
-    parser.add_argument("--assets", required=False, default="../../../assets", help="Path to the assets folder")
-    parser.add_argument("--charset", required=False, default="latin", help="Defines the recognition charset (a.k.a alphabet) value (latin, korean, chinese...)")
-    parser.add_argument("--car_noplate_detect_enabled", required=False, default=False, help="Whether to detect and return cars with no plate")
-    parser.add_argument("--ienv_enabled", required=False, default=False, help="Whether to enable Image Enhancement for Night-Vision (IENV). More info about IENV at https://www.doubango.org/SDKs/anpr/docs/Features.html#image-enhancement-for-night-vision-ienv. Default: true for x86-64 and false for ARM.")
-    parser.add_argument("--openvino_enabled", required=False, default=True, help="Whether to enable OpenVINO. Tensorflow will be used when OpenVINO is disabled")
-    parser.add_argument("--openvino_device", required=False, default="CPU", help="Defines the OpenVINO device to use (CPU, GPU, FPGA...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#openvino-device")
-    parser.add_argument("--npu_enabled", required=False, default=True, help="Whether to enable NPU (Neural Processing Unit) acceleration")
-    parser.add_argument("--klass_lpci_enabled", required=False, default=False, help="Whether to enable License Plate Country Identification (LPCI). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#license-plate-country-identification-lpci")
-    parser.add_argument("--klass_vcr_enabled", required=False, default=False, help="Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-color-recognition-vcr")
-    parser.add_argument("--klass_vmmr_enabled", required=False, default=False, help="Whether to enable Vehicle Make Model Recognition (VMMR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-make-model-recognition-vmmr")
-    parser.add_argument("--klass_vbsr_enabled", required=False, default=False, help="Whether to enable Vehicle Body Style Recognition (VBSR). More info at https://www.doubango.org/SDKs/anpr/docs/Features.html#vehicle-body-style-recognition-vbsr")
+    parser.add_argument("--image", required=True, help="Path to the image(JPEG/PNG/BMP) to process. You can use default image at ../../../assets/images/lic_us_1280x720.jpg.")
+    parser.add_argument("--assets", required=True, help="Path to the assets folder containing the configuration files and models. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#assets-folder.")
+    parser.add_argument("--charset", required=False, default="latin", help="Defines the recognition charset (a.k.a alphabet) value (latin, korean, chinese...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#recogn-charset. Default: latin.")
+    parser.add_argument("--recogn_enabled", required=False, default=True, help="Whether to enable License Plate Recognition (LPR) / OCR. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#recogn-enabled.")
+    parser.add_argument("--nvision_enabled", required=False, default=False, help="Whether to enable Image Enhancement for Night-Vision (IENV). More info about IENV at https://www.doubango.org/SDKs/anpr/docs/Features.html#image-enhancement-for-night-vision-ienv. Default: true for x86-64 and false for ARM.")
+    parser.add_argument("--platform", required=False, default="auto", help="Target platform. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#platform")
+    parser.add_argument("--backend", required=False, default="auto", help="Target backend. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#backend")
+    parser.add_argument("--klass_lpci_enabled", required=False, default=False, help="Whether to enable License Plate Country Identification (LPCI). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-lpci-enabled")
+    parser.add_argument("--klass_vcr_enabled", required=False, default=False, help="Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vcr-enabled")
+    parser.add_argument("--klass_vmmr_enabled", required=False, default=False, help="Whether to enable Vehicle Make Model Recognition (VMMR). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vmmr-enabled")
+    parser.add_argument("--klass_vbsr_enabled", required=False, default=False, help="Whether to enable Vehicle Body Style Recognition (VBSR). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vbsr-enabled")
+    parser.add_argument("--parallel", required=False, default=False, help="Whether to enabled the parallel mode.More info about the parallel mode at https://www.doubango.org/SDKs/anpr/docs/Parallel_processing.html")
     parser.add_argument("--tokenfile", required=False, default="", help="Path to license token file")
     parser.add_argument("--tokendata", required=False, default="", help="Base64 license token data")
 
@@ -123,53 +112,53 @@ if __name__ == "__main__":
 
     # Check if image exist
     if not os.path.isfile(args.image):
-        raise OSError(TAG + "File doesn't exist: %s" % args.image)
+        raise OSError(f"{TAG} File doesn't exist: {args.image}")
 
-     # Decode the image and extract type
-    image, imageType = load_pil_image(args.image)
-    width, height = image.size
+    # Check if assets exist
+    if not os.path.isdir(args.assets):
+        raise OSError(f"{TAG} Folder doesn't exist: {args.assets}")
 
     # Update JSON options using values from the command args
     JSON_CONFIG["assets_folder"] = args.assets
-    JSON_CONFIG["charset"] = args.charset
-    JSON_CONFIG["car_noplate_detect_enabled"] = (args.car_noplate_detect_enabled == "True")
-    JSON_CONFIG["ienv_enabled"] = (args.ienv_enabled == "True")
-    JSON_CONFIG["openvino_enabled"] = (args.openvino_enabled == "True")
-    JSON_CONFIG["openvino_device"] = args.openvino_device
-    JSON_CONFIG["npu_enabled"] = (args.npu_enabled == "True")
-    JSON_CONFIG["klass_lpci_enabled"] = (args.klass_lpci_enabled == "True")
-    JSON_CONFIG["klass_vcr_enabled"] = (args.klass_vcr_enabled == "True")
-    JSON_CONFIG["klass_vmmr_enabled"] = (args.klass_vmmr_enabled == "True")
-    JSON_CONFIG["klass_vbsr_enabled"] = (args.klass_vbsr_enabled == "True")
+    JSON_CONFIG["recogn_charset"] = args.charset
+    JSON_CONFIG["recogn_enabled"] = (str(args.recogn_enabled).lower() == "true")
+    JSON_CONFIG["night_vision_enabled"] = (str(args.nvision_enabled).lower() == "true")
+    JSON_CONFIG["platform"] = args.platform
+    JSON_CONFIG["backend"] = args.backend
+    JSON_CONFIG["klass_lpci_enabled"] = (str(args.klass_lpci_enabled).lower() == "true")
+    JSON_CONFIG["klass_vcr_enabled"] = (str(args.klass_vcr_enabled).lower() == "true")
+    JSON_CONFIG["klass_vmmr_enabled"] = (str(args.klass_vmmr_enabled).lower() == "true")
+    JSON_CONFIG["klass_vbsr_enabled"] = (str(args.klass_vbsr_enabled).lower() == "true")
     JSON_CONFIG["license_token_file"] = args.tokenfile
     JSON_CONFIG["license_token_data"] = args.tokendata
 
     # Initialize the engine
+    callback = MyParallelDeliveryCallback() if (str(args.parallel).lower() == "true") else None
     checkResult("Init", 
-                ultimateAlprSdk.UltAlprSdkEngine_init(json.dumps(JSON_CONFIG))
+                ultimateAlprSdk.UltAlprSdkEngine.init(json.dumps(JSON_CONFIG), callback)
                )
 
     # Recognize/Process
     # Please note that the first time you call this function all deep learning models will be loaded 
     # and initialized which means it will be slow. In your application you've to initialize the engine
     # once and do all the recognitions you need then, deinitialize it.
-    checkResult("Process",
-                ultimateAlprSdk.UltAlprSdkEngine_process(
-                    imageType,
-                    image.tobytes(), # type(x) == bytes
-                    width,
-                    height,
-                    0, # stride
-                    1 # exifOrientation (already rotated in load_image -> use default value: 1)
-                )
-        )
+    # For packed formats (RGB-family): https://www.doubango.org/SDKs/anpr/docs/cpp-api.html#_CPPv4N15ultimateAlprSdk16UltAlprSdkEngine7processEK22ULTALPR_SDK_IMAGE_TYPEPKvK6size_tK6size_tK6size_tKi
+    # For YUV formats (data from camera): https://www.doubango.org/SDKs/anpr/docs/cpp-api.html#_CPPv4N15ultimateAlprSdk16UltAlprSdkEngine7processEK22ULTALPR_SDK_IMAGE_TYPEPKvPKvPKvK6size_tK6size_tK6size_tK6size_tK6size_tK6size_tKi
+    # For compressed data (jpeg, png...): https://www.doubango.org/SDKs/anpr/docs/cpp-api.html#_CPPv4N15ultimateAlprSdk16UltAlprSdkEngine7processEPKvK6size_t
+    with open(args.image, 'rb') as file:
+        checkResult("Sync Process",
+                    ultimateAlprSdk.UltAlprSdkEngine.process(
+                        file.read(), 
+                        os.fstat(file.fileno()).st_size
+                    )
+            )
 
     # Press any key to exit
     input("\nPress Enter to exit...\n") 
 
     # DeInit the engine
     checkResult("DeInit", 
-                ultimateAlprSdk.UltAlprSdkEngine_deInit()
+                ultimateAlprSdk.UltAlprSdkEngine.deInit()
                )
     
     

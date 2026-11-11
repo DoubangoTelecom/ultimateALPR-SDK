@@ -6,7 +6,7 @@ To avoid being bound to a specific Python version we let the extension build tas
 # C++ Compiler #
 You'll need a C++ compiler. 
 
-On Windows we recommend Visual Studio 2015 Community or later.
+On Windows we recommend Visual Studio 2026 Community or later.
 
 On Linux we recommend recent GCC/G++ version with support for C++11.
 
@@ -23,7 +23,6 @@ For example:
  - On Windows x86_64: [binaries/windows/x86_64](../binaries/windows/x86_64)
  - On Linux x86_64: [binaries/linux/x86_64](../binaries/linux/x86_64)
  - On Linux aarch64: [binaries/linux/aarch64](../binaries/linux/aarch64)
- - On Raspbian arm32 : [binaries/raspbian/armv7l](../binaries/raspbian/armv7l)
  - ... you got the idea
  
  From the the binaries folder (`ultimateALPR-SDK/binaries/<<os>>/<<arch>>`), call the [setup.py](setup.py) script:
@@ -31,6 +30,8 @@ For example:
  python ../../../python/setup.py build_ext --inplace -v
  ```
  If you have multiple python versions installed, then you may use a virtual env, a full path to the executable... Also, you may use `python3` instead of `python` to make sure you're using version 3. The python version used to build the extension should be the same as the one running the samples.
+
+ Requirements: Cython and distutils. To install them: `pip install Cython setuptools`
  
  This will build and install the extension in the current folder. The extension is named **_ultimateAlpr.pyd** on Windows and **_ultimateAlpr.so** on Linux.
  

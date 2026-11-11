@@ -1,0 +1,1 @@
+All files in this folder are symlinks from [models](../models). They're the minimal set of models for the SDK work on x86_64 devices. It's a subset to reduce your final app size.

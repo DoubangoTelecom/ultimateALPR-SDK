@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
-
+    compileSdkVersion 30
+    namespace 'org.doubango.ultimateAlpr.sample.benchmark'
 
     defaultConfig {
-        applicationId "org.doubango.ultimateAlpr"
-        minSdkVersion 21
-        targetSdkVersion 28
+        applicationId "org.doubango.ultimateAlpr.sample.benchmark"
+        minSdkVersion 29
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
 
@@ -18,6 +18,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true
         }
     }
 

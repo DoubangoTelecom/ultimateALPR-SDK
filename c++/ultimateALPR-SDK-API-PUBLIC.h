@@ -1,4 +1,4 @@
-/* Copyright (C) 2011-2020 Doubango Telecom <https://www.doubango.org>
+/* Copyright (C) 2011-2026 Doubango Telecom <https://www.doubango.org>
 * File author: Mamadou DIOP (Doubango Telecom, France).
 * License: For non commercial use only.
 * Source code: https://github.com/DoubangoTelecom/ultimateALPR-SDK
@@ -12,10 +12,11 @@ ultimateALPR SDK public header
 #define _ULTIMATE_ALPR_SDK_API_PUBLIC_H_
 
 #include <string>
+#include <assert.h>
 
-#define ULTALPR_SDK_VERSION_MAJOR		3
-#define ULTALPR_SDK_VERSION_MINOR		10
-#define ULTALPR_SDK_VERSION_MICRO		5
+#define ULTALPR_SDK_VERSION_MAJOR		4
+#define ULTALPR_SDK_VERSION_MINOR		0
+#define ULTALPR_SDK_VERSION_MICRO		0
 
 // Windows's symbols export
 #if defined(SWIG)
@@ -170,7 +171,7 @@ namespace ultimateAlprSdk
 	class ULTIMATE_ALPR_SDK_PUBLIC_API UltAlprSdkResult {
 	public:
 		UltAlprSdkResult();
-		UltAlprSdkResult(const int code, const char* phrase, const char* json, const size_t numPlates = 0, const size_t numCars = 0);
+		UltAlprSdkResult(const int code, const char* phrase, const char* json);
 		UltAlprSdkResult(const UltAlprSdkResult& other);
 		virtual ~UltAlprSdkResult();
 #if !defined(SWIG)
@@ -185,17 +186,7 @@ namespace ultimateAlprSdk
 		inline const char* phrase()const { return phrase_; }
 		/*! The license plates as JSON content string. May be null if no plate found.
 		*/
-		inline const char* json()const { return json_; }
-		/*! Number of license plates in \ref json string. This is a helper function to quickly check whether the result contains license plates
-			without parsing the \ref json string.
-		*/
-		inline const size_t numPlates()const { return numPlates_; }
-		/*! Number of cars in \ref json string. This is a helper function to quickly check whether the result contains cars
-		without parsing the \ref json string.
-		*
-		* Available since: 3.2.0
-		*/
-		inline const size_t numCars()const { return numCars_; }
+		inline const char* json()const { return json_ ? json_ : ""; }
 		/*! Whether the result is success. true if success, false otherwise.
 		*/
 		inline bool isOK()const { return (code_ == 0); }
@@ -205,7 +196,7 @@ namespace ultimateAlprSdk
 #endif /* SWIG */
 
 	private:
-		void ctor(const int code, const char* phrase, const char* json, const size_t numPlates, const size_t numCars);
+		void ctor(const int code, const char* phrase, const char* json);
 #if !defined(SWIG)
 		UltAlprSdkResult& operatorAssign(const UltAlprSdkResult& other);
 #endif /* SWIG */
@@ -214,8 +205,6 @@ namespace ultimateAlprSdk
 		int code_;
 		char* phrase_;
 		char* json_;
-		size_t numPlates_;
-		size_t numCars_;
 	};
 
 	/*! Callback function to be used to get asynchronous notifications.
@@ -346,6 +335,16 @@ namespace ultimateAlprSdk
 			const int exifOrientation = 1
 		);
 
+		/*! Performs ANPR detection and recognition operations.
+			\param encodedDataPtr Pointer to the encoded data. Could be JPEG, PNG, BMP or any encoded data.
+			\param encodedDataSize The size of the encoded data in bytes.
+			\returns a \ref KycVerifSdkResult "result"
+		*/
+		static UltAlprSdkResult process(
+			const void* encodedDataPtr,
+			const size_t encodedDataSize
+		);
+
 		/*! Retrieve EXIF orientation value from JPEG meta-data.
 			\param jpegMetaDataPtr Pointer to the meta-data.
 			\param jpegMetaDataSize Size of the meta-data.
@@ -365,7 +364,6 @@ namespace ultimateAlprSdk
 		*/
 		static UltAlprSdkResult requestRuntimeLicenseKey(const bool& rawInsteadOfJSON = false);
 
-		static UltAlprSdkResult warmUp(const ULTALPR_SDK_IMAGE_TYPE imageType);
 #if !defined(SWIG)
 		static UltAlprSdkResult optimizeTRT(const char* models_folder);
 #endif /* !defined(SWIG) */

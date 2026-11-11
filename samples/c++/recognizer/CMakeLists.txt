@@ -1,24 +1,23 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required (VERSION 3.10)
 
-project(recognizer VERSION 1.0.0 LANGUAGES CXX C)
+project (recognizer)
 
-#### ultimate Libraries ####
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../../../SDK_dev/lib build/ultimateALPR/SDK_dev)
-
+include(${CMAKE_CURRENT_SOURCE_DIR}/../common.cmake)
+ 
 include_directories(
-	${CMAKE_CURRENT_SOURCE_DIR}/../../../../SDK_dev/lib/include
+	${CMAKE_CURRENT_SOURCE_DIR}/../../../c++
 )
 
-set(recognizer_SOURCES 
-	recognizer.cxx
+set (SOURCE ${PROJECT_NAME}.cxx)
+
+add_executable (${PROJECT_NAME} ${SOURCE})
+
+target_link_libraries(${PROJECT_NAME} 
+	PRIVATE ${SDK_DIST_CPP_ALPR_SDK}
+	"-Wl,--unresolved-symbols=ignore-in-shared-libs"
 )
+if (NOT "${SDK_DIST_CPP_ALPR_SDK}" MATCHES "\.so$" AND NOT "${SDK_DIST_CPP_ALPR_SDK}" MATCHES "\.lib$")
+	add_dependencies(${PROJECT_NAME} ${SDK_DIST_CPP_ALPR_SDK})
+endif ()
 
-###### The executable ######
-add_executable(recognizer ${recognizer_SOURCES})
-
-###### 3rd parties libs ######
-target_link_libraries(recognizer ${LIB_LINK_SCOPE} ultimate_alpr-sdk)
-add_dependencies(recognizer ultimate_alpr-sdk)
-
-###### Install Libs ######
-install(TARGETS recognizer DESTINATION bin)
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
