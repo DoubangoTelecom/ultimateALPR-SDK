@@ -49,7 +49,7 @@ JSON_CONFIG = {
     "detect_miniou": 0.4,
 
     "pyramidal_search_enabled": True,
-    "pyramidal_search_minscore": 0.3,
+    "pyramidal_search_minscore": 0.2,
     "pyramidal_search_min_image_size_inpixels": 800,
     "pyramidal_search_miniou": 0.4,
 
@@ -68,7 +68,7 @@ JSON_CONFIG = {
     "recogn_enabled": True,
     "recogn_charset": "latin",
     "recogn_score_type": "cumprod",
-    "recogn_minscore": 0.2,
+    "recogn_minscore": 0.1,
 }
 
 # Check result

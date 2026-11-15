@@ -28,7 +28,7 @@ The latest version (**v4.0.0**) is a complete re-design and focuses on broad sup
 
 With a minimum frame rate as high as [**37 fps on Raspberry Pi 5**, **91 fps on Galaxy S24**, **310 fps on Orange Pi 5** and **472 fps on Jetson Nano Orin**](samples/c++/benchmark/README.md#peformance-numbers), this is the fastest ANPR/ALPR implementation you'll find on the market. Being fast is important but being accurate is crucial. We use state of the art deep learning techniques (multi-head attention, transformers...) to offer unmatched accuracy and precision.
 
-The next [video](https://doubango.org/videos/anpr/highway-x264.mp4) shows the [Recognizer sample](#sample-application-recognizer-others) running on Windows: <br />
+The next [video](https://doubango.org/videos/anpr/highway-x264.mp4) shows the Recognizer sample running on Windows: <br />
 [![Recognizer Running on Windows](https://www.doubango.org/SDKs/anpr/docs/_images/vlcsnap-2020-09-10-03h27m56s176.jpg)](https://doubango.org/videos/anpr/highway-x264.mp4)
 <hr />
 
@@ -48,12 +48,13 @@ This SDK is the fastest you'll find on the market, we provide pre-built [binarie
 
 | ARM64 edge Device  | Frame rate 
 |--- | --- |
-| Jetson Nano Orin (TensorRT GPU) | 472.89 |
-| Orange Pi 5 (RKNPU2) | 310.21 |
-| Debix A (NXP i.MX 8M Plus NPU) | 71.02 |
-| Raspberry Pi 5 (Hailo-8L NPU) | 143.67 |
-| Raspberry Pi 5 (TfLite CPU) | 37.41 |
-| Samsung Galaxy S24 (TfLite CPU) | 91.24 |
+| [Jetson Nano Orin (TensorRT GPU)](samples/c++/benchmark/README.md#peformance-numbers-mobile-jetson) | 472.89 |
+| [Orange Pi 5 (RKNPU2)](https://github.com/DoubangoTelecom/ultimateALPR/blob/master/SDK_dist/samples/c++/benchmark/README.md#peformance-numbers-mobile-orangepi) | 310.21 |
+| [Dragon Q6A (Qualcomm Hexagon NPU)](https://github.com/DoubangoTelecom/ultimateALPR/blob/master/SDK_dist/samples/c%2B%2B/benchmark/README.md#peformance-numbers-mobile-dragon) | 301.04 |
+| [Raspberry Pi 5+ (Hailo-8L NPU)](https://github.com/DoubangoTelecom/ultimateALPR/blob/master/SDK_dist/samples/c%2B%2B/benchmark/README.md#peformance-numbers-mobile-orangepi) | 143.67 |
+| [Samsung Galaxy S24 (TfLite CPU)](https://github.com/DoubangoTelecom/ultimateALPR/blob/master/SDK_dist/samples/c%2B%2B/benchmark/README.md#peformance-numbers-mobile-s24) | 91.24 |
+| [Debix A (NXP i.MX 8M Plus NPU)](https://github.com/DoubangoTelecom/ultimateALPR/blob/master/SDK_dist/samples/c%2B%2B/benchmark/README.md#peformance-numbers-mobile-debixa) | 71.02 |
+| [Raspberry Pi 5+ (TfLite CPU)](https://github.com/DoubangoTelecom/ultimateALPR/blob/master/SDK_dist/samples/c%2B%2B/benchmark/README.md#peformance-numbers-mobile-orangepi) | 37.41 |
 
 More benchmark numbers could be found at [samples/c++/benchmark](samples/c++/benchmark/README.md#peformance-numbers).
 

@@ -15,7 +15,7 @@ ultimateALPR SDK public header
 #include <assert.h>
 
 #define ULTALPR_SDK_VERSION_MAJOR		4
-#define ULTALPR_SDK_VERSION_MINOR		0
+#define ULTALPR_SDK_VERSION_MINOR		1
 #define ULTALPR_SDK_VERSION_MICRO		0
 
 // Windows's symbols export

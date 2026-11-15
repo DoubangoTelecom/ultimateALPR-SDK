@@ -205,12 +205,12 @@ public class Recognizer {
     * Any detection with a score below that threshold will be ignored.
     * 0.f being poor confidence and 1.f excellent confidence.
     * JSON name: "pyramidal_search_minscore"
-    * Default: 0.3f
+    * Default: 0.2f
     * type: float
     * pattern: ]0.f, 1.f]
     * More info: https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#pyramidal-search-minscore
     */
-   static final double CONFIG_PYRAMIDAL_SEARCH_MINSCORE = 0.3; // 30%
+   static final double CONFIG_PYRAMIDAL_SEARCH_MINSCORE = 0.2; // 20%
 
    /**
     * Minimum image size (max[width, height]) in pixels to trigger pyramidal search.

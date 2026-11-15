@@ -39,6 +39,7 @@
 #include <sys/stat.h>
 #include <random>
 #include <mutex>
+#include <chrono>
 #include <condition_variable>
 #include <map>
 #if defined(_WIN32)
@@ -117,7 +118,7 @@ static const char* __jsonConfig =
 "\"detect_miniou\": 0.4,"
 ""
 "\"pyramidal_search_enabled\": true,"
-"\"pyramidal_search_minscore\": 0.3,"
+"\"pyramidal_search_minscore\": 0.2,"
 "\"pyramidal_search_miniou\": 0.4,"
 "\"pyramidal_search_min_image_size_inpixels\": 600,"
 ""
@@ -146,7 +147,7 @@ int main(int argc, char *argv[])
 
 	// local variables
 	UltAlprSdkResult result;
-	std::string assetsFolder, licenseTokenData, licenseTokenFile;
+	std::string assetsFolder, licenseTokenData, licenseTokenFile, pluginOptions;
 	bool isParallelDeliveryEnabled = false; // Single image -> no need for parallel processing
 	bool isNightVisionEnabled = false;
 	bool isKlassLPCI_Enabled = false;
@@ -215,6 +216,9 @@ int main(int argc, char *argv[])
 	if (args.find("--tokendata") != args.end()) {
 		licenseTokenData = args["--tokendata"];
 	}
+	if (args.find("--plugin_options") != args.end()) {
+		pluginOptions = args["--plugin_options"];
+	}
 
 	// Update JSON config
 	std::string jsonConfig = __jsonConfig;
@@ -241,6 +245,9 @@ int main(int argc, char *argv[])
 	if (!licenseTokenData.empty()) {
 		jsonConfig += std::string(",\"license_token_data\": \"") + licenseTokenData + std::string("\"");
 	}
+	if (!pluginOptions.empty()) {
+		jsonConfig += std::string(",\"plugin_options\": \"") + pluginOptions + std::string("\"");
+	}
 	
 	jsonConfig += "}"; // end-of-config
 
@@ -254,11 +261,15 @@ int main(int argc, char *argv[])
 	// Init
 	ULTALPR_SDK_PRINT_INFO("Starting recognizer...");
 	MyUltAlprSdkParallelDeliveryCallback parallelDeliveryCallbackCallback(nullptr);
+	const std::chrono::high_resolution_clock::time_point timeStartInit = std::chrono::high_resolution_clock::now();
 	ULTALPR_SDK_ASSERT(UltAlprSdkEngine::init(
 		ASSET_MGR_PARAM()
 		jsonConfig.c_str(),
 		isParallelDeliveryEnabled ? &parallelDeliveryCallbackCallback : nullptr
 	).isOK());
+	const std::chrono::high_resolution_clock::time_point timeEndInit = std::chrono::high_resolution_clock::now();
+	ULTALPR_SDK_PRINT_INFO("Engine init duration: %lf millis",
+		std::chrono::duration_cast<std::chrono::duration<double >>(timeEndInit - timeStartInit).count() * 1000.0);
 
 	// Recognize/Process
 	// We load the models when this function is called for the first time. This make the first inference slow.

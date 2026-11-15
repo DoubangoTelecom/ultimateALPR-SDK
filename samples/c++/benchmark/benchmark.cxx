@@ -10,7 +10,7 @@
 	https://github.com/DoubangoTelecom/ultimateALPR/blob/master/SDK_dist/samples/c++/benchmark/README.md
 	Usage: 
 		benchmark \
-			--image <path-to-image-with-to-benchmark> \
+			--image <comma-separated-paths-to-images> \
 			--assets <path-to-assets-folder> \
 			[--charset <recognition-charset:latin/korean/chinese>] \
 			[--num_threads <number-of-threads:[1, inf]>] \
@@ -24,7 +24,8 @@
 			[--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \
 			[--klass_vmmr_enabled <whether-to-enable-VMMR:true/false>] \
 			[--klass_vbsr_enabled <whether-to-enable-VBSR:true/false>] \
-			[--loops <number-of-times-to-run-the-loop:[1, inf]>] \
+			[--loops <number-of-times-to-run-the-inference-loop:[1, inf]>] \
+			[--loopsw <number-of-times-to-run-the-warmup-loop:[1, inf]>] \
 			[--parallel <whether-to-enable-parallel-mode:true/false>] \
 			[--tokenfile <path-to-license-token-file>] \
 			[--tokendata <base64-license-token-data>]
@@ -46,6 +47,7 @@
 #include <algorithm>
 #include <random>
 #include <mutex>
+#include <sstream>
 #include <map>
 #include <sys/stat.h>
 #include <condition_variable>
@@ -74,11 +76,11 @@ static const char* __jsonConfig =
 "\"detect_minscore\": 0.4,"
 "\"detect_miniou\": 0.4,"
 ""
-"\"pyramidal_search_minscore\": 0.3,"
+"\"pyramidal_search_minscore\": 0.2,"
 "\"pyramidal_search_miniou\": 0.4,"
 "\"pyramidal_search_min_image_size_inpixels\": 800,"
 ""
-"\"recogn_minscore\": 0.2,"
+"\"recogn_minscore\": 0.1,"
 "\"recogn_score_type\": \"cumprod\","
 ""
 "\"klass_lpci_topk\": 5,"
@@ -97,8 +99,6 @@ static const char* __jsonConfig =
 #else
 #	define ASSET_MGR_PARAM() 
 #endif /* ULTALPR_SDK_OS_ANDROID */
-
-#define NUM_WARMUP_LOOPS	30 // Number of loops for warmup, should  be >> 1 to reach or parallel threads
 
 /*
 * Parallel callback function used for notification. Not mandatory.
@@ -133,6 +133,16 @@ struct FileInfo {
 	size_t width = 0;
 	size_t height = 0;
 	ULTALPR_SDK_IMAGE_TYPE type;
+	FileInfo() {}
+	FileInfo(const FileInfo& fi) = delete;
+	FileInfo(FileInfo&& fi) noexcept // std::move
+		: uncompressedData(fi.uncompressedData)
+		, width(fi.width)
+		, height(fi.height)
+		, type(fi.type)
+	{ 
+		fi.uncompressedData = nullptr;
+	}
 	virtual ~FileInfo() {
 		release();
 	}
@@ -164,7 +174,7 @@ int main(int argc, char *argv[])
 
 	// local variables
 	UltAlprSdkResult result;
-	std::string assetsFolder, licenseTokenData, licenseTokenFile;
+	std::string assetsFolder, licenseTokenData, licenseTokenFile, pluginOptions;
 	bool isRecognEnabled = true;
 	bool isNightVisionEnabled = false;
 	bool isPySearchEnabled = false;
@@ -182,9 +192,10 @@ int main(int argc, char *argv[])
 #else
 	size_t loopsCount = 500;
 #endif
+	size_t loopsCountW = 30;
 	int numThreads = -1;
 	int maxLatency = -1;
-	std::string pathFileImage;
+	std::string images;
 
 	// Parsing args
 	std::map<std::string, std::string > args;
@@ -196,7 +207,7 @@ int main(int argc, char *argv[])
 		printUsage("--image required");
 		return -1;
 	}
-	pathFileImage = args["--image"];
+	images = args["--image"];
 
 	if (args.find("--parallel") != args.end()) {
 		isParallelDeliveryEnabled = (args["--parallel"].compare("true") == 0);
@@ -252,19 +263,24 @@ int main(int argc, char *argv[])
 	if (args.find("--tokendata") != args.end()) {
 		licenseTokenData = args["--tokendata"];
 	}
+	if (args.find("--plugin_options") != args.end()) {
+		pluginOptions = args["--plugin_options"];
+	}
 	if (args.find("--num_threads") != args.end()) {
 		numThreads = std::atoi(args["--num_threads"].c_str());
 	}
 	if (args.find("--max_latency") != args.end()) {
 		maxLatency = std::atoi(args["--max_latency"].c_str());
 	}
-	if (args.find("--loops") != args.end()) {
-		const int loops = std::atoi(args["--loops"].c_str());
-		if (loops < 1) {
-			printUsage("--loops must be within [1, inf]");
-			return -1;
+	for (const std::string name : { "--loops", "--loopsw" }) {
+		if (args.find(name) != args.end()) {
+			const int loops = std::atoi(args[name].c_str());
+			if (loops < 1 && (name == "--loops")) {
+				printUsage("--loops must be within [1, inf]");
+				return -1;
+			}
+			*((name == "--loops") ? &loopsCount : &loopsCountW) = static_cast<size_t>(loops < 0 ? 0 : loops);
 		}
-		loopsCount = static_cast<size_t>(loops);
 	}
 
 	// Update JSON config
@@ -299,15 +315,24 @@ int main(int argc, char *argv[])
 	if (!licenseTokenData.empty()) {
 		jsonConfig += std::string(",\"license_token_data\": \"") + licenseTokenData + std::string("\"");
 	}
+	if (!pluginOptions.empty()) {
+		jsonConfig += std::string(",\"plugin_options\": \"") + pluginOptions + std::string("\"");
+	}
 
 	jsonConfig += "}"; // end-of-config
-	
 
-	// Read input file
-	FileInfo file;
-	if (!readFile(pathFileImage, file) || !file.isValid()) {
-		ULTALPR_SDK_PRINT_FATAL("Can't read %s", pathFileImage.c_str());
-		return -1;
+	// Read input files (comma-separated)
+	std::istringstream iss(images);
+	ULTALPR_SDK_PRINT_INFO("images:%s", images.c_str());
+	std::string image;
+	std::vector<FileInfo> files;
+	while (std::getline(iss, image, ',')) {
+		FileInfo file;
+		if (!readFile(image, file) || !file.isValid()) {
+			ULTALPR_SDK_PRINT_FATAL("Can't read %s", image.c_str());
+			return -1;
+		}
+		files.push_back(std::move(file));
 	}
 
 	// Function to wait until parallel callback is called
@@ -333,31 +358,36 @@ int main(int argc, char *argv[])
 	// Init
 	ULTALPR_SDK_PRINT_INFO("Starting benchmark...");
 	MyUltAlprSdkParallelDeliveryCallback parallelDeliveryCallbackCallback(nullptr);
+	const std::chrono::high_resolution_clock::time_point timeStartInit = std::chrono::high_resolution_clock::now();
 	ULTALPR_SDK_ASSERT(checkResult(UltAlprSdkEngine::init(
 		ASSET_MGR_PARAM()
 		jsonConfig.c_str(),
 		isParallelDeliveryEnabled ? &parallelDeliveryCallbackCallback : nullptr
 	)));
+	const std::chrono::high_resolution_clock::time_point timeEndInit = std::chrono::high_resolution_clock::now();
+	ULTALPR_SDK_PRINT_INFO("Engine init duration: %lf millis",
+		std::chrono::duration_cast<std::chrono::duration<double >>(timeEndInit - timeStartInit).count() * 1000.0);
 
 	// WarmUp
 	// We load the models into the memory the first time the inference is called which
 	// means it'll be very slow.
 	ULTALPR_SDK_PRINT_INFO("Starting warmup...");
 	parallelState = "WARMUP";
-	const size_t num_warmup_loops = isParallelDeliveryEnabled ? NUM_WARMUP_LOOPS : 1;
-	for (size_t i = 0; i < num_warmup_loops; ++i) {
+	for (size_t i = 0; i < loopsCountW; ++i) {
+		const auto& file = files[rand() % files.size()];
 		ULTALPR_SDK_ASSERT(checkResult(result = UltAlprSdkEngine::process(
 			file.type, file.uncompressedData, file.width, file.height
 		)));
 	}
-	funcWaitPtr(num_warmup_loops, kParallelNotifCountResetTrue);
+	funcWaitPtr(loopsCountW, kParallelNotifCountResetTrue);
 	ULTALPR_SDK_PRINT_INFO("Warmup done.");
 
 	// Processing
 	ULTALPR_SDK_PRINT_INFO("Starting benchmarking...");
 	parallelState = "BENCH";
-	const std::chrono::high_resolution_clock::time_point timeStart = std::chrono::high_resolution_clock::now();
+	const std::chrono::high_resolution_clock::time_point timeStartBench = std::chrono::high_resolution_clock::now();
 	for (size_t i = 0; i < loopsCount; ++i) {
+		const auto& file = files[rand() % files.size()];
 		ULTALPR_SDK_ASSERT(checkResult(result = UltAlprSdkEngine::process(
 			file.type, file.uncompressedData, file.width, file.height
 		)));
@@ -368,8 +398,8 @@ int main(int argc, char *argv[])
 	// At this step all frames are already processed but the result could be still on the delivery
 	// queue due to the console display latency. You can move here the code used to wait until all
 	// messages are displayed to include the delivery latency.
-	const std::chrono::high_resolution_clock::time_point timeEnd = std::chrono::high_resolution_clock::now();
-	const double elapsedTimeInMillis = std::chrono::duration_cast<std::chrono::duration<double >>(timeEnd - timeStart).count() * 1000.0;
+	const std::chrono::high_resolution_clock::time_point timeEndBench = std::chrono::high_resolution_clock::now();
+	const double elapsedTimeInMillis = std::chrono::duration_cast<std::chrono::duration<double >>(timeEndBench - timeStartBench).count() * 1000.0;
 	ULTALPR_SDK_PRINT_INFO("Elapsed time (Benchmark) = [[[ %lf millis ]]]", elapsedTimeInMillis);
 
 	// Print latest result
@@ -404,7 +434,7 @@ static void printUsage(const std::string& message /*= ""*/)
 	ULTALPR_SDK_PRINT_INFO(
 		"\n********************************************************************************\n"
 		"benchmark\n"
-		"\t--image <path-to-image-with-to-benchmark> \n"
+		"\t--image <comma-separated-paths-to-images> \n"
 		"\t--assets <path-to-assets-folder> \n"
 		"\t[--charset <recognition-charset:latin/korean/chinese/brazilian/israeli>] \n"
 		"\t[--num_threads <number of threads : [1, inf]>] \n"
@@ -418,14 +448,15 @@ static void printUsage(const std::string& message /*= ""*/)
 		"\t[--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \n"
 		"\t[--klass_vmmr_enabled <whether-to-enable-VMMR:true/false>] \n"
 		"\t[--klass_vbsr_enabled <whether-to-enable-VBSR:true/false>] \n"
-		"\t[--loops <number-of-times-to-run-the-loop:[1, inf]>] \n"
+		"\t[--loops <number-of-times-to-run-the-inference-loop:[1, inf]>] \n"
+		"\t[--loopsw <number-of-times-to-run-the-warmup-loop:[1, inf]>] \n"
 		"\t[--parallel <whether-to-enable-parallel-mode:true / false>] \n"
 		"\t[--tokenfile <path-to-license-token-file>] \n"
 		"\t[--tokendata <base64-license-token-data>] \n"
 		"\n"
 		"Options surrounded with [] are optional.\n"
 		"\n"
-		"--image: Path to the image(JPEG/PNG/BMP) to benchmark. You can use default image at ../../../assets/images/lic_us_1280x720.jpg.\n\n"
+		"--image: Comma-separated paths to images (JPEG/PNG/BMP) to benchmark. You can use default image at ../../../assets/images/lic_us_1280x720.jpg.\n\n"
 		"--assets: Path to the assets folder containing the configuration files and models. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#assets-folder. \n\n"
 		"--charset: Defines the recognition charset (a.k.a alphabet) value (latin, korean, chinese...). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#recogn-charset. Default: latin.\n\n"
 		"--num_threads: Number of threads to use. More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#num-threads. Default: -1.\n\n"
@@ -439,7 +470,8 @@ static void printUsage(const std::string& message /*= ""*/)
 		"--klass_vcr_enabled: Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vcr-enabled. Default: false.\n\n"
 		"--klass_vmmr_enabled: Whether to enable Vehicle Make Model Recognition (VMMR). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vmmr-enabled. Default: false.\n\n"
 		"--klass_vbsr_enabled: Whether to enable Vehicle Body Style Recognition (VBSR). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vbsr-enabled. Default: false.\n\n"
-		"--loops: Number of times to run the processing pipeline.\n\n"
+		"--loops: Number of times to run the inference loop.\n\n"
+		"--loopsw: Number of times to run the warmup loop.\n\n"
 		"--parallel: Whether to enabled the parallel mode. More info about the parallel mode at https://www.doubango.org/SDKs/anpr/docs/Parallel_processing.html. Default: true.\n\n"
 		"--tokenfile: Path to the file containing the base64 license token if you have one. If not provided then, the application will act like a trial version. Default: null.\n\n"
 		"--tokendata: Base64 license token if you have one. If not provided then, the application will act like a trial version. Default: null.\n\n"

@@ -6,14 +6,14 @@
 - [Usage](#testing-usage)
 - [Peformance numbers](#peformance-numbers)
   - [Desktop (Linux/Windows X86_64)](#peformance-numbers-desktop)
-  - [Mobile (Linux aarch64)](#peformance-numbers-mobile)
+  - [Mobile (Linux/Android AArch64)](#peformance-numbers-mobile)
     - [NVIDIA Jetson](#peformance-numbers-mobile-jetson)
     - [Raspberry Pi](#peformance-numbers-mobile-rpi)
     - [OrangePi 5+ (rk3588 NPU)](#peformance-numbers-mobile-orangepi)
     - [Radxa rock 5b (rk3588 NPU)](#peformance-numbers-mobile-rock5b)
-    - [Radxa Dragon Q6A (Qualcomm NPU)](#peformance-numbers-mobile-dragon)
+    - [Radxa Dragon Q6A (Qualcomm Hexagon NPU)](#peformance-numbers-mobile-dragon)
+    - [Samsung Galaxy S24](#peformance-numbers-mobile-s24)
     - [Debix A (NXP i.MX 8M Plus NPU)](#peformance-numbers-mobile-debixa)
-    - [Samsung Galaxy S24 (Qualcomm NPU)](#peformance-numbers-mobile-s24)
 <hr />
 
 This application is used to check everything is ok and running as fast as expected on Windows and Linux. Check [here](../../android/benchmark) for Android. 
@@ -64,7 +64,7 @@ To build the project:
 
 ```
 		benchmark \
-			--image <path-to-image-with-to-benchmark> \
+			--image <Comma-separated paths to images (JPEG/PNG/BMP) to benchmark> \
 			--assets <path-to-assets-folder> \
 			[--charset <recognition-charset:latin/korean/chinese>] \
 			[--num_threads <number-of-threads:[1, inf]>] \
@@ -79,7 +79,8 @@ To build the project:
 			[--klass_vcr_enabled <whether-to-enable-VCR:true/false>] \
 			[--klass_vmmr_enabled <whether-to-enable-VMMR:true/false>] \
 			[--klass_vbsr_enabled <whether-to-enable-VBSR:true/false>] \
-			[--loops <number-of-times-to-run-the-loop:[1, inf]>] \
+			[--loops <number-of-times-to-run-the-inference-loop:[1, inf]>] \
+            [--loopsw <number-of-times-to-run-the-warmup-loop:[1, inf]>] \
 			[--parallel <whether-to-enable-parallel-mode:true/false>] \
 			[--tokenfile <path-to-license-token-file>] \
 			[--tokendata <base64-license-token-data>]
@@ -99,7 +100,8 @@ Options surrounded with **[]** are optional.
 - `--klass_vcr_enabled` Whether to enable Vehicle Color Recognition (VCR). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vcr-enabled. Default: *false*.
 - `--klass_vmmr_enabled` Whether to enable Vehicle Make Model Recognition (VMMR). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vmmr-enabled. Default: *false*.
 - `--klass_vbsr_enabled` Whether to enable Vehicle Body Style Recognition (VBSR). More info at https://www.doubango.org/SDKs/anpr/docs/Configuration_options.html#klass-vbsr-enabled. Default: *false*.
-- `--loops` Number of times to run the processing pipeline.
+- `--loops` Number of times to run the inference loop.
+- `--loopsw` Number of times to run the warmup loop.
 - `--parallel` Whether to enabled the parallel mode. More info about the parallel mode at https://www.doubango.org/SDKs/anpr/docs/Parallel_processing.html. Default: *true*.
 - `--tokenfile` Path to the file containing the base64 license token if you have one. If not provided then, the application will act like a trial version. Default: *null*.
 - `--tokendata` Base64 license token if you have one. If not provided then, the application will act like a trial version. Default: *null*.
@@ -212,11 +214,24 @@ Please also note that Hailo uses different OCR models and may produce difference
  - The Android project contains only TensorflowLite models, you need to change **sdk/build.gradle** to include everything: from `assets.srcDirs += ['../../../assets/models.tflite']` to `assets.srcDirs += ['../../../assets/models']`.
 
 <a name="peformance-numbers-mobile-dragon"></a>
-### Radxa Dragon Q6A (Qualcomm NPU) ###
+### Radxa Dragon Q6A (Qualcomm Hexagon NPU) ###
 
-| | tflite[ext=/usr/lib/libvx_delegate.so] |tflite[xnnpack]| tflite[none]  | onnx          |
+| | tflite[ext=$QAIRT_HOME/lib/$ABI/libQnnTFLiteDelegate.so] |tflite[xnnpack]| tflite[none]  | onnx          |
 | --- | --- | --- | --- | --- |
-| Dragon Q6A | -- | 43.06 | 19.97 | 16.67 |
+| Dragon Q6A (QCS6490) | 301.04 | 43.06 | 19.97 | 16.67 |
+
+Check [here](../../../Qualcomm.md) on how to configure the SDK to run on Qualcomm Hexagon Tensor Processor (HTP).
+
+<a name="peformance-numbers-mobile-s24"></a>
+### Samsung Galaxy S24 ###
+
+These numbers are generated using [Android benchmark app](../../android/benchmark).
+
+| | tflite[ext=libQnnTFLiteDelegate.so]    |tflite[xnnpack]|tflite[nnapi]  | tflite[gpu]   | tflite[none]  |
+| --- | --- | --- | --- | --- | --- |
+| Samsung Galaxy S24 (Android) | -- | 91.24 | 51.64 | 6.84 | 54.47 |
+
+The S24 model (`SM-S921B`) used is an European version with a `Exynos 2400` processor. Unlike the S24 models sold in America and China (`Snapdragon 8 Gen 3` processor), ours doesn't have an NPU.
 
 <a name="peformance-numbers-mobile-debixa"></a>
 ### Debix A (NXP i.MX 8M Plus NPU) ###
@@ -225,18 +240,9 @@ Please also note that Hailo uses different OCR models and may produce difference
 | --- | --- | --- | --- | --- |
 | [Debix A](https://debix.io/product/debix-model-a/) | 71.02 | 5.18 | 3.25 | -- |
 
-First inference is slow when using the NPU, you need some warm up before doing the benchmark.
+Use the next code to cache the compiled graph and speedup the startup:
 
-<a name="peformance-numbers-mobile-s24"></a>
-### Samsung Galaxy S24 (Qualcomm NPU) ###
-
-These numbers are generated using [Android benchmark app](../../android/benchmark).
-
-| | tflite[ext=libQnnTFLiteDelegate.so]    |tflite[xnnpack]|tflite[nnapi]  | tflite[gpu]   | tflite[none]  |
-| --- | --- | --- | --- | --- | --- |
-| Samsung Galaxy S24 | -- | 91.24 | 51.64 | 6.84 | 54.47 |
-
-
-
-
-
+```
+export VIV_VX_CACHE_BINARY_GRAPH_DIR=`pwd`
+export VIV_VX_ENABLE_CACHE_GRAPH_BINARY="1"
+```
