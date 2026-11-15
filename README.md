@@ -49,8 +49,8 @@ This SDK is the fastest you'll find on the market, we provide pre-built [binarie
 | ARM64 edge Device  | Frame rate 
 |--- | --- |
 | [Jetson Nano Orin (TensorRT GPU)](samples/c++/benchmark/README.md#peformance-numbers-mobile-jetson) | 472.89 |
+| [Dragon Q6A (Qualcomm Hexagon NPU)](https://github.com/DoubangoTelecom/ultimateALPR/blob/master/SDK_dist/samples/c%2B%2B/benchmark/README.md#peformance-numbers-mobile-dragon) | 317.18 |
 | [Orange Pi 5 (RKNPU2)](https://github.com/DoubangoTelecom/ultimateALPR/blob/master/SDK_dist/samples/c++/benchmark/README.md#peformance-numbers-mobile-orangepi) | 310.21 |
-| [Dragon Q6A (Qualcomm Hexagon NPU)](https://github.com/DoubangoTelecom/ultimateALPR/blob/master/SDK_dist/samples/c%2B%2B/benchmark/README.md#peformance-numbers-mobile-dragon) | 301.04 |
 | [Raspberry Pi 5+ (Hailo-8L NPU)](https://github.com/DoubangoTelecom/ultimateALPR/blob/master/SDK_dist/samples/c%2B%2B/benchmark/README.md#peformance-numbers-mobile-orangepi) | 143.67 |
 | [Samsung Galaxy S24 (TfLite CPU)](https://github.com/DoubangoTelecom/ultimateALPR/blob/master/SDK_dist/samples/c%2B%2B/benchmark/README.md#peformance-numbers-mobile-s24) | 91.24 |
 | [Debix A (NXP i.MX 8M Plus NPU)](https://github.com/DoubangoTelecom/ultimateALPR/blob/master/SDK_dist/samples/c%2B%2B/benchmark/README.md#peformance-numbers-mobile-debixa) | 71.02 |
